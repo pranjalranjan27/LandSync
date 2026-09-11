@@ -9,10 +9,12 @@ import {
   Check,
   Loader2
 } from 'lucide-react';
+import { useTranslation } from '../../locales';
 import './FieldOfficerView.css';
 
 export const FieldOfficerView: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -59,7 +61,7 @@ export const FieldOfficerView: React.FC = () => {
       {/* Header with Field Officer Profile Card */}
       <div className="fo-header-row">
         <div className="fo-title-area">
-          <h1>Field Officer Dashboard</h1>
+          <h1>{t('dashboard.fieldOfficerViewTitle', 'Field Officer Dashboard')}</h1>
           <p className="fo-subtitle">
             Cadastral Ground-Truthing &amp; Possession • Boundary pillar verification, tree/structure counts &amp; joint handover.
           </p>

@@ -34,5 +34,13 @@ export const common: CommonTranslations = {
     siaExpert: 'SIA நிபுணர்',
     rrAdmin: 'மறுவாழ்வு மற்றும் மீள்குடியேற்ற நிர்வாகி',
     fieldOfficer: 'கள அதிகாரி'
+  },
+  nav: {
+    dashboard: 'முகப்பு பலகை',
+    cases: 'மாவட்ட வழக்குகள்',
+    reports: 'அறிக்கைகள்',
+    notifications: 'அறிவிப்புகள்',
+    documents: 'ஆவணங்கள்',
+    profile: 'சுயவிவரம்'
   }
 };

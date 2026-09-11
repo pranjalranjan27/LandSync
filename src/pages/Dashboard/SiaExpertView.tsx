@@ -10,10 +10,12 @@ import {
   Inbox,
   Loader2
 } from 'lucide-react';
+import { useTranslation } from '../../locales';
 import './SiaExpertView.css';
 
 export const SiaExpertView: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [assignedCases, setAssignedCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -54,7 +56,7 @@ export const SiaExpertView: React.FC = () => {
       {/* Header with SIA Expert Profile Badge */}
       <div className="sia-header-row">
         <div className="sia-title-area">
-          <h1>SIA Expert Dashboard</h1>
+          <h1>{t('dashboard.siaExpertViewTitle', 'SIA Expert Dashboard')}</h1>
           <p className="sia-subtitle">
             Social Impact Assessment Committee • Public hearings, demographic impact review &amp; recommendations.
           </p>
@@ -65,7 +67,7 @@ export const SiaExpertView: React.FC = () => {
             <Users size={22} />
           </div>
           <div>
-            <div className="sia-expert-label">Committee Expert</div>
+            <div className="sia-expert-label">{t('common.roles.siaExpert', 'Committee Expert')}</div>
             <div className="sia-expert-name">{user?.name || 'Dr. Meenakshi Sundaram'}</div>
             <div className="sia-expert-desig">State Directorate of SIA • Statutory Reviewer</div>
           </div>
@@ -75,7 +77,7 @@ export const SiaExpertView: React.FC = () => {
       {/* Section: Assigned Cases */}
       <div>
         <div className="sia-section-header">
-          <h2 className="sia-section-title">Assigned Cases</h2>
+          <h2 className="sia-section-title">{t('dashboard.activeCases', 'Assigned Cases')}</h2>
           <span className="sia-section-count">{assignedCases.length}</span>
         </div>
 

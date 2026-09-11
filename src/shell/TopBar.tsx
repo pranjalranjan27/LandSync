@@ -13,7 +13,7 @@ import {
   Shield
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../locales';
+import { useTranslation } from '../locales';
 import { useAuth } from '../hooks/useAuth';
 import './TopBar.css';
 
@@ -22,6 +22,15 @@ interface TopBarProps {
   onToggleMobileNav?: () => void;
 }
 
+const ROLE_LOCALE_MAP: Record<string, string> = {
+  COLLECTOR: 'common.roles.collector',
+  REQUIRING_BODY: 'common.roles.requiringBody',
+  STATE_APPROVER: 'common.roles.stateApprover',
+  SIA_EXPERT: 'common.roles.siaExpert',
+  RR_ADMIN: 'common.roles.rrAdmin',
+  FIELD_OFFICER: 'common.roles.fieldOfficer'
+};
+
 export const TopBar: React.FC<TopBarProps> = ({
   currentUser,
   onToggleMobileNav
@@ -29,7 +38,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { language, setLanguage, languages } = useLanguage();
+  const { t, language, setLanguage, languages } = useTranslation();
   const { logout } = useAuth();
 
   // Close dropdown on outside click
@@ -54,6 +63,8 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const displayName = currentUser.name.replace(/,.*$/, '');
   const userRoleMeta = roleConfigs[currentUser.role];
+  const roleTranslationKey = ROLE_LOCALE_MAP[currentUser.role];
+  const roleDisplay = roleTranslationKey ? t(roleTranslationKey, userRoleMeta?.displayName) : (userRoleMeta?.displayName || currentUser.designation);
 
   const handleSignOut = () => {
     setDropdownOpen(false);
@@ -81,7 +92,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           <input
             type="text"
             className="topbar-search-input"
-            placeholder="Search cases, ID, or location..."
+            placeholder={t('common.search', 'Search cases, ID, or location...')}
             aria-label="Search cases"
           />
         </div>
@@ -97,7 +108,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           <div className="topbar-location-text">
             <span className="topbar-location-name">{currentUser.district || 'Gautam Buddha Nagar'}</span>
             <span className="topbar-location-role">
-              {userRoleMeta?.displayName || currentUser.designation || 'District Official'}
+              {roleDisplay}
             </span>
           </div>
         </div>
@@ -148,7 +159,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 }}
               >
                 <Shield size={12} color="#0B192C" />
-                <span>{userRoleMeta?.displayName || currentUser.role}</span>
+                <span>{roleDisplay}</span>
               </div>
               <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '2px' }}>
                 {currentUser.department}
@@ -165,7 +176,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               }}
             >
               <UserIcon size={15} />
-              <span>My Profile &amp; Settings</span>
+              <span>{t('common.nav.profile', 'My Profile & Settings')}</span>
             </button>
 
             <div className="dropdown-divider" />
@@ -173,7 +184,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             {/* Language Selection */}
             <div className="dropdown-section-title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Globe size={12} />
-              <span>Select Language</span>
+              <span>{t('auth.selectLanguage', 'Select Language')}</span>
             </div>
             {languages.map((lang) => (
               <button
@@ -200,7 +211,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               style={{ color: '#DC2626' }}
             >
               <LogOut size={15} />
-              <span>Sign Out</span>
+              <span>{t('auth.returnToSignIn', 'Sign Out')}</span>
             </button>
           </div>
         )}

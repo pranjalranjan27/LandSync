@@ -19,5 +19,11 @@ export const dashboard: DashboardTranslations = {
   stateApproverViewTitle: 'राज्य अनुमोदक स्वीकृति कंसोल',
   siaExpertViewTitle: 'एसआईए विशेषज्ञ मूल्यांकन डैशबोर्ड',
   rrAdminViewTitle: 'पुनर्वास एवं पुनर्स्थापन कंसोल',
-  fieldOfficerViewTitle: 'क्षेत्रीय सर्वेक्षण एवं सत्यापन पटल'
+  fieldOfficerViewTitle: 'क्षेत्रीय सर्वेक्षण एवं सत्यापन पटल',
+  needsAction: 'मेरी कार्रवाई आवश्यक',
+  allDistrictCases: 'जिले के सभी मामले',
+  filterByStage: 'चरण अनुसार फ़िल्टर करें:',
+  districtLabel: 'ज़िला',
+  collectorSubtitle: 'अपने जिले में भूमि अधिग्रहण मामलों का प्रबंधन करें।',
+  allStateCases: 'राज्य के सभी मामले'
 };

@@ -19,5 +19,11 @@ export const dashboard: DashboardTranslations = {
   stateApproverViewTitle: 'மாநில ஒப்புதல் பணியகம்',
   siaExpertViewTitle: 'SIA நிபுணர் மதிப்பீட்டு தளம்',
   rrAdminViewTitle: 'மறுவாழ்வு மற்றும் மீள்குடியேற்ற பணியகம்',
-  fieldOfficerViewTitle: 'கள நில அளவை & சரிபார்ப்பு மேசை'
+  fieldOfficerViewTitle: 'கள நில அளவை & சரிபார்ப்பு மேசை',
+  needsAction: 'எனது நடவடிக்கை தேவை',
+  allDistrictCases: 'அனைத்து மாவட்ட வழக்குகள்',
+  filterByStage: 'நிலை வாரியாக வடிகட்டவும்:',
+  districtLabel: 'மாவட்டம்',
+  collectorSubtitle: 'உங்கள் மாவட்டத்தில் நிலம் கையகப்படுத்தும் வழக்குகளை நிர்வகிக்கவும்.',
+  allStateCases: 'அனைத்து மாநில வழக்குகள்'
 };

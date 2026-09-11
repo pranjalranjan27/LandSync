@@ -19,5 +19,11 @@ export const dashboard: DashboardTranslations = {
   stateApproverViewTitle: 'రాష్ట్ర ఆమోద అధికారి కన్సోల్',
   siaExpertViewTitle: 'SIA నిపుణుల మదింపు డాష్‌బోర్డ్',
   rrAdminViewTitle: 'పునరావాస మరియు పునఃస్థాపన కన్సోల్',
-  fieldOfficerViewTitle: 'ఫీల్డ్ సర్వే & ధృవీకరణ డెస్క్'
+  fieldOfficerViewTitle: 'ఫీల్డ్ సర్వే & ధృవీకరణ డెస్క్',
+  needsAction: 'నా చర్య అవసరం',
+  allDistrictCases: 'అన్ని జిల్లా కేసులు',
+  filterByStage: 'దశల వారీగా ఫిల్టర్ చేయండి:',
+  districtLabel: 'జిల్లా',
+  collectorSubtitle: 'మీ జిల్లాలోని భూసేకరణ కేసులను నిర్వహించండి.',
+  allStateCases: 'అన్ని రాష్ట్ర కేసులు'
 };

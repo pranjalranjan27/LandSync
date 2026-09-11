@@ -41,6 +41,14 @@ export interface CommonTranslations {
     rrAdmin: string;
     fieldOfficer: string;
   };
+  nav?: {
+    dashboard: string;
+    cases: string;
+    reports: string;
+    notifications: string;
+    documents: string;
+    profile: string;
+  };
 }
 
 export interface AuthTranslations {
@@ -154,6 +162,12 @@ export interface DashboardTranslations {
   siaExpertViewTitle: string;
   rrAdminViewTitle: string;
   fieldOfficerViewTitle: string;
+  needsAction?: string;
+  allDistrictCases?: string;
+  filterByStage?: string;
+  districtLabel?: string;
+  collectorSubtitle?: string;
+  allStateCases?: string;
 }
 
 export interface CasesTranslations {

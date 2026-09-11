@@ -11,6 +11,7 @@ import {
   X
 } from 'lucide-react';
 import { IndianFlagIcon } from '../features/auth/IndianFlagIcon';
+import { useTranslation } from '../locales';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -20,6 +21,8 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
+
   const handleNavClick = () => {
     if (onClose) {
       onClose();
@@ -33,14 +36,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <NavLink to="/dashboard" className="sidebar-brand-header" onClick={handleNavClick}>
           <img
             src="/assets/Ashoka emblem.png"
-            alt="State Emblem of India"
+            alt={t('common.emblemAlt', 'State Emblem of India')}
             className="sidebar-emblem-img"
           />
           <div className="sidebar-brand-text">
             <span className="sidebar-brand-title">LandSync</span>
             <span className="sidebar-brand-subtitle">
-              National Land Acquisition &amp;<br />
-              Management System
+              {t('common.appSubtitle', 'National Land Acquisition & Management System')}
             </span>
           </div>
         </NavLink>
@@ -65,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           onClick={handleNavClick}
         >
           <LayoutDashboard size={18} />
-          <span>Dashboard</span>
+          <span>{t('common.nav.dashboard', 'Dashboard')}</span>
         </NavLink>
 
         <NavLink
@@ -74,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           onClick={handleNavClick}
         >
           <FolderKanban size={18} />
-          <span>District Cases</span>
+          <span>{t('common.nav.cases', 'District Cases')}</span>
         </NavLink>
 
         <NavLink
@@ -83,7 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           onClick={handleNavClick}
         >
           <BarChart2 size={18} />
-          <span>Reports</span>
+          <span>{t('common.nav.reports', 'Reports')}</span>
         </NavLink>
 
         <NavLink
@@ -95,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           }}
         >
           <Bell size={18} />
-          <span>Notifications</span>
+          <span>{t('common.nav.notifications', 'Notifications')}</span>
           <span className="sidebar-badge-pill">3</span>
         </NavLink>
 
@@ -108,7 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           }}
         >
           <Files size={18} />
-          <span>Documents</span>
+          <span>{t('common.nav.documents', 'Documents')}</span>
         </NavLink>
 
         <NavLink
@@ -120,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           }}
         >
           <UserCircle size={18} />
-          <span>Profile</span>
+          <span>{t('common.nav.profile', 'Profile')}</span>
         </NavLink>
       </nav>
 
@@ -128,9 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <div className="sidebar-footer">
         <IndianFlagIcon width={24} height={16} />
         <div className="sidebar-footer-text">
-          <span>Digital India.</span>
-          <span>Transparent India.</span>
-          <span>Developed India.</span>
+          <span>{t('common.digitalIndiaTagline', 'Digital India. Transparent India. Developed India.')}</span>
         </div>
       </div>
     </aside>

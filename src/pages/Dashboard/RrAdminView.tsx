@@ -12,10 +12,12 @@ import {
   ChevronRight,
   Loader2
 } from 'lucide-react';
+import { useTranslation } from '../../locales';
 import './RrAdminView.css';
 
 export const RrAdminView: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [rrCases, setRrCases] = useState<Case[]>([]);
@@ -64,7 +66,7 @@ export const RrAdminView: React.FC = () => {
       {/* Header with R&R Jurisdiction Card */}
       <div className="rr-header-row">
         <div className="rr-title-area">
-          <h1>R&amp;R Administrator Dashboard</h1>
+          <h1>{t('dashboard.rrAdminViewTitle', 'R&R Administrator Dashboard')}</h1>
           <p className="rr-subtitle">
             Rehabilitation &amp; Resettlement Schemes • Family enumeration, solatium package calculation &amp; DBT execution.
           </p>

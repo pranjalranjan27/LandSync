@@ -12,10 +12,12 @@ import {
   ChevronRight,
   Loader2
 } from 'lucide-react';
+import { useTranslation } from '../../locales';
 import './StateApproverView.css';
 
 export const StateApproverView: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<'needs_action' | 'all_state_cases'>('needs_action');
@@ -73,7 +75,7 @@ export const StateApproverView: React.FC = () => {
       {/* Header with State Jurisdiction Card */}
       <div className="state-header-row">
         <div className="state-title-area">
-          <h1>State Approver Dashboard</h1>
+          <h1>{t('dashboard.stateApproverViewTitle', 'State Approver Dashboard')}</h1>
           <p className="state-subtitle">
             Principal Secretary (Revenue) • State statutory review, SIA sanction &amp; inter-district oversight.
           </p>
@@ -84,7 +86,7 @@ export const StateApproverView: React.FC = () => {
             <Landmark size={22} />
           </div>
           <div>
-            <div className="state-card-label">State Jurisdiction</div>
+            <div className="state-card-label">{t('dashboard.districtLabel', 'State Jurisdiction')}</div>
             <div className="state-card-name">{stateId}</div>
             <div className="state-card-scope">All Districts • Inter-Departmental</div>
           </div>
@@ -101,7 +103,7 @@ export const StateApproverView: React.FC = () => {
             className={`state-tab-btn ${activeTab === 'needs_action' ? 'active' : ''}`}
             onClick={() => setActiveTab('needs_action')}
           >
-            <span>Needs My Action</span>
+            <span>{t('dashboard.needsAction', 'Needs My Action')}</span>
             <span className="state-tab-count">{actionCases.length}</span>
           </button>
 
@@ -112,7 +114,7 @@ export const StateApproverView: React.FC = () => {
             className={`state-tab-btn ${activeTab === 'all_state_cases' ? 'active' : ''}`}
             onClick={() => setActiveTab('all_state_cases')}
           >
-            <span>All State Cases</span>
+            <span>{t('dashboard.allStateCases', 'All State Cases')}</span>
             <span className="state-tab-count">{stateCases.length}</span>
           </button>
         </div>
@@ -120,7 +122,7 @@ export const StateApproverView: React.FC = () => {
         {activeTab === 'all_state_cases' && (
           <div className="state-filter-area">
             <label htmlFor="state-stage-filter" style={{ fontSize: '0.85rem', color: '#64748B' }}>
-              Filter by Stage:
+              {t('dashboard.filterByStage', 'Filter by Stage:')}
             </label>
             <select
               id="state-stage-filter"

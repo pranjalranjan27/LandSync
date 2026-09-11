@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../../components/Button/Button';
+import { useTranslation } from '../../locales';
 import './NotificationsPage.css';
 
 /* ─── Types ──────────────────────────────────────── */
@@ -136,6 +137,7 @@ type TabKey = 'all' | 'unread' | 'case_updates' | 'system';
 
 export function NotificationsPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
   const [activeTab, setActiveTab] = useState<TabKey>('all');
   const [selected, setSelected] = useState<Notification | null>(MOCK_NOTIFICATIONS[0]);
@@ -183,14 +185,14 @@ export function NotificationsPage() {
         <div>
           <h1 className="notif-page-title">
             <Bell size={24} style={{ color: 'var(--color-primary-navy)' }} />
-            Notifications
+            {t('common.nav.notifications', 'Notifications')}
           </h1>
           <p className="notif-page-subtitle">
             Stay updated on the latest updates, actions and events related to land acquisition cases.
           </p>
         </div>
         <Button variant="secondary" size="sm" onClick={markAllRead}>
-          <Check size={14} /> Mark all as read
+          <Check size={14} /> {t('common.confirm', 'Mark all as read')}
         </Button>
       </div>
 
@@ -200,10 +202,10 @@ export function NotificationsPage() {
         <div className="notif-list-panel">
           {/* Tabs */}
           <div className="notif-tabs">
-            <TabBtn id="all" active={activeTab === 'all'} count={notifications.length} label="All" onClick={() => handleTabChange('all')} />
-            <TabBtn id="unread" active={activeTab === 'unread'} count={unreadCount} label="Unread" onClick={() => handleTabChange('unread')} highlighted />
-            <TabBtn id="case_updates" active={activeTab === 'case_updates'} count={caseUpdateCount} label="Case Updates" onClick={() => handleTabChange('case_updates')} />
-            <TabBtn id="system" active={activeTab === 'system'} count={systemCount} label="System" onClick={() => handleTabChange('system')} />
+            <TabBtn id="all" active={activeTab === 'all'} count={notifications.length} label={t('common.all', 'All')} onClick={() => handleTabChange('all')} />
+            <TabBtn id="unread" active={activeTab === 'unread'} count={unreadCount} label={t('dashboard.priorityAlerts', 'Unread')} onClick={() => handleTabChange('unread')} highlighted />
+            <TabBtn id="case_updates" active={activeTab === 'case_updates'} count={caseUpdateCount} label={t('dashboard.recentActivities', 'Case Updates')} onClick={() => handleTabChange('case_updates')} />
+            <TabBtn id="system" active={activeTab === 'system'} count={systemCount} label={t('common.status', 'System')} onClick={() => handleTabChange('system')} />
           </div>
 
           {/* List */}

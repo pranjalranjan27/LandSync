@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/Button/Button';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from '../../locales';
 import './DocumentsPage.css';
 
 /* ─── Types ──────────────────────────────────────── */
@@ -85,6 +86,7 @@ function StageBadge({ stage }: { stage: string }) {
 /* ─── Component ──────────────────────────────────── */
 export function DocumentsPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [tab, setTab] = useState<DocTab>('all');
   const [search, setSearch] = useState('');
   const [caseFilter, setCaseFilter] = useState('');
@@ -162,11 +164,11 @@ export function DocumentsPage() {
       {/* ── Page header ── */}
       <div className="docs-page-header">
         <div>
-          <h1 className="docs-page-title">Documents</h1>
-          <p className="docs-page-subtitle">Access, manage and download all case related documents.</p>
+          <h1 className="docs-page-title">{t('common.nav.documents', 'Documents')}</h1>
+          <p className="docs-page-subtitle">{t('cases.detailTabs.documents', 'Access, manage and download all case related documents.')}</p>
         </div>
         <Button variant="primary" size="md" onClick={() => alert('Upload dialog — coming soon')}>
-          <Upload size={15} /> Upload Document
+          <Upload size={15} /> {t('common.export', 'Upload Document')}
         </Button>
       </div>
 
@@ -177,19 +179,19 @@ export function DocumentsPage() {
           {/* Tabs */}
           <div className="docs-tabs">
             {([
-              { key: 'all', label: 'All Documents' },
-              { key: 'my_uploads', label: 'My Uploads' },
-              { key: 'shared', label: 'Shared With Me' },
-              { key: 'recycle_bin', label: 'Recycle Bin' },
-            ] as const).map((t) => (
+              { key: 'all', label: t('common.all', 'All Documents') },
+              { key: 'my_uploads', label: t('dashboard.activeCases', 'My Uploads') },
+              { key: 'shared', label: t('dashboard.pendingReview', 'Shared With Me') },
+              { key: 'recycle_bin', label: t('common.delete', 'Recycle Bin') },
+            ] as const).map((tItem) => (
               <button
-                key={t.key}
+                key={tItem.key}
                 role="tab"
-                aria-selected={tab === t.key}
-                className={`docs-tab${tab === t.key ? ' docs-tab--active' : ''}`}
-                onClick={() => handleTabChange(t.key)}
+                aria-selected={tab === tItem.key}
+                className={`docs-tab${tab === tItem.key ? ' docs-tab--active' : ''}`}
+                onClick={() => handleTabChange(tItem.key)}
               >
-                {t.label}
+                {tItem.label}
               </button>
             ))}
           </div>
@@ -201,7 +203,7 @@ export function DocumentsPage() {
               <input
                 type="text"
                 className="docs-search-input"
-                placeholder="Search documents..."
+                placeholder={t('common.search', 'Search documents...')}
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               />

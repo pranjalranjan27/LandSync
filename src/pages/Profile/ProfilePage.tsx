@@ -12,6 +12,7 @@ import {
 import { Button } from '../../components/Button/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { roleConfigs } from '../../mock-data/users';
+import { useTranslation } from '../../locales';
 import './ProfilePage.css';
 
 /* ─── Section tabs ─────────────────────────────── */
@@ -55,6 +56,7 @@ function getInitials(name: string) {
 /* ─── Component ─────────────────────────────────── */
 export function ProfilePage() {
   const { user } = useAuth();
+  const { t, language, setLanguage, languages } = useTranslation();
   const roleConfig = roleConfigs[user.role];
 
   const [section, setSection] = useState<ProfileSection>('personal');
@@ -290,14 +292,17 @@ export function ProfilePage() {
                 ))}
               </div>
               <div style={{ marginTop: 'var(--spacing-4)' }}>
-                <Field label="Interface Language">
-                  <select defaultValue="en" style={{ maxWidth: 260 }}>
-                    <option value="en">English</option>
-                    <option value="hi">हिन्दी (Hindi)</option>
-                    <option value="mr">मराठी (Marathi)</option>
-                    <option value="ta">தமிழ் (Tamil)</option>
-                    <option value="te">తెలుగు (Telugu)</option>
-                    <option value="bn">বাংলা (Bengali)</option>
+                <Field label={t('auth.selectLanguage', 'Interface Language')}>
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value as any)}
+                    style={{ maxWidth: 260 }}
+                  >
+                    {languages.map((l) => (
+                      <option key={l.code} value={l.code}>
+                        {l.name} ({l.nativeName})
+                      </option>
+                    ))}
                   </select>
                 </Field>
               </div>

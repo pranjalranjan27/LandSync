@@ -12,10 +12,12 @@ import {
   Sparkles,
   FilePlus2
 } from 'lucide-react';
+import { useTranslation } from '../../locales';
 import './RequiringBodyView.css';
 
 export const RequiringBodyView: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,7 +79,7 @@ export const RequiringBodyView: React.FC = () => {
           ========================================================================== */}
       <div className="requiring-body-top-bar">
         <div className="requiring-body-title-group">
-          <h2>Requiring Body Dashboard (अपेक्षी निकाय)</h2>
+          <h2>{t('dashboard.requiringBodyViewTitle', 'Requiring Body Dashboard')}</h2>
           <p>
             Railways, NHAI, Metro &amp; Public Infrastructure Authorities • Form-1 Land Requisitions
           </p>
@@ -90,7 +92,7 @@ export const RequiringBodyView: React.FC = () => {
           aria-label="Create New Land Acquisition Proposal"
         >
           <PlusCircle size={18} />
-          <span>+ New Proposal</span>
+          <span>{t('dashboard.createNewProposal', '+ New Proposal')}</span>
         </button>
       </div>
 
@@ -110,11 +112,11 @@ export const RequiringBodyView: React.FC = () => {
           <div className="attention-title-wrapper">
             <h3 id="heading-attention">
               <AlertTriangle size={20} color="#D97706" />
-              Needs Your Attention
+              {t('dashboard.priorityAlerts', 'Needs Your Attention')}
             </h3>
             {attentionCases.length > 0 && (
               <span className="attention-badge-count">
-                {attentionCases.length} Action Required
+                {attentionCases.length} {t('common.actions', 'Action Required')}
               </span>
             )}
           </div>
@@ -202,10 +204,10 @@ export const RequiringBodyView: React.FC = () => {
           <div className="proposals-title-wrapper">
             <h3 id="heading-my-proposals">
               <FolderKanban size={20} color="var(--color-primary-navy)" />
-              My Proposals
+              {t('dashboard.activeCases', 'My Proposals')}
             </h3>
             <span className="badge-saffron" style={{ fontSize: '0.72rem' }}>
-              {regularProposals.length} Active
+              {regularProposals.length} {t('common.status', 'Active')}
             </span>
           </div>
           <span className="text-caption" style={{ color: 'var(--color-text-secondary)' }}>

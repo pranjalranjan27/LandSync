@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Loader2
 } from 'lucide-react';
+import { useTranslation } from '../../locales';
 import './CollectorView.css';
 
 // Stages requiring collector action
@@ -27,6 +28,7 @@ const COLLECTOR_ACTION_STAGES: CaseStage[] = [
 
 export const CollectorView: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<'needs_action' | 'all_cases'>('needs_action');
@@ -165,8 +167,8 @@ export const CollectorView: React.FC = () => {
       {/* Top Header Row with District Badge */}
       <div className="collector-header-row">
         <div className="collector-title-area">
-          <h1>Collector Dashboard</h1>
-          <p className="collector-subtitle">Manage land acquisition cases in your district.</p>
+          <h1>{t('dashboard.collectorViewTitle', 'Collector Dashboard')}</h1>
+          <p className="collector-subtitle">{t('dashboard.collectorSubtitle', 'Manage land acquisition cases in your district.')}</p>
         </div>
 
         <div className="collector-district-card">
@@ -174,7 +176,7 @@ export const CollectorView: React.FC = () => {
             <Landmark size={20} />
           </div>
           <div className="district-card-text">
-            <span className="district-card-label">District</span>
+            <span className="district-card-label">{t('dashboard.districtLabel', 'District')}</span>
             <span className="district-card-name">{collectorDistrictName}</span>
             <span className="district-card-state">{collectorStateName}</span>
           </div>
@@ -191,7 +193,7 @@ export const CollectorView: React.FC = () => {
             className={`collector-tab-btn ${activeTab === 'needs_action' ? 'active' : ''}`}
             onClick={() => setActiveTab('needs_action')}
           >
-            <span>Needs My Action</span>
+            <span>{t('dashboard.needsAction', 'Needs My Action')}</span>
             <span className="collector-tab-count">{actionQueueCases.length}</span>
           </button>
 
@@ -202,7 +204,7 @@ export const CollectorView: React.FC = () => {
             className={`collector-tab-btn ${activeTab === 'all_cases' ? 'active' : ''}`}
             onClick={() => setActiveTab('all_cases')}
           >
-            <span>All District Cases</span>
+            <span>{t('dashboard.allDistrictCases', 'All District Cases')}</span>
             <span className="collector-tab-count">{districtCases.length}</span>
           </button>
         </div>
@@ -210,7 +212,7 @@ export const CollectorView: React.FC = () => {
         {activeTab === 'all_cases' && (
           <div className="collector-filter-area">
             <label htmlFor="stage-filter" className="filter-label">
-              Filter by Stage:
+              {t('dashboard.filterByStage', 'Filter by Stage:')}
             </label>
             <select
               id="stage-filter"
@@ -218,15 +220,15 @@ export const CollectorView: React.FC = () => {
               onChange={(e) => setSelectedStage(e.target.value)}
               className="filter-select"
             >
-              <option value="ALL">All Stages</option>
-              <option value="proposal_submitted">Proposal Submitted</option>
+              <option value="ALL">{t('common.all', 'All Stages')}</option>
+              <option value="proposal_submitted">{t('cases.stages.preliminary', 'Proposal Submitted')}</option>
               <option value="state_review">State Review</option>
-              <option value="sia_complete">SIA Complete</option>
+              <option value="sia_complete">{t('cases.stages.sia', 'SIA Complete')}</option>
               <option value="objections_window">Objections Window</option>
-              <option value="award_issued">Award Issued</option>
+              <option value="award_issued">{t('cases.stages.award', 'Award Issued')}</option>
               <option value="rr_in_progress">R&amp;R In Progress</option>
               <option value="compensation_disbursed">Compensation Disbursed</option>
-              <option value="possession_taken">Possession Taken</option>
+              <option value="possession_taken">{t('cases.stages.possession', 'Possession Taken')}</option>
             </select>
           </div>
         )}
@@ -288,11 +290,11 @@ export const CollectorView: React.FC = () => {
           <table className="collector-table">
             <thead>
               <tr>
-                <th style={{ width: '15%' }}>Case ID</th>
-                <th style={{ width: '30%' }}>Project Name</th>
-                <th style={{ width: '22%' }}>Location</th>
-                <th style={{ width: '18%' }}>Current Stage</th>
-                <th style={{ width: '12%' }}>Days in Stage</th>
+                <th style={{ width: '15%' }}>{t('cases.tableHeaders.caseId', 'Case ID')}</th>
+                <th style={{ width: '30%' }}>{t('cases.tableHeaders.projectName', 'Project Name')}</th>
+                <th style={{ width: '22%' }}>{t('cases.tableHeaders.district', 'Location')}</th>
+                <th style={{ width: '18%' }}>{t('cases.tableHeaders.stage', 'Current Stage')}</th>
+                <th style={{ width: '12%' }}>{t('cases.tableHeaders.lastUpdated', 'Days in Stage')}</th>
                 <th style={{ width: '3%' }}></th>
               </tr>
             </thead>

@@ -19,5 +19,11 @@ export const dashboard: DashboardTranslations = {
   stateApproverViewTitle: 'State Approver Clearance Console',
   siaExpertViewTitle: 'SIA Expert Appraisal Dashboard',
   rrAdminViewTitle: 'Rehabilitation & Resettlement Console',
-  fieldOfficerViewTitle: 'Field Surveyor & Verification Desk'
+  fieldOfficerViewTitle: 'Field Surveyor & Verification Desk',
+  needsAction: 'Needs My Action',
+  allDistrictCases: 'All District Cases',
+  filterByStage: 'Filter by Stage:',
+  districtLabel: 'District',
+  collectorSubtitle: 'Manage land acquisition cases in your district.',
+  allStateCases: 'All State Cases'
 };

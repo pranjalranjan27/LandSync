@@ -19,5 +19,11 @@ export const dashboard: DashboardTranslations = {
   stateApproverViewTitle: 'রাজ্য অনুমোদনকারী কনসোল',
   siaExpertViewTitle: 'এসআইএ বিশেষজ্ঞ মূল্যায়ন ড্যাশবোর্ড',
   rrAdminViewTitle: 'পুনর্বাসন ও পুনর্বাসতি কনসোল',
-  fieldOfficerViewTitle: 'ফিল্ড সার্ভে ও যাচাইকরণ ডেস্ক'
+  fieldOfficerViewTitle: 'ফিল্ড সার্ভে ও যাচাইকরণ ডেস্ক',
+  needsAction: 'আমার পদক্ষেপ প্রয়োজন',
+  allDistrictCases: 'সমস্ত জেলা মামলা',
+  filterByStage: 'পর্যায় অনুসারে ফিল্টার করুন:',
+  districtLabel: 'জেলা',
+  collectorSubtitle: 'আপনার জেলার জমি অধিগ্রহণ মামলাগুলি পরিচালনা করুন।',
+  allStateCases: 'সমস্ত রাজ্য মামলা'
 };

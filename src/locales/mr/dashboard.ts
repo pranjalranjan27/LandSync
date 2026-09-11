@@ -19,5 +19,11 @@ export const dashboard: DashboardTranslations = {
   stateApproverViewTitle: 'राज्य मंजुरी अधिकारी कन्सोल',
   siaExpertViewTitle: 'एसआयए तज्ञ मूल्यमापन डॅशबोर्ड',
   rrAdminViewTitle: 'पुनर्वसन आणि पुनर्स्थापना कन्सोल',
-  fieldOfficerViewTitle: 'क्षेत्रीय सर्वेक्षण आणि पडताळणी टेबल'
+  fieldOfficerViewTitle: 'क्षेत्रीय सर्वेक्षण आणि पडताळणी टेबल',
+  needsAction: 'माझी कृती आवश्यक',
+  allDistrictCases: 'जिल्ह्यातील सर्व प्रकरणे',
+  filterByStage: 'टप्प्यानुसार फिल्टर करा:',
+  districtLabel: 'जिल्हा',
+  collectorSubtitle: 'आपल्या जिल्ह्यातील जमीन संपादन प्रकरणांचे व्यवस्थापन करा.',
+  allStateCases: 'राज्यातील सर्व प्रकरणे'
 };

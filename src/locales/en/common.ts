@@ -34,5 +34,13 @@ export const common: CommonTranslations = {
     siaExpert: 'SIA Expert',
     rrAdmin: 'R&R Administrator',
     fieldOfficer: 'Field Officer'
+  },
+  nav: {
+    dashboard: 'Dashboard',
+    cases: 'District Cases',
+    reports: 'Reports',
+    notifications: 'Notifications',
+    documents: 'Documents',
+    profile: 'Profile'
   }
 };

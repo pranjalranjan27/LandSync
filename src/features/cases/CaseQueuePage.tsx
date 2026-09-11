@@ -3,8 +3,10 @@ import { mockCases } from '../../mock-data/cases';
 import { CaseCard } from '../../components/CaseCard/CaseCard';
 import { Search, Filter, Layers } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from '../../locales';
 
 export function CaseQueuePage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
   const [query, setQuery] = useState(initialSearch);
@@ -27,9 +29,9 @@ export function CaseQueuePage() {
     <div className="page-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-6)', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h2>National Land Acquisition Case Registry</h2>
+          <h2>{t('cases.caseQueueTitle', 'National Land Acquisition Case Registry')}</h2>
           <p className="text-caption">
-            Centralized public repository of all statutory RFCTLARR Act acquisition records and Khasra parcels.
+            {t('cases.caseQueueSubtitle', 'Centralized public repository of all statutory RFCTLARR Act acquisition records and Khasra parcels.')}
           </p>
         </div>
 
@@ -41,7 +43,7 @@ export function CaseQueuePage() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search Case ID, Khasra, Title..."
+              placeholder={t('cases.searchCasesPlaceholder', 'Search Case ID, Khasra, Title...')}
               style={{ padding: '6px 12px 6px 32px', border: '1px solid var(--color-border-slate)', borderRadius: 'var(--radius-sm)', width: '220px', fontSize: '0.82rem' }}
             />
           </div>
@@ -53,7 +55,7 @@ export function CaseQueuePage() {
               onChange={(e) => setStageFilter(e.target.value)}
               style={{ padding: '6px 10px', border: '1px solid var(--color-border-slate)', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem' }}
             >
-              <option value="ALL">All Stages (1 to 8)</option>
+              <option value="ALL">{t('common.all', 'All Stages')}</option>
               <option value="STAGE_4_SEC11_NOTIFICATION">Stage 4: Sec 11 Notification</option>
               <option value="STAGE_5_OBJECTIONS_HEARING">Stage 5: Sec 15 Objections</option>
               <option value="STAGE_7_RR_AWARD_DISBURSEMENT">Stage 7: Solatium &amp; R&amp;R</option>
