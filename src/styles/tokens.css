@@ -1,0 +1,110 @@
+/**
+ * NALAMS Design Tokens System
+ * Companion to NALAMS_Antigravity_Build_Spec.md
+ * Compliant with GIGW 3.0 & WCAG 2.1 AA/AAA
+ */
+
+:root {
+  /* ==========================================================================
+     1. COLOR TOKENS (NALAMS Core Government Palette)
+     ========================================================================== */
+
+  /* Primary Authority (Ashoka Navy) */
+  /* 10.43:1 on White #FFFFFF (AAA normal text), 9.90:1 on Off-White #F8F9FA (AAA) */
+  --color-primary-navy: #1B3F75;
+  --color-primary-navy-hover: #14315c;
+  --color-primary-navy-surface: #eef3fb;
+
+  /* National Accents (Tiranga Direction) */
+  /*
+   * FLAG: --color-accent-saffron is a FILL-ONLY color.
+   * Contrast on White #FFFFFF is 2.13:1 (FAILS AA).
+   * Do NOT use as text or thin UI outline on light surfaces.
+   * As filled background with Navy #1B3F75 or Black text: ~9.86:1 (AAA).
+   */
+  --color-accent-saffron: #FF9933;
+  --color-accent-saffron-surface: #fff7eb;
+
+  /* Darker Saffron variant — active tab underline, pressed states */
+  /* 3.60:1 on White #FFFFFF (AA for large text / UI components only, not body text) */
+  /* 5.83:1 as background with black text (AA normal text) */
+  --color-accent-kesari: #E65A00;
+  --color-accent-kesari-hover: #c44d00;
+  --color-accent-kesari-surface: #fef0e6;
+
+  /* Success states, "Acquired" status, verified badges */
+  /*
+   * FLAG: --color-accent-green is borderline AA (4.61:1 on White).
+   * Avoid for small/thin text; prefer bold weight >= 14px, or status dot/badge fill with white text.
+   */
+  --color-accent-green: #138808;
+  --color-accent-green-surface: #e7f6e6;
+
+  /* Surface Tokens */
+  --color-surface-offwhite: #F8F9FA; /* Page background */
+  --color-surface-card: #FFFFFF;     /* Card / panel background */
+
+  /* Border Tokens */
+  /*
+   * FLAG: --color-border-slate is 1.47:1 on White (fails 3:1).
+   * Acceptable ONLY for decorative/non-essential dividers (WCAG 1.4.11 exempts decorative dividers).
+   * Do NOT rely on this alone to convey a required boundary (e.g. required form field).
+   */
+  --color-border-slate: #D1D5DB;
+  --color-border-focus: #FF9933; /* Saffron focus ring */
+
+  /* Text & Typography Tokens */
+  --color-text-heading: #111827;    /* 17.74:1 on White (AAA) - H1 to H4 */
+  --color-text-body: #1F2937;       /* 14.67:1 on White (AAA) - Primary body */
+  --color-text-secondary: #4B5563;  /* 7.56:1 on White (AAA) - Secondary text, metadata */
+  
+  /*
+   * FLAG: --color-text-disabled is 2.54:1 on White (Fails AA).
+   * Acceptable per WCAG inactive-UI exemption (1.4.3), but NEVER reuse for active/required text.
+   */
+  --color-text-disabled: #9CA3AF;
+  --color-text-inverse: #FFFFFF;
+
+  /* High-Contrast Mode (Accessibility GIGW 3.0 / WCAG AAA) */
+  --hc-base-black: #000000;         /* High-contrast page base */
+  --hc-text-yellow: #FFFF00;        /* 19.56:1 on Black (AAA) - Text & accents */
+
+  /* Spacing Scale (8px baseline system) */
+  --spacing-1: 0.25rem;  /* 4px */
+  --spacing-2: 0.5rem;   /* 8px */
+  --spacing-3: 0.75rem;  /* 12px */
+  --spacing-4: 1rem;     /* 16px */
+  --spacing-5: 1.25rem;  /* 20px */
+  --spacing-6: 1.5rem;   /* 24px */
+  --spacing-8: 2rem;     /* 32px */
+  --spacing-10: 2.5rem;  /* 40px */
+  --spacing-12: 3rem;    /* 48px */
+  --spacing-16: 4rem;    /* 64px */
+
+  /* Border Radii (Swiss style strict max md) */
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-full: 9999px;
+
+  /* Shadows (Subtle, purposeful) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(255, 153, 51, 0.5); /* Saffron focus glow */
+}
+
+/* High Contrast Theme Override */
+[data-theme="high-contrast"],
+.high-contrast-mode {
+  --color-surface-offwhite: var(--hc-base-black);
+  --color-surface-card: var(--hc-base-black);
+  --color-text-heading: var(--hc-text-yellow);
+  --color-text-body: var(--hc-text-yellow);
+  --color-text-secondary: var(--hc-text-yellow);
+  --color-border-slate: var(--hc-text-yellow);
+  --color-primary-navy: var(--hc-base-black);
+  --color-text-inverse: var(--hc-base-black);
+  --color-accent-kesari: var(--hc-text-yellow);
+  --color-accent-green: var(--hc-text-yellow);
+  --color-accent-saffron: var(--hc-text-yellow);
+}

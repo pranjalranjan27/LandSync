@@ -1,0 +1,146 @@
+/* SiaExpertView.css */
+.sia-expert-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 24px);
+  width: 100%;
+  box-sizing: border-box;
+  animation: siaFadeIn 0.2s ease-out;
+}
+
+@keyframes siaFadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sia-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-4, 16px);
+  flex-wrap: wrap;
+}
+
+.sia-title-area h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0F172A);
+  margin: 0 0 4px 0;
+}
+
+.sia-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary, #64748B);
+}
+
+.sia-expert-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: #F0F4F8;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 12px 20px;
+}
+
+.sia-expert-icon-wrap {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0F172A;
+  flex-shrink: 0;
+}
+
+.sia-expert-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748B;
+}
+
+.sia-expert-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.sia-expert-desig {
+  font-size: 0.78rem;
+  color: #64748B;
+}
+
+.sia-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.sia-section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.sia-section-count {
+  background-color: var(--color-accent-kesari, #E65A00);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.sia-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.sia-tag-pill.hearing-pending {
+  background-color: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.sia-tag-pill.verdict-pending {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.sia-empty-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 64px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.sia-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: #64748B;
+}

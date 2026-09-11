@@ -1,0 +1,45 @@
+/* ProgressBarRow.css */
+.progress-bar-row-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-width: 200px;
+}
+
+.progress-bar-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.progress-bar-row-label {
+  font-weight: 600;
+  color: var(--color-text-heading, #0F172A);
+}
+
+.progress-bar-row-percentage {
+  font-weight: 700;
+  color: var(--color-accent-kesari, #E65A00);
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background-color: #E2E8F0;
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #E65A00, #F97316);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.progress-bar-fill.success {
+  background: linear-gradient(90deg, #16A34A, #22C55E);
+}

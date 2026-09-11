@@ -1,0 +1,170 @@
+/* StateApproverView.css */
+.state-approver-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 24px);
+  width: 100%;
+  box-sizing: border-box;
+  animation: stateFadeIn 0.2s ease-out;
+}
+
+@keyframes stateFadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.state-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-4, 16px);
+  flex-wrap: wrap;
+}
+
+.state-title-area h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0F172A);
+  margin: 0 0 4px 0;
+}
+
+.state-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary, #64748B);
+}
+
+.state-jurisdiction-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: #F0F4F8;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 12px 20px;
+}
+
+.state-card-icon-wrap {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0F172A;
+  flex-shrink: 0;
+}
+
+.state-card-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748B;
+}
+
+.state-card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.state-card-scope {
+  font-size: 0.78rem;
+  color: #64748B;
+}
+
+/* Tabs */
+.state-tabs-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid #E2E8F0;
+  margin-top: 8px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.state-tabs {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.state-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 4px 14px 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.state-tab-btn.active {
+  font-weight: 700;
+  color: #0F172A;
+  border-bottom-color: var(--color-accent-kesari, #E65A00);
+}
+
+.state-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  background-color: #E2E8F0;
+  color: #64748B;
+}
+
+.state-tab-btn.active .state-tab-count {
+  background-color: var(--color-accent-kesari, #E65A00);
+  color: #FFFFFF;
+}
+
+.state-filter-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+}
+
+.state-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.state-empty-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 64px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.state-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #DCFCE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}

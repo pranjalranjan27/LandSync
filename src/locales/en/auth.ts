@@ -1,0 +1,71 @@
+import type { AuthTranslations } from '../types';
+
+export const auth: AuthTranslations = {
+  loginTitle: 'Authorized Official Login',
+  loginSubtitle: 'Enter your designated departmental credentials to proceed',
+  officialSystemBadge: 'Official System of the Government of India',
+  identifierLabel: 'Email, Username or Mobile',
+  identifierPlaceholder: 'e.g. collector.pauri@uk.gov.in or 9876543210',
+  identifierHelp: 'Official NIC email, mobile number or system username',
+  passwordLabel: 'Password',
+  passwordPlaceholder: 'Enter your secure password',
+  rememberMe: 'Remember me on this device',
+  forgotPassword: 'Forgot Password?',
+  loginButton: 'Login',
+  loggingIn: 'Logging in...',
+  newUserPrompt: 'New user?',
+  registerHere: 'Register here',
+  selectLanguage: 'Select Language',
+  quickTestLabel: 'Quick Test:',
+  quickTestCollector: 'Fill Collector',
+  quickTestRequiringBody: 'Fill Requiring Body',
+  quickTestFieldOfficer: 'Fill Field Officer',
+
+  // Validation errors
+  errorIdentifierRequired: 'Please enter your email, username, or mobile number.',
+  errorIdentifierInvalid: 'Please enter a valid official email address or a 10-digit mobile number.',
+  errorPasswordRequired: 'Please enter your password.',
+  errorPasswordShort: 'Password must be at least 6 characters long.',
+  errorInvalidCredentials: 'Authentication failed. Please check your credentials or network status.',
+
+  // Register page
+  registerTitle: 'Official Registration',
+  registerSubtitle: 'Request an authorized credential for Land Acquisition Officers, Surveyors, or Requiring Body representatives.',
+  fullNameLabel: 'Full Name & Designation',
+  fullNamePlaceholder: 'e.g. Ramesh Chandra, Additional Collector',
+  emailLabel: 'Official NIC / Gov Email',
+  emailPlaceholder: 'officer@nic.in or officer@state.gov.in',
+  phoneLabel: 'Mobile Number (Aadhaar Linked)',
+  phonePlaceholder: '+91 98765 43210',
+  departmentLabel: 'Department / Agency',
+  departmentPlaceholder: 'Revenue & Land Reforms, NHAI, Railways, etc.',
+  submitRegistration: 'Submit Registration for Verification',
+  alreadyRegistered: 'Already registered?',
+  signInHere: 'Sign In here',
+  registrationSuccessTitle: 'Registration Application Received',
+  registrationSuccessDesc: 'Your request has been forwarded to the State Nodal Officer for verification against the official departmental roster.',
+  returnToLogin: 'Return to Login',
+
+  // OTP Verification
+  otpTitle: 'Two-Factor Authentication',
+  otpSubtitle: 'Enter the 6-digit OTP code dispatched to registered ID',
+  mfaBadge: 'MFA Verification • Level 2 Security',
+  otpInputLabel: 'Enter 6-Digit One-Time Password',
+  verifyOtpButton: 'Verify & Access System',
+  verifying: 'Verifying credentials...',
+  resendOtp: 'Resend Code',
+  resendIn: 'Resend code in',
+  otpInvalid: 'Invalid OTP code. Please enter the correct 6-digit number.',
+  backToLogin: 'Back to Login',
+
+  // Forgot password
+  forgotPasswordTitle: 'Account Recovery',
+  forgotPasswordSubtitle: 'Enter your registered username, official NIC email or mobile number to receive a secure password reset link.',
+  recoveryInputLabel: 'Official Email / Username / Mobile',
+  recoveryPlaceholder: 'e.g. collector.pauri@uk.gov.in',
+  sendResetLink: 'Send Reset Link',
+  resetLinkSentTitle: 'Reset Link Dispatched',
+  resetLinkSentDesc: 'If an account is associated with your identifier, a secure reset token has been sent to your verified inbox.',
+  returnToSignIn: 'Return to Sign In',
+  rememberedPassword: 'Remembered your password?'
+};

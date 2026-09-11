@@ -1,0 +1,71 @@
+import type { AuthTranslations } from '../types';
+
+export const auth: AuthTranslations = {
+  loginTitle: 'అధికారిక లాగిన్',
+  loginSubtitle: 'కొనసాగడానికి మీ శాఖాగత ఆధారాలను నమోదు చేయండి',
+  officialSystemBadge: 'భారత ప్రభుత్వ అధికారిక వ్యవస్థ',
+  identifierLabel: 'ఇమెయిల్, వినియోగదారు పేరు లేదా మొబైల్',
+  identifierPlaceholder: 'ఉదా: collector.pauri@uk.gov.in లేదా 9876543210',
+  identifierHelp: 'అధికారిక NIC ఇమెయిల్, మొబైల్ నంబర్ లేదా యూజర్‌నేమ్',
+  passwordLabel: 'పాస్‌వర్డ్',
+  passwordPlaceholder: 'మీ భద్రమైన పాస్‌వర్డ్‌ను నమోదు చేయండి',
+  rememberMe: 'ఈ పరికరంలో నన్ను గుర్తుంచుకో',
+  forgotPassword: 'పాస్‌వర్డ్ మర్చిపోయారా?',
+  loginButton: 'లాగిన్ అవ్వండి',
+  loggingIn: 'లాగిన్ అవుతోంది...',
+  newUserPrompt: 'కొత్త వినియోగదారులా?',
+  registerHere: 'ఇక్కడ నమోదు చేసుకోండి',
+  selectLanguage: 'భాషను ఎంచుకోండి',
+  quickTestLabel: 'త్వరిత పరీక్ష:',
+  quickTestCollector: 'కలెక్టర్ నింపండి',
+  quickTestRequiringBody: 'అభ్యర్థన సంస్థ నింపండి',
+  quickTestFieldOfficer: 'ఫీల్డ్ ఆఫీసర్ నింపండి',
+
+  // Validation errors
+  errorIdentifierRequired: 'దయచేసి మీ ఇమెయిల్, వినియోగదారు పేరు లేదా మొబైల్ నంబర్ నమోదు చేయండి.',
+  errorIdentifierInvalid: 'దయచేసి సరైన అధికారిక ఇమెయిల్ లేదా 10 అంకెల మొబైల్ నంబర్ నమోదు చేయండి.',
+  errorPasswordRequired: 'దయచేసి మీ పాస్‌వర్డ్‌ను నమోదు చేయండి.',
+  errorPasswordShort: 'పాస్‌వర్డ్ కనీసం 6 అక్షరాలు ఉండాలి.',
+  errorInvalidCredentials: 'లాగిన్ విఫలమైంది. దయచేసి మీ ఆధారాలను తనిఖీ చేయండి.',
+
+  // Register page
+  registerTitle: 'అధికారిక నమోదు',
+  registerSubtitle: 'భూసేకరణ అధికారులు, సర్వేయర్లు లేదా అభ్యర్థన సంస్థ ప్రతినిధుల కోసం అధికారిక ఆధారాలను అభ్యర్థించండి.',
+  fullNameLabel: 'పూర్తి పేరు మరియు హోదా',
+  fullNamePlaceholder: 'ఉదా: రమేష్ చంద్ర, అదనపు కలెక్టర్',
+  emailLabel: 'అధికారిక NIC / ప్రభుత్వ ఇమెయిల్',
+  emailPlaceholder: 'officer@nic.in లేదా officer@state.gov.in',
+  phoneLabel: 'మొబైల్ నంబర్ (ఆధార్ అనుసంధానమైనది)',
+  phonePlaceholder: '+91 98765 43210',
+  departmentLabel: 'శాఖ / సంస్థ',
+  departmentPlaceholder: 'రెవెన్యూ & భూ సంస్కరణలు, NHAI, రైల్వేలు మొదలైనవి',
+  submitRegistration: 'ధృవీకరణ కోసం నమోదును సమర్పించండి',
+  alreadyRegistered: 'ఇప్పటికే నమోదు చేసుకున్నారా?',
+  signInHere: 'ఇక్కడ సైన్ ఇన్ చేయండి',
+  registrationSuccessTitle: 'నమోదు దరఖాస్తు స్వీకరించబడింది',
+  registrationSuccessDesc: 'అధికారిక రోస్టర్ ప్రకారం ధృవీకరణ కోసం మీ అభ్యర్థన రాష్ట్ర నోడల్ అధికారికి పంపబడింది.',
+  returnToLogin: 'లాగిన్‌కు తిరిగి వెళ్లండి',
+
+  // OTP Verification
+  otpTitle: 'రెండు-దశల ధృవీకరణ (MFA)',
+  otpSubtitle: 'నమోదిత ఐడీకి పంపబడిన 6 అంకెల OTP కోడ్‌ను నమోదు చేయండి',
+  mfaBadge: 'MFA ధృవీకరణ • లెవల్ 2 భద్రత',
+  otpInputLabel: '6 అంకెల వన్-టైమ్ పాస్‌వర్డ్‌ను నమోదు చేయండి',
+  verifyOtpButton: 'ధృవీకరించి ప్రవేశించండి',
+  verifying: 'ఆధారాలను ధృవీకరిస్తోంది...',
+  resendOtp: 'కోడ్ మళ్లీ పంపండి',
+  resendIn: 'మళ్లీ పంపడానికి మిగిలిన సమయం',
+  otpInvalid: 'చెల్లని OTP కోడ్. సరైన 6 అంకెల సంఖ్యను నమోదు చేయండి.',
+  backToLogin: 'లాగిన్‌కు తిరిగి వెళ్లండి',
+
+  // Forgot password
+  forgotPasswordTitle: 'ఖాతా పునరుద్ధరణ',
+  forgotPasswordSubtitle: 'పాస్‌వర్డ్ రీసెట్ లింక్ పొందడానికి మీ నమోదిత వినియోగదారు పేరు, NIC ఇమెయిల్ లేదా మొబైల్ నంబర్ నమోదు చేయండి.',
+  recoveryInputLabel: 'అధికారిక ఇమెయిల్ / యూజర్‌నేమ్ / మొబైల్',
+  recoveryPlaceholder: 'ఉదా: collector.pauri@uk.gov.in',
+  sendResetLink: 'రీసెట్ లింక్ పంపండి',
+  resetLinkSentTitle: 'రీసెట్ లింక్ పంపబడింది',
+  resetLinkSentDesc: 'ఖాతా కనుగొనబడితే, మీ ధృవీకరించబడిన ఇన్‌బాక్స్‌కు సురక్షితమైన రీసెట్ టోకెన్ పంపబడింది.',
+  returnToSignIn: 'సైన్ ఇన్‌కు తిరిగి వెళ్లండి',
+  rememberedPassword: 'పాస్‌వర్డ్ గుర్తుకు వచ్చిందా?'
+};

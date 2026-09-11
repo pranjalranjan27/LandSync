@@ -1,0 +1,95 @@
+/* RrAdminView.css */
+.rr-admin-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 24px);
+  width: 100%;
+  box-sizing: border-box;
+  animation: rrFadeIn 0.2s ease-out;
+}
+
+@keyframes rrFadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rr-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-4, 16px);
+  flex-wrap: wrap;
+}
+
+.rr-title-area h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0F172A);
+  margin: 0 0 4px 0;
+}
+
+.rr-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary, #64748B);
+}
+
+.rr-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: #F0F4F8;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 12px 20px;
+}
+
+.rr-card-icon-wrap {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0F172A;
+  flex-shrink: 0;
+}
+
+.rr-group-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rr-group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #E2E8F0;
+}
+
+.rr-group-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.rr-group-count {
+  background-color: var(--color-primary-navy, #0B192C);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.rr-empty-box {
+  background-color: #FFFFFF;
+  border: 1px dashed #CBD5E1;
+  border-radius: 8px;
+  padding: 32px 20px;
+  text-align: center;
+  color: #64748B;
+  font-size: 0.9rem;
+}

@@ -1,0 +1,238 @@
+/* CaseCard.css */
+.case-card-container {
+  background: var(--color-surface-card, #ffffff);
+  border: 1px solid var(--color-border-slate, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  font-family: var(--font-family-bilingual);
+  cursor: pointer;
+  outline: none;
+}
+
+/* Keyboard focus ring with Kesari / Navy guidance */
+.case-card-container:focus-visible {
+  outline: 2px solid var(--color-accent-kesari, #E65A00);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(230, 90, 0, 0.15);
+}
+
+.case-card-container:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Card Header */
+.case-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.case-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.case-card-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Action Tag: distinct label near status badge */
+.case-card-action-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #9A3412;
+  background-color: #FFF7ED;
+  border: 1px solid #FFEDD5;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+  white-space: nowrap;
+}
+
+/* Card Body */
+.case-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.case-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0F172A);
+  line-height: 1.35;
+}
+
+.case-card-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: var(--color-text-secondary, #64748B);
+}
+
+/* Card Footer / Status or Progress row */
+.case-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+  gap: 12px;
+}
+
+.case-card-days-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--color-text-secondary, #64748B);
+}
+
+.case-card-days-number {
+  font-weight: 700;
+  color: var(--color-text-body, #1E293B);
+  font-family: var(--font-family-mono, monospace);
+}
+
+/* Overdue Warning Flag */
+.case-card-overdue-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #DC2626;
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm, 4px);
+  animation: overduePulse 2s infinite ease-in-out;
+}
+
+@keyframes overduePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+.case-card-progress-wrap {
+  width: 100%;
+}
+
+/* Row Layout Variant for full-width queue view */
+.case-card-row-wrapper {
+  background: var(--color-surface-card, #ffffff);
+  border: 1px solid var(--color-border-slate, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 14px 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+  text-align: left;
+}
+
+.case-card-row-wrapper:focus-visible {
+  outline: 2px solid var(--color-accent-kesari, #E65A00);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(230, 90, 0, 0.15);
+}
+
+.case-card-row-wrapper:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.case-card-row-left {
+  flex: 1 1 260px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.case-card-row-title {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0f172a);
+  line-height: 1.35;
+}
+
+.case-card-row-location {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #64748b);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.case-card-row-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.case-card-row-days {
+  flex: 0 0 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 2px;
+}
+
+.case-card-row-days-num {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0f172a);
+  font-family: var(--font-family-mono, monospace);
+}
+
+.case-card-row-days-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.case-card-row-chevron {
+  flex: 0 0 auto;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.case-card-row-wrapper:hover .case-card-row-chevron {
+  color: var(--color-primary-navy, #1B3F75);
+  transform: translateX(2px);
+}

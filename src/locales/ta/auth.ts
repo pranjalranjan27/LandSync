@@ -1,0 +1,71 @@
+import type { AuthTranslations } from '../types';
+
+export const auth: AuthTranslations = {
+  loginTitle: 'அதிகாரப்பூர்வ உள்நுழைவு',
+  loginSubtitle: 'தொடர உங்கள் துறைசார் நற்சான்றிதழ்களை உள்ளிடவும்',
+  officialSystemBadge: 'இந்திய அரசின் அதிகாரப்பூர்வ அமைப்பு',
+  identifierLabel: 'மின்னஞ்சல், பயனர்பெயர் அல்லது மொபைல்',
+  identifierPlaceholder: 'எ.கா: collector.pauri@uk.gov.in அல்லது 9876543210',
+  identifierHelp: 'அதிகாரப்பூர்வ NIC மின்னஞ்சல், மொபைல் எண் அல்லது பயனர்பெயர்',
+  passwordLabel: 'கடவுச்சொல்',
+  passwordPlaceholder: 'உங்கள் பாதுகாப்பான கடவுச்சொல்லை உள்ளிடவும்',
+  rememberMe: 'இந்த சாதனத்தில் என்னை நினைவில் கொள்க',
+  forgotPassword: 'கடவுச்சொல் மறந்துவிட்டதா?',
+  loginButton: 'உள்நுழைக',
+  loggingIn: 'உள்நுழைகிறது...',
+  newUserPrompt: 'புதிய பயனரா?',
+  registerHere: 'இங்கே பதிவு செய்க',
+  selectLanguage: 'மொழியைத் தேர்ந்தெடுக்கவும்',
+  quickTestLabel: 'விரைவு சோதனை:',
+  quickTestCollector: 'ஆட்சியர் நிரப்புக',
+  quickTestRequiringBody: 'கோரும் அமைப்பு நிரப்புக',
+  quickTestFieldOfficer: 'கள அதிகாரி நிரப்புக',
+
+  // Validation errors
+  errorIdentifierRequired: 'உங்கள் மின்னஞ்சல், பயனர்பெயர் அல்லது மொபைல் எண்ணை உள்ளிடவும்.',
+  errorIdentifierInvalid: 'செல்லுபடியாகும் அதிகாரப்பூர்வ மின்னஞ்சல் அல்லது 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்.',
+  errorPasswordRequired: 'உங்கள் கடவுச்சொல்லை உள்ளிடவும்.',
+  errorPasswordShort: 'கடவுச்சொல் குறைந்தது 6 எழுத்துகள் கொண்டிருக்க வேண்டும்.',
+  errorInvalidCredentials: 'உள்நுழைவு தோல்வியடைந்தது. உங்கள் நற்சான்றிதழ்களைச் சரிபார்க்கவும்.',
+
+  // Register page
+  registerTitle: 'அதிகாரப்பூர்வ பதிவு',
+  registerSubtitle: 'நிலம் கையகப்படுத்தல் அதிகாரிகள், நில அளவையாளர்கள் அல்லது கோரும் அமைப்பின் பிரதிநிதிகளுக்கான அதிகாரப்பூர்வ நற்சான்றிதழ்களைக் கோரவும்.',
+  fullNameLabel: 'முழுப் பெயர் & பதவி',
+  fullNamePlaceholder: 'எ.கா: ரமேஷ் சந்திரா, கூடுதல் ஆட்சியர்',
+  emailLabel: 'அதிகாரப்பூர்வ NIC / அரசு மின்னஞ்சல்',
+  emailPlaceholder: 'officer@nic.in அல்லது officer@state.gov.in',
+  phoneLabel: 'மொபைல் எண் (ஆதார் இணைக்கப்பட்டது)',
+  phonePlaceholder: '+91 98765 43210',
+  departmentLabel: 'துறை / நிறுவனம்',
+  departmentPlaceholder: 'வருவாய் மற்றும் நில சீர்திருத்தங்கள், NHAI, ரயில்வே போன்றவை',
+  submitRegistration: 'சரிபார்ப்பிற்காக பதிவை சமர்ப்பிக்கவும்',
+  alreadyRegistered: 'ஏற்கனவே பதிவு செய்துள்ளீர்களா?',
+  signInHere: 'இங்கே உள்நுழையவும்',
+  registrationSuccessTitle: 'பதிவு விண்ணப்பம் பெறப்பட்டது',
+  registrationSuccessDesc: 'அதிகாரப்பூர்வ துறைசார் பட்டியலில் சரிபார்க்க உங்கள் கோரிக்கை மாநில நோடல் அதிகாரிக்கு அனுப்பப்பட்டுள்ளது.',
+  returnToLogin: 'உள்நுழைவுக்குத் திரும்பு',
+
+  // OTP Verification
+  otpTitle: 'இரு காரணி அங்கீகாரம் (MFA)',
+  otpSubtitle: 'பதிவுசெய்யப்பட்ட அடையாளத்திற்கு அனுப்பப்பட்ட 6 இலக்க OTP குறியீட்டை உள்ளிடவும்',
+  mfaBadge: 'MFA சரிபார்ப்பு • நிலை 2 பாதுகாப்பு',
+  otpInputLabel: '6 இலக்க ஒருமுறை கடவுச்சொல்லை உள்ளிடவும்',
+  verifyOtpButton: 'சரிபார்த்து உள்நுழையவும்',
+  verifying: 'நற்சான்றிதழ்கள் சரிபார்க்கப்படுகின்றன...',
+  resendOtp: 'குறியீட்டை மீண்டும் அனுப்பு',
+  resendIn: 'மீண்டும் அனுப்ப மீதமுள்ள நேரம்',
+  otpInvalid: 'தவறான OTP குறியீடு. சரியான 6 இலக்க எண்ணை உள்ளிடவும்.',
+  backToLogin: 'உள்நுழைவுக்குத் திரும்பு',
+
+  // Forgot password
+  forgotPasswordTitle: 'கணக்கு மீட்டெடுப்பு',
+  forgotPasswordSubtitle: 'கடவுச்சொல் மீட்டமைப்பு இணைப்பைப் பெற உங்கள் பதிவுசெய்த பயனர்பெயர், NIC மின்னஞ்சல் அல்லது மொபைல் எண்ணை உள்ளிடவும்.',
+  recoveryInputLabel: 'அதிகாரப்பூர்வ மின்னஞ்சல் / பயனர்பெயர் / மொபைல்',
+  recoveryPlaceholder: 'எ.கா: collector.pauri@uk.gov.in',
+  sendResetLink: 'மீட்டமைப்பு இணைப்பை அனுப்பு',
+  resetLinkSentTitle: 'மீட்டமைப்பு இணைப்பு அனுப்பப்பட்டது',
+  resetLinkSentDesc: 'கணக்கு இணைக்கப்பட்டிருந்தால், உங்கள் சரிபார்க்கப்பட்ட இன்பாக்ஸுக்கு பாதுகாப்பான மீட்டமைப்பு டோக்கன் அனுப்பப்பட்டுள்ளது.',
+  returnToSignIn: 'உள்நுழைவுக்குத் திரும்பு',
+  rememberedPassword: 'கடவுச்சொல் நினைவுக்கு வந்ததா?'
+};

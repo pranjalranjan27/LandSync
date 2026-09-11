@@ -1,0 +1,41 @@
+/* CaseDetailPage.css — Tab bar + Loading spinner */
+
+/* ── Tab bar ── */
+.cd-tab-bar {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border-slate);
+  margin-bottom: var(--spacing-6);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.cd-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Loading state ── */
+.cd-loading {
+  text-align: center;
+  padding: var(--spacing-12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+  color: var(--color-text-secondary);
+}
+
+.cd-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--color-border-slate);
+  border-top-color: var(--color-primary-navy);
+  border-radius: 50%;
+  animation: cd-spin 0.8s linear infinite;
+}
+
+@keyframes cd-spin {
+  to { transform: rotate(360deg); }
+}

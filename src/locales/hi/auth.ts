@@ -1,0 +1,71 @@
+import type { AuthTranslations } from '../types';
+
+export const auth: AuthTranslations = {
+  loginTitle: 'अधिकृत अधिकारी लॉगिन',
+  loginSubtitle: 'आगे बढ़ने के लिए अपने विभागीय क्रेडेंशियल दर्ज करें',
+  officialSystemBadge: 'भारत सरकार की आधिकारिक प्रणाली',
+  identifierLabel: 'ईमेल, उपयोगकर्ता नाम या मोबाइल',
+  identifierPlaceholder: 'उदा. collector.pauri@uk.gov.in या 9876543210',
+  identifierHelp: 'आधिकारिक एनआईसी ईमेल, मोबाइल नंबर या उपयोगकर्ता नाम',
+  passwordLabel: 'पासवर्ड',
+  passwordPlaceholder: 'अपना सुरक्षित पासवर्ड दर्ज करें',
+  rememberMe: 'इस उपकरण पर मुझे याद रखें',
+  forgotPassword: 'पासवर्ड भूल गए?',
+  loginButton: 'लॉगिन करें',
+  loggingIn: 'लॉगिन हो रहा है...',
+  newUserPrompt: 'नए उपयोगकर्ता?',
+  registerHere: 'यहाँ पंजीकरण करें',
+  selectLanguage: 'भाषा चुनें',
+  quickTestLabel: 'त्वरित परीक्षण:',
+  quickTestCollector: 'कलेक्टर भरें',
+  quickTestRequiringBody: 'अध्येता निकाय भरें',
+  quickTestFieldOfficer: 'क्षेत्र अधिकारी भरें',
+
+  // Validation errors
+  errorIdentifierRequired: 'कृपया अपना ईमेल, उपयोगकर्ता नाम या मोबाइल नंबर दर्ज करें।',
+  errorIdentifierInvalid: 'कृपया एक वैध आधिकारिक ईमेल या 10 अंकों का मोबाइल नंबर दर्ज करें।',
+  errorPasswordRequired: 'कृपया अपना पासवर्ड दर्ज करें।',
+  errorPasswordShort: 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।',
+  errorInvalidCredentials: 'प्रमाणीकरण विफल रहा। कृपया अपने क्रेडेंशियल की जाँच करें।',
+
+  // Register page
+  registerTitle: 'आधिकारिक पंजीकरण',
+  registerSubtitle: 'भूमि अधिग्रहण अधिकारियों, सर्वेक्षणकर्ताओं या निकाय प्रतिनिधियों के लिए अधिकृत क्रेडेंशियल का अनुरोध करें।',
+  fullNameLabel: 'पूरा नाम और पदनाम',
+  fullNamePlaceholder: 'उदा. रमेश चंद्र, अपर जिलाधिकारी',
+  emailLabel: 'आधिकारिक एनआईसी / सरकारी ईमेल',
+  emailPlaceholder: 'officer@nic.in या officer@state.gov.in',
+  phoneLabel: 'मोबाइल नंबर (आधार से जुड़ा हुआ)',
+  phonePlaceholder: '+91 98765 43210',
+  departmentLabel: 'विभाग / एजेंसी',
+  departmentPlaceholder: 'राजस्व एवं भूमि सुधार, एनएचएआई, रेलवे आदि',
+  submitRegistration: 'सत्यापन हेतु पंजीकरण जमा करें',
+  alreadyRegistered: 'पहले से पंजीकृत हैं?',
+  signInHere: 'यहाँ साइन इन करें',
+  registrationSuccessTitle: 'पंजीकरण आवेदन प्राप्त हुआ',
+  registrationSuccessDesc: 'आपका अनुरोध आधिकारिक विभागीय रोस्टर के विरुद्ध सत्यापन हेतु राज्य नोडल अधिकारी को भेज दिया गया है।',
+  returnToLogin: 'लॉगिन पर लौटें',
+
+  // OTP Verification
+  otpTitle: 'दो-चरणीय प्रमाणीकरण (MFA)',
+  otpSubtitle: 'पंजीकृत पहचान पर भेजे गए 6-अंकीय ओटीपी कोड को दर्ज करें',
+  mfaBadge: 'एमएफए सत्यापन • स्तर 2 सुरक्षा',
+  otpInputLabel: '6-अंकीय वन-टाइम पासवर्ड दर्ज करें',
+  verifyOtpButton: 'सत्यापित करें और प्रवेश करें',
+  verifying: 'क्रेडेंशियल सत्यापित हो रहे हैं...',
+  resendOtp: 'कोड पुनः भेजें',
+  resendIn: 'पुनः भेजने में शेष समय',
+  otpInvalid: 'अमान्य ओटीपी कोड। कृपया सही 6-अंकीय संख्या दर्ज करें।',
+  backToLogin: 'लॉगिन पर वापस जाएं',
+
+  // Forgot password
+  forgotPasswordTitle: 'खाता पुनर्प्राप्ति',
+  forgotPasswordSubtitle: 'पासवर्ड रीसेट लिंक प्राप्त करने के लिए अपना पंजीकृत उपयोगकर्ता नाम, एनआईसी ईमेल या मोबाइल नंबर दर्ज करें।',
+  recoveryInputLabel: 'आधिकारिक ईमेल / उपयोगकर्ता नाम / मोबाइल',
+  recoveryPlaceholder: 'उदा. collector.pauri@uk.gov.in',
+  sendResetLink: 'रीसेट लिंक भेजें',
+  resetLinkSentTitle: 'रीसेट लिंक भेज दिया गया है',
+  resetLinkSentDesc: 'यदि कोई खाता आपकी पहचान से जुड़ा है, तो एक सुरक्षित रीसेट टोकन आपके सत्यापित इनबॉक्स में भेजा गया है।',
+  returnToSignIn: 'साइन इन पर वापस लौटें',
+  rememberedPassword: 'पासवर्ड याद आ गया?'
+};

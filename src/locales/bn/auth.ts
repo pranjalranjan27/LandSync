@@ -1,0 +1,71 @@
+import type { AuthTranslations } from '../types';
+
+export const auth: AuthTranslations = {
+  loginTitle: 'অনুমোদিত আধিকারিক লগইন',
+  loginSubtitle: 'এগিয়ে যেতে আপনার বিভাগীয় শংসাপত্র লিখুন',
+  officialSystemBadge: 'ভারত সরকারের অফিসিয়াল সিস্টেম',
+  identifierLabel: 'ইমেল, ব্যবহারকারীর নাম বা মোবাইল',
+  identifierPlaceholder: 'যেমন: collector.pauri@uk.gov.in বা 9876543210',
+  identifierHelp: 'অফিসিয়াল এনআইসি ইমেল, মোবাইল নম্বর বা ইউজারনেম',
+  passwordLabel: 'পাসওয়ার্ড',
+  passwordPlaceholder: 'আপনার সুরক্ষিত পাসওয়ার্ড লিখুন',
+  rememberMe: 'এই ডিভাইসে আমাকে মনে রাখুন',
+  forgotPassword: 'পাসওয়ার্ড ভুলে গেছেন?',
+  loginButton: 'লগইন করুন',
+  loggingIn: 'লগইন হচ্ছে...',
+  newUserPrompt: 'নতুন ব্যবহারকারী?',
+  registerHere: 'এখানে নিবন্ধন করুন',
+  selectLanguage: 'ভাষা নির্বাচন করুন',
+  quickTestLabel: 'দ্রুত পরীক্ষা:',
+  quickTestCollector: 'কালেক্টর পূরণ করুন',
+  quickTestRequiringBody: 'প্রত্যাশী সংস্থা পূরণ করুন',
+  quickTestFieldOfficer: 'ফিল্ড অফিসার পূরণ করুন',
+
+  // Validation errors
+  errorIdentifierRequired: 'অনুগ্রহ করে আপনার ইমেল, ব্যবহারকারীর নাম বা মোবাইল নম্বর লিখুন।',
+  errorIdentifierInvalid: 'অনুগ্রহ করে একটি বৈধ অফিশিয়াল ইমেল বা ১০-সংখ্যার মোবাইল নম্বর লিখুন।',
+  errorPasswordRequired: 'অনুগ্রহ করে আপনার পাসওয়ার্ড লিখুন।',
+  errorPasswordShort: 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।',
+  errorInvalidCredentials: 'লগইন ব্যর্থ হয়েছে। অনুগ্রহ করে আপনার শংসাপত্র পরীক্ষা করুন।',
+
+  // Register page
+  registerTitle: 'অফিসিয়াল নিবন্ধন',
+  registerSubtitle: 'ভূমি অধিগ্রহণ আধিকারিক, সার্ভেয়ার বা প্রত্যাশী সংস্থার প্রতিনিধিদের জন্য অনুমোদিত শংসাপত্রের আবেদন করুন।',
+  fullNameLabel: 'সম্পূর্ণ নাম ও পদবি',
+  fullNamePlaceholder: 'যেমন: রমেশ চন্দ্র, অতিরিক্ত জেলা শাসক',
+  emailLabel: 'অফিসিয়াল এনআইসি / সরকারি ইমেল',
+  emailPlaceholder: 'officer@nic.in বা officer@state.gov.in',
+  phoneLabel: 'মোবাইল নম্বর (আধার সংযুক্ত)',
+  phonePlaceholder: '+91 98765 43210',
+  departmentLabel: 'বিভাগ / সংস্থা',
+  departmentPlaceholder: 'ভূমি ও ভূমি সংস্কার, এনএইচএআই, রেলওয়ে ইত্যাদি',
+  submitRegistration: 'যাচাইকরণের জন্য নিবন্ধন জমা দিন',
+  alreadyRegistered: 'ইতিমধ্যে নিবন্ধিত?',
+  signInHere: 'এখানে সাইন ইন করুন',
+  registrationSuccessTitle: 'নিবন্ধন আবেদন গৃহীত হয়েছে',
+  registrationSuccessDesc: 'বিভাগীয় রোস্টার অনুযায়ী যাচাইয়ের জন্য আপনার আবেদন রাজ্য নোডাল অফিসারের কাছে পাঠানো হয়েছে।',
+  returnToLogin: 'লগইনে ফিরে যান',
+
+  // OTP Verification
+  otpTitle: 'দ্বি-পদক্ষেপ যাচাইকরণ (MFA)',
+  otpSubtitle: 'নিবন্ধিত আইডিতে প্রেরিত ৬-সংখ্যার ওটিপি কোডটি লিখুন',
+  mfaBadge: 'MFA যাচাইকরণ • লেভেল ২ নিরাপত্তা',
+  otpInputLabel: '৬-সংখ্যার ওয়ান-টাইম পাসওয়ার্ড লিখুন',
+  verifyOtpButton: 'যাচাই করুন ও প্রবেশ করুন',
+  verifying: 'শংসাপত্র যাচাই করা হচ্ছে...',
+  resendOtp: 'কোড পুনরায় পাঠান',
+  resendIn: 'পুনরায় পাঠানোর সময় বাকি',
+  otpInvalid: 'অবৈধ ওটিপি কোড। অনুগ্রহ করে সঠিক ৬-সংখ্যার নম্বরটি লিখুন।',
+  backToLogin: 'লগইনে ফিরে যান',
+
+  // Forgot password
+  forgotPasswordTitle: 'অ্যাকাউন্ট পুনরুদ্ধার',
+  forgotPasswordSubtitle: 'পাসওয়ার্ড রিসেট লিঙ্ক পেতে আপনার নিবন্ধিত ব্যবহারকারীর নাম, এনআইসি ইমেল বা মোবাইল নম্বর লিখুন।',
+  recoveryInputLabel: 'অফিসিয়াল ইমেল / ব্যবহারকারীর নাম / মোবাইল',
+  recoveryPlaceholder: 'যেমন: collector.pauri@uk.gov.in',
+  sendResetLink: 'রিসেট লিঙ্ক পাঠান',
+  resetLinkSentTitle: 'রিসেট লিঙ্ক পাঠানো হয়েছে',
+  resetLinkSentDesc: 'অ্যাকাউন্ট পাওয়া গেলে আপনার যাচাইকৃত ইনবক্সে একটি সুরক্ষিত রিসেট টোকেন পাঠানো হয়েছে।',
+  returnToSignIn: 'সাইন ইন-এ ফিরে যান',
+  rememberedPassword: 'পাসওয়ার্ড মনে পড়েছে?'
+};

@@ -1,0 +1,50 @@
+.nalams-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-family-bilingual);
+  font-size: var(--font-size-caption, 0.75rem);
+  font-weight: var(--font-weight-semibold, 600);
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Gray / Neutral */
+.nalams-status-badge.badge-gray {
+  background-color: #F3F4F6;
+  color: #374151;
+  border-color: #D1D5DB;
+}
+
+/* Yellow / In-Progress */
+.nalams-status-badge.badge-yellow {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
+}
+
+/* Green / Completed */
+.nalams-status-badge.badge-green {
+  background-color: #DEF7EC;
+  color: #03543F;
+  border-color: #A7F3D0;
+}
+
+/* Red / Rejected */
+.nalams-status-badge.badge-red {
+  background-color: #FDE8E8;
+  color: #9B1C1C;
+  border-color: #F8B4B4;
+}
+
+/* Amber / Returned */
+.nalams-status-badge.badge-amber {
+  background-color: #FFFBEB;
+  color: #B45309;
+  border-color: #FCD34D;
+}

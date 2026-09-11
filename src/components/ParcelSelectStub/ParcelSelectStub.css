@@ -1,0 +1,244 @@
+/* ParcelSelectStub.css — Selectable cadastral parcel list */
+
+.parcel-select-stub {
+  border: 1px solid var(--color-border-slate);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-card);
+}
+
+/* ── Header ── */
+.pss-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-primary-navy-surface);
+  border-bottom: 1px solid var(--color-border-slate);
+  padding: var(--spacing-3) var(--spacing-4);
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+.pss-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.pss-icon {
+  color: var(--color-primary-navy);
+  flex-shrink: 0;
+}
+
+.pss-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-primary-navy);
+  letter-spacing: 0.01em;
+}
+
+.pss-stub-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: var(--color-accent-saffron-surface);
+  color: var(--color-accent-kesari);
+  border: 1px solid var(--color-accent-saffron);
+  border-radius: var(--radius-full);
+  padding: 1px 8px;
+  letter-spacing: 0.02em;
+}
+
+.pss-info-tip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+/* ── Search row ── */
+.pss-search-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--color-border-slate);
+  background: var(--color-surface-offwhite);
+  flex-wrap: wrap;
+}
+
+.pss-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.pss-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.pss-search-input {
+  width: 100%;
+  padding: 6px 10px 6px 32px;
+  border: 1px solid var(--color-border-slate);
+  border-radius: var(--radius-sm);
+  font-size: 0.83rem;
+  color: var(--color-text-body);
+  background: var(--color-surface-card);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.pss-search-input:focus {
+  border-color: var(--color-primary-navy);
+  box-shadow: var(--shadow-focus);
+}
+
+.pss-select-all {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary-navy);
+  background: none;
+  border: 1px solid var(--color-primary-navy);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.pss-select-all:hover {
+  background: var(--color-primary-navy);
+  color: var(--color-text-inverse);
+}
+
+/* ── Selection summary strip ── */
+.pss-summary {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  background: var(--color-accent-saffron-surface);
+  border-bottom: 1px solid var(--color-border-slate);
+}
+
+.pss-summary strong {
+  color: var(--color-primary-navy);
+}
+
+/* ── List ── */
+.pss-list {
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.pss-empty {
+  padding: var(--spacing-8);
+  text-align: center;
+  font-size: 0.83rem;
+  color: var(--color-text-disabled);
+}
+
+/* ── Parcel row ── */
+.pss-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--color-border-slate);
+  cursor: pointer;
+  transition: background 0.1s;
+  flex-wrap: wrap;
+}
+
+.pss-row:last-child {
+  border-bottom: none;
+}
+
+.pss-row:hover:not(.pss-row--readonly) {
+  background: var(--color-primary-navy-surface);
+}
+
+.pss-row:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+.pss-row--selected {
+  background: var(--color-accent-saffron-surface);
+  border-left: 3px solid var(--color-accent-kesari);
+}
+
+.pss-row--selected:hover:not(.pss-row--readonly) {
+  background: #fff0e0;
+}
+
+.pss-row--readonly {
+  cursor: default;
+}
+
+/* Checkbox icon */
+.pss-check {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.pss-check-icon--on {
+  color: var(--color-accent-kesari);
+}
+
+.pss-check-icon--off {
+  color: var(--color-text-disabled);
+}
+
+/* Khasra + mauza */
+.pss-khasra {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 90px;
+}
+
+.pss-mauza {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+/* Meta columns */
+.pss-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 100px;
+}
+
+.pss-meta--num {
+  flex: 0 0 auto;
+  min-width: 80px;
+  text-align: right;
+}
+
+.pss-meta-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pss-meta-value {
+  font-size: 0.8rem;
+  color: var(--color-text-body);
+}
+
+.pss-meta-value--bold {
+  font-weight: 700;
+  color: var(--color-primary-navy);
+}

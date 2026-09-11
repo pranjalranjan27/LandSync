@@ -1,0 +1,105 @@
+/* FieldOfficerView.css */
+.field-officer-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 24px);
+  width: 100%;
+  box-sizing: border-box;
+  animation: foFadeIn 0.2s ease-out;
+}
+
+@keyframes foFadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fo-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-4, 16px);
+  flex-wrap: wrap;
+}
+
+.fo-title-area h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0F172A);
+  margin: 0 0 4px 0;
+}
+
+.fo-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary, #64748B);
+}
+
+.fo-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: #F0F4F8;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 12px 20px;
+}
+
+.fo-card-icon-wrap {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0F172A;
+  flex-shrink: 0;
+}
+
+.fo-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.fo-section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.fo-section-count {
+  background-color: var(--color-accent-kesari, #E65A00);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.fo-empty-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 64px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.fo-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #DCFCE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: #16A34A;
+}

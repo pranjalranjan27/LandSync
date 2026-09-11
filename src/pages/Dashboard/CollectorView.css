@@ -1,0 +1,340 @@
+/* CollectorView.css */
+.collector-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 24px);
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  animation: collectorFadeIn 0.2s ease-out;
+}
+
+@keyframes collectorFadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.collector-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-4, 16px);
+  flex-wrap: wrap;
+}
+
+.collector-title-area h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0f172a);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.collector-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary, #64748b);
+}
+
+/* District Card */
+.collector-district-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--color-surface-card, #ffffff);
+  border: 1px solid var(--color-border-slate, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 10px 18px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.04));
+}
+
+.district-card-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-navy, #0B192C);
+  flex-shrink: 0;
+}
+
+.district-card-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.district-card-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.district-card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0f172a);
+  line-height: 1.25;
+}
+
+.district-card-state {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #64748b);
+}
+
+/* Tab Navigation Strip */
+.collector-tabs-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--color-border-slate, #e2e8f0);
+  margin-top: var(--spacing-2, 8px);
+  gap: var(--spacing-4, 16px);
+  flex-wrap: wrap;
+}
+
+.collector-tabs {
+  display: flex;
+  gap: var(--spacing-6, 24px);
+}
+
+.collector-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 4px 14px 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #64748b);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.collector-tab-btn:hover {
+  color: var(--color-primary-navy, #0B192C);
+}
+
+.collector-tab-btn.active {
+  font-weight: 700;
+  color: var(--color-text-heading, #0f172a);
+  border-bottom-color: var(--color-accent-kesari, #E65A00);
+}
+
+.collector-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.collector-tab-btn.active .collector-tab-count {
+  background-color: var(--color-accent-kesari, #E65A00);
+  color: #ffffff;
+}
+
+.collector-tab-btn:not(.active) .collector-tab-count {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+/* Filter Controls */
+.collector-filter-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+}
+
+.filter-label {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #64748b);
+  font-weight: 500;
+}
+
+.filter-select {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-slate, #e2e8f0);
+  background-color: #ffffff;
+  color: var(--color-text-heading, #0f172a);
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-select:focus {
+  border-color: var(--color-accent-kesari, #E65A00);
+}
+
+/* Needs My Action Queue */
+.collector-action-queue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+/* Empty State */
+.collector-empty-card {
+  background: var(--color-surface-card, #ffffff);
+  border: 1px solid var(--color-border-slate, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 64px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.04));
+  margin: var(--spacing-4, 16px) 0;
+}
+
+.collector-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.collector-empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-heading, #0f172a);
+  margin: 0 0 8px 0;
+}
+
+.collector-empty-sub {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary, #64748b);
+  margin: 0 0 6px 0;
+}
+
+.collector-empty-desc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  max-width: 480px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* All District Cases Table */
+.collector-table-wrapper {
+  background: var(--color-surface-card, #ffffff);
+  border: 1px solid var(--color-border-slate, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.04));
+}
+
+.collector-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.collector-table th {
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #64748b);
+  background-color: #f8fafc;
+  border-bottom: 1px solid var(--color-border-slate, #e2e8f0);
+  text-transform: none;
+}
+
+.collector-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.88rem;
+  vertical-align: middle;
+}
+
+.collector-table tr.collector-table-row {
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.collector-table tr.collector-table-row:hover {
+  background-color: #f8fafc;
+}
+
+.collector-table-id {
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  color: var(--color-primary-navy, #0B192C);
+  font-size: 0.85rem;
+}
+
+.collector-table-title {
+  font-weight: 600;
+  color: var(--color-text-heading, #0f172a);
+}
+
+.collector-table-loc {
+  color: var(--color-text-secondary, #64748b);
+  font-size: 0.82rem;
+}
+
+.collector-table-days {
+  font-weight: 600;
+  color: var(--color-text-heading, #0f172a);
+  font-size: 0.85rem;
+}
+
+.collector-table-chevron {
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.collector-table tr.collector-table-row:hover .collector-table-chevron {
+  color: var(--color-primary-navy, #0B192C);
+  transform: translateX(2px);
+}
+
+/* Demo simulation toggle */
+.demo-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-4, 16px);
+}
+
+.demo-toggle-btn {
+  background: transparent;
+  border: 1px dashed var(--color-border-slate, #cbd5e1);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.demo-toggle-btn:hover {
+  border-color: var(--color-accent-kesari, #E65A00);
+  color: var(--color-accent-kesari, #E65A00);
+}

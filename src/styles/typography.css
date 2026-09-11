@@ -1,0 +1,246 @@
+/**
+ * NALAMS Typography System
+ * Companion to NALAMS_Antigravity_Build_Spec.md
+ * Multi-Script Engine: Latin (Noto Sans) + Devanagari (Noto Sans Devanagari) + JetBrains Mono
+ */
+
+/* ==========================================================================
+   1. GOOGLE FONTS IMPORTS
+   ========================================================================== */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap");
+
+:root {
+  /* Font Family Stacks */
+  --font-family-latin: "Noto Sans", -apple-system, "Segoe UI", sans-serif;
+  --font-family-devanagari: "Noto Sans Devanagari", sans-serif;
+  /* Bilingual fallback: list Devanagari right after Latin so mixed-script resolves without layout jump */
+  --font-family-bilingual: "Noto Sans", "Noto Sans Devanagari", -apple-system, "Segoe UI", sans-serif;
+  --font-family-mono: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ==========================================================================
+     2. NALAMS TYPE SCALE
+     ========================================================================== */
+  /* H1: 2.5rem / 40px | 700 | 1.2 | -0.02em */
+  --font-size-h1: 2.5rem;
+  --line-height-h1: 1.2;
+  --letter-spacing-h1: -0.02em;
+  --font-weight-h1: 700;
+
+  /* H2: 2rem / 32px | 700 | 1.25 | -0.01em */
+  --font-size-h2: 2rem;
+  --line-height-h2: 1.25;
+  --letter-spacing-h2: -0.01em;
+  --font-weight-h2: 700;
+
+  /* H3: 1.5rem / 24px | 600 | 1.3 | 0 */
+  --font-size-h3: 1.5rem;
+  --line-height-h3: 1.3;
+  --letter-spacing-h3: 0;
+  --font-weight-h3: 600;
+
+  /* H4: 1.25rem / 20px | 600 | 1.35 | 0 */
+  --font-size-h4: 1.25rem;
+  --line-height-h4: 1.35;
+  --letter-spacing-h4: 0;
+  --font-weight-h4: 600;
+
+  /* H5: 1.125rem / 18px | 600 | 1.4 | 0 */
+  --font-size-h5: 1.125rem;
+  --line-height-h5: 1.4;
+  --letter-spacing-h5: 0;
+  --font-weight-h5: 600;
+
+  /* H6: 1rem / 16px | 600 | 1.4 | 0 */
+  --font-size-h6: 1rem;
+  --line-height-h6: 1.4;
+  --letter-spacing-h6: 0;
+  --font-weight-h6: 600;
+
+  /* Body: 1rem / 16px | 400 | 1.6 | 0 */
+  --font-size-body: 1rem;
+  --line-height-body: 1.6;
+  --letter-spacing-body: 0;
+  --font-weight-body: 400;
+
+  /* Body Small: 0.875rem / 14px | 400 | 1.5 | 0 */
+  --font-size-body-sm: 0.875rem;
+  --line-height-body-sm: 1.5;
+  --letter-spacing-body-sm: 0;
+  --font-weight-body-sm: 400;
+
+  /* Caption / Metadata: 0.75rem / 12px | 500 | 1.4 | 0.02em */
+  --font-size-caption: 0.75rem;
+  --line-height-caption: 1.4;
+  --letter-spacing-caption: 0.02em;
+  --font-weight-caption: 500;
+}
+
+/* ==========================================================================
+   3. GLOBAL TYPOGRAPHY APPLICATION
+   ========================================================================== */
+body {
+  font-family: var(--font-family-bilingual);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  font-weight: var(--font-weight-body);
+  color: var(--color-text-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, .text-h1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-h1);
+  letter-spacing: var(--letter-spacing-h1);
+  font-weight: var(--font-weight-h1);
+  color: var(--color-text-heading);
+}
+
+h2, .text-h2 {
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-h2);
+  letter-spacing: var(--letter-spacing-h2);
+  font-weight: var(--font-weight-h2);
+  color: var(--color-text-heading);
+}
+
+h3, .text-h3 {
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-h3);
+  letter-spacing: var(--letter-spacing-h3);
+  font-weight: var(--font-weight-h3);
+  color: var(--color-text-heading);
+}
+
+h4, .text-h4 {
+  font-size: var(--font-size-h4);
+  line-height: var(--line-height-h4);
+  letter-spacing: var(--letter-spacing-h4);
+  font-weight: var(--font-weight-h4);
+  color: var(--color-text-heading);
+}
+
+h5, .text-h5 {
+  font-size: var(--font-size-h5);
+  line-height: var(--line-height-h5);
+  letter-spacing: var(--letter-spacing-h5);
+  font-weight: var(--font-weight-h5);
+  color: var(--color-text-heading);
+}
+
+h6, .text-h6 {
+  font-size: var(--font-size-h6);
+  line-height: var(--line-height-h6);
+  letter-spacing: var(--letter-spacing-h6);
+  font-weight: var(--font-weight-h6);
+  color: var(--color-text-heading);
+}
+
+p, .text-body {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+  font-weight: var(--font-weight-body);
+  color: var(--color-text-body);
+}
+
+.text-body-sm {
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-body-sm);
+  letter-spacing: var(--letter-spacing-body-sm);
+  font-weight: var(--font-weight-body-sm);
+}
+
+.text-caption {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-caption);
+  font-weight: var(--font-weight-caption);
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   4. MONOSPACE NUMERICS & IDENTIFIERS (Khasra No, Case ID, Hash)
+   ========================================================================== */
+.text-mono-id,
+code,
+kbd,
+samp {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  letter-spacing: 0; /* Fixed-width reads clearly without extra tracking */
+  font-weight: var(--font-weight-medium);
+}
+
+.khasra-badge {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-caption);
+  letter-spacing: 0;
+  padding: 2px 6px;
+  background-color: var(--color-surface-offwhite);
+  border: 1px solid var(--color-border-slate);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-body);
+}
+
+/* ==========================================================================
+   5. BILINGUAL (ENGLISH / HINDI) SYSTEMIC RULES
+   ========================================================================== */
+
+/*
+ * RULE 1: Line-height headroom
+ * Devanagari matras extend above (e.g. ी, े, ै) and below (e.g. ु, ू, ृ).
+ * Body line-height must NEVER drop below 1.5; 1.6-1.65 is the default to prevent clipping.
+ */
+:lang(hi),
+:lang(mr),
+.script-devanagari {
+  line-height: 1.65;
+  letter-spacing: 0; /* Never track wide, breaks shirorekha */
+}
+
+/*
+ * RULE 2: Visual size parity
+ * Noto Sans Devanagari renders visually ~5-8% larger than Latin at the same font-size.
+ * When rendered side-by-side, apply a ~6% scale down to Devanagari span for optical parity.
+ */
+.bilingual-pair {
+  display: inline-flex;
+  align-items: baseline; /* RULE 3: Always baseline, NEVER middle */
+  gap: var(--spacing-2);
+}
+
+.bilingual-pair [lang="hi"],
+.bilingual-pair .hi-label {
+  font-size: 0.94em; /* ~6% optical reduction */
+  vertical-align: baseline; /* RULE 3: baseline alignment */
+}
+
+/*
+ * RULE 4: No layout shift on language toggle
+ * Reserve container height using the taller Devanagari line render.
+ */
+.i18n-toggle-container {
+  min-height: calc(var(--font-size-body) * 1.65);
+}
+
+/*
+ * RULE 5: Don't italicize Devanagari
+ * Noto Sans Devanagari has no true italic form — fake slant looks broken.
+ * We force normal posture and use font-weight (600/700) for emphasis instead.
+ */
+:lang(hi) em,
+:lang(hi) i,
+.script-devanagari em,
+.script-devanagari i {
+  font-style: normal;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-navy);
+}

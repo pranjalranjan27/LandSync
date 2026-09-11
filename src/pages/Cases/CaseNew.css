@@ -1,0 +1,331 @@
+/* CaseNew.css — Proposal form shell styling */
+
+/* ── Shell ── */
+.case-new-shell {
+  padding: var(--spacing-6) var(--spacing-6);
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+
+/* ── Page header ── */
+.case-new-page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+}
+
+.case-new-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-primary-navy);
+  background: none;
+  border: 1px solid var(--color-border-slate);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  margin-top: 3px;
+}
+
+.case-new-back:hover {
+  background: var(--color-primary-navy-surface);
+}
+
+.case-new-heading {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-primary-navy);
+  margin: 0 0 4px;
+}
+
+.case-new-subheading {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ── Step indicator ── */
+.case-new-steps {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+.case-new-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-slate);
+  background: var(--color-surface-card);
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.case-new-step.active {
+  background: var(--color-primary-navy);
+  border-color: var(--color-primary-navy);
+  color: var(--color-text-inverse);
+  font-weight: 700;
+}
+
+.case-new-step.done {
+  background: var(--color-accent-green-surface);
+  border-color: var(--color-accent-green);
+  color: var(--color-accent-green);
+}
+
+.case-new-step-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.case-new-step.active .case-new-step-circle {
+  background: rgba(255,255,255,0.25);
+}
+
+.case-new-step.done .case-new-step-circle {
+  background: var(--color-accent-green);
+  color: white;
+}
+
+.case-new-step-label {
+  white-space: nowrap;
+}
+
+.case-new-step-arrow {
+  color: var(--color-text-disabled);
+}
+
+/* ── Error banner ── */
+.case-new-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-sm);
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+/* ── Body layouts ── */
+.case-new-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+
+.case-new-body--two-col {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  align-items: start;
+  gap: var(--spacing-5);
+}
+
+@media (max-width: 900px) {
+  .case-new-body--two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Form card ── */
+.case-new-form-card {
+  padding: var(--spacing-6);
+}
+
+.case-new-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary-navy);
+  margin: 0 0 var(--spacing-2);
+}
+
+/* ── Form grid ── */
+.case-new-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-4);
+}
+
+/* ── Shared form field ── */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-body);
+}
+
+.form-field-required {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border-slate);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--color-text-body);
+  background: var(--color-surface-card);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: var(--color-primary-navy);
+  box-shadow: var(--shadow-focus);
+}
+
+.form-field input.field-error,
+.form-field textarea.field-error {
+  border-color: #dc2626;
+}
+
+.form-field-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+/* ── Checkbox ── */
+.case-new-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.83rem;
+  color: var(--color-text-body);
+  margin-top: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--color-border-slate);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-offwhite);
+}
+
+.case-new-checkbox-row input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: var(--color-primary-navy);
+  flex-shrink: 0;
+}
+
+/* ── Footer actions ── */
+.case-new-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-border-slate);
+}
+
+/* ── Parcel panel (step 2 right) ── */
+.case-new-parcel-panel {
+  position: sticky;
+  top: var(--spacing-6);
+}
+
+/* ── Parcel summary (step 2 left) ── */
+.case-new-parcel-summary {
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-2);
+}
+
+.case-new-parcel-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ── Review step ── */
+.case-new-review-section {
+  margin-bottom: var(--spacing-6);
+  padding-bottom: var(--spacing-6);
+  border-bottom: 1px solid var(--color-border-slate);
+}
+
+.case-new-review-section:last-of-type {
+  border-bottom: none;
+}
+
+.case-new-review-heading {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-primary-navy);
+  margin: 0 0 var(--spacing-3);
+}
+
+.case-new-review-dl {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--spacing-2) var(--spacing-4);
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.case-new-review-dl dt {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+}
+
+.case-new-review-dl dd {
+  margin: 0;
+  color: var(--color-text-body);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Statutory declaration ── */
+.case-new-declaration {
+  display: flex;
+  gap: 10px;
+  padding: var(--spacing-4);
+  background: var(--color-primary-navy-surface);
+  border: 1px solid var(--color-primary-navy);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--color-primary-navy);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-4);
+}

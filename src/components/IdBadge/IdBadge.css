@@ -1,0 +1,22 @@
+.nalams-id-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-family-mono, monospace);
+  font-size: var(--font-size-caption, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  line-height: var(--line-height-caption, 1.4);
+  letter-spacing: var(--letter-spacing-caption, 0.02em);
+  color: var(--color-primary-navy, #1B3F75);
+  background-color: var(--color-primary-navy-surface, #EEF3FB);
+  border: 1px solid rgba(27, 63, 117, 0.2);
+  padding: 2px 8px;
+  border-radius: 9999px; /* Pill / tag styling */
+  white-space: nowrap;
+  user-select: all;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.nalams-id-badge:hover {
+  background-color: #E2ECF9;
+  border-color: rgba(27, 63, 117, 0.35);
+}

@@ -1,0 +1,177 @@
+/**
+ * NALAMS Theme & Component Foundation
+ * Companion to tokens.css and typography.css
+ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  background-color: var(--color-surface-offwhite);
+  color: var(--color-text-body);
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface-offwhite);
+}
+
+/* Accessibility Focus Rings */
+:focus-visible {
+  outline: 2px solid var(--color-accent-saffron);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Base Card */
+.card {
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--color-border-slate);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: #b0b7c3;
+  box-shadow: var(--shadow-md);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  font-family: var(--font-family-bilingual);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.15s ease-in-out;
+}
+
+/* Primary Button (Ashoka Navy, AAA 10.43:1) */
+.btn-primary {
+  background-color: var(--color-primary-navy);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary-navy);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-navy-hover);
+  border-color: var(--color-primary-navy-hover);
+}
+
+/* Secondary Button (Hairline Outline) */
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-text-body);
+  border-color: var(--color-border-slate);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-surface-offwhite);
+  border-color: var(--color-text-secondary);
+}
+
+/* Accent Kesari Button (Action / Track) */
+.btn-accent-kesari {
+  background-color: var(--color-accent-kesari);
+  color: #FFFFFF;
+  border-color: var(--color-accent-kesari);
+}
+
+.btn-accent-kesari:hover {
+  background-color: var(--color-accent-kesari-hover);
+  border-color: var(--color-accent-kesari-hover);
+}
+
+/* Saffron Fill-Only Badge / Highlight */
+/* Saffron ONLY used as background fill with Dark Navy text for AAA compliance */
+.badge-saffron {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--color-accent-saffron);
+  color: var(--color-primary-navy);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* Green Status Badge (AA compliant >=14px bold or white text on green fill) */
+.badge-green {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--color-accent-green);
+  color: #FFFFFF;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.badge-green-subtle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-accent-green-surface);
+  color: var(--color-accent-green);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-bold);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+}
+
+/* Kesari Active Tab Indicator */
+.tab-item {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-body-sm);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tab-item.active {
+  color: var(--color-primary-navy);
+  border-bottom: 2px solid var(--color-accent-kesari);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Skip to main content link for GIGW accessibility */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  background: var(--color-primary-navy);
+  color: #ffffff;
+  padding: 8px 16px;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
