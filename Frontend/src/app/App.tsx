@@ -18,7 +18,7 @@ function AppContent() {
 
   // Standalone full-viewport views (Landing & Auth pages)
   const standalonePages = ['/', '/login', '/auth/otp', '/forgot-password', '/register'];
-  if (standalonePages.includes(location.pathname)) {
+  if (standalonePages.includes(location.pathname) || !user) {
     return <>{routeElement}</>;
   }
 

@@ -22,6 +22,7 @@ export interface User {
   district: string;
   district_id?: string;
   state: string;
+  phone?: string;
   avatarUrl?: string;
   isOfficial: boolean;
 }

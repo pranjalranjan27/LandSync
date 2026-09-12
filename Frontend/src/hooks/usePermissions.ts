@@ -14,11 +14,11 @@ export interface UsePermissionsReturn {
 
 export function usePermissions(): UsePermissionsReturn {
   const { role } = useAuth();
-  const normalized = (role || '').toUpperCase() as Role;
+  const normalized = (role || 'COLLECTOR').toUpperCase() as Role;
   const isPolicyViewer = normalized === 'POLICY_VIEWER';
 
   return {
-    role,
+    role: normalized,
     isReadOnly: isPolicyViewer || isReadOnlyRole(normalized),
     canMutate: isPolicyViewer ? false : (roleConfigs[normalized]?.canMutate ?? false),
     canPerformAction: (stage: CaseStage) => isPolicyViewer ? false : canPerformCaseAction(normalized, stage),

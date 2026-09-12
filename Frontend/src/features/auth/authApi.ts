@@ -1,10 +1,30 @@
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signOut,
+  sendPasswordResetEmail,
+  type User as FirebaseUser
+} from 'firebase/auth';
+import { auth } from '../../lib/firebase';
 import type { User, Role } from '../../types/user';
-import { mockUsers } from '../../mock-data/users';
+import { roleConfigs } from '../../mock-data/users';
 
 export interface LoginCredentials {
-  identifier: string; // username, email, or mobile number
+  identifier: string; // email address
   password: string;
   rememberMe?: boolean;
+}
+
+export interface RegisterDetails {
+  email: string;
+  password: string;
+  fullName: string;
+  phone?: string;
+  department?: string;
+  role: Role;
+  district?: string;
+  state?: string;
 }
 
 export interface LoginResult {
@@ -13,143 +33,232 @@ export interface LoginResult {
   error?: string;
 }
 
-export async function loginWithRole(role: Role): Promise<User> {
-  await new Promise((res) => setTimeout(res, 80));
-  const user = mockUsers.find((u) => u.role === role) || mockUsers[0];
-  sessionStorage.setItem('landsync_session_user', JSON.stringify(user));
-  sessionStorage.setItem('landsync_role', user.role);
+const PROFILE_STORAGE_PREFIX = 'landsync_profile_';
+const SESSION_KEY = 'landsync_session_user';
+const SESSION_ROLE_KEY = 'landsync_role';
+
+/**
+ * Retrieve saved profile metadata for a given Firebase UID
+ */
+export function getStoredUserProfile(uid: string): Partial<User> | null {
+  try {
+    const raw = localStorage.getItem(`${PROFILE_STORAGE_PREFIX}${uid}`);
+    if (raw) {
+      return JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn('Failed to read user profile for UID:', uid, e);
+  }
+  return null;
+}
+
+/**
+ * Store profile metadata for a given Firebase UID
+ */
+export function saveStoredUserProfile(uid: string, profile: Partial<User>): void {
+  try {
+    const existing = getStoredUserProfile(uid) || {};
+    const merged = { ...existing, ...profile };
+    localStorage.setItem(`${PROFILE_STORAGE_PREFIX}${uid}`, JSON.stringify(merged));
+  } catch (e) {
+    console.warn('Failed to save user profile for UID:', uid, e);
+  }
+}
+
+/**
+ * Construct application User model from Firebase User and stored profile
+ */
+export function buildUserFromFirebase(fbUser: FirebaseUser): User {
+  const stored = getStoredUserProfile(fbUser.uid) || {};
+  const role: Role = (stored.role as Role) || 'COLLECTOR';
+  const roleMeta = roleConfigs[role];
+
+  const user: User = {
+    id: fbUser.uid,
+    name: fbUser.displayName || stored.name || fbUser.email?.split('@')[0] || 'Authorized Official',
+    email: fbUser.email || stored.email || '',
+    role,
+    designation: stored.designation || roleMeta?.displayName || 'Government Official',
+    department: stored.department || 'Department of Revenue & Land Acquisition',
+    district: stored.district || 'Gautam Buddha Nagar',
+    district_id: stored.district_id || 'gautam_buddha_nagar',
+    state: stored.state || 'Uttar Pradesh',
+    phone: stored.phone || fbUser.phoneNumber || undefined,
+    avatarUrl: fbUser.photoURL || undefined,
+    isOfficial: role !== 'CITIZEN'
+  };
+
   return user;
 }
 
 /**
- * Validates credentials against FastAPI /auth/login with graceful mock fallback.
+ * Translate Firebase Auth error codes into friendly human-readable messages
+ */
+export function mapFirebaseError(err: unknown): string {
+  if (!err || typeof err !== 'object') {
+    return 'Authentication failed. Please check your credentials and try again.';
+  }
+
+  const code = (err as { code?: string }).code || '';
+
+  switch (code) {
+    case 'auth/user-not-found':
+      return 'No account found with this email address. Please register first.';
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'Invalid email or password. Please verify your credentials and try again.';
+    case 'auth/email-already-in-use':
+      return 'An account with this email address already exists. Please sign in instead.';
+    case 'auth/weak-password':
+      return 'Password is too weak. Please choose a password with at least 6 characters.';
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.';
+    case 'auth/too-many-requests':
+      return 'Access temporarily locked due to multiple failed login attempts. Please try again later.';
+    case 'auth/network-request-failed':
+      return 'Network communication failed. Please check your internet connection and retry.';
+    case 'auth/user-disabled':
+      return 'This departmental account has been disabled. Please contact your administrator.';
+    case 'auth/operation-not-allowed':
+      return 'Email/Password authentication is currently not enabled in Firebase Console.';
+    default:
+      return (err as { message?: string }).message || 'An error occurred during authentication. Please try again.';
+  }
+}
+
+/**
+ * Authenticate existing user with Firebase Authentication
  */
 export async function loginUser(credentials: LoginCredentials): Promise<LoginResult> {
-  const id = credentials.identifier.trim();
-  const pwd = credentials.password;
+  const email = credentials.identifier.trim();
+  const password = credentials.password;
 
-  // Intentional failure test credentials
-  if (
-    pwd.toLowerCase() === 'wrong' ||
-    pwd.toLowerCase() === 'invalid' ||
-    id.toLowerCase() === 'wrong' ||
-    id.toLowerCase() === 'invalid' ||
-    id.toLowerCase() === 'fail'
-  ) {
+  if (!email || !password) {
     return {
       success: false,
-      error: 'Invalid username or password. Please check your credentials and try again.'
+      error: 'Please enter both email and password.'
     };
   }
 
-  // Attempt FastAPI backend login first
   try {
-    const emailToTry = id.includes('@')
-      ? id
-      : id.toLowerCase() === 'collector'
-      ? 'collector@landsync.gov.in'
-      : id.toLowerCase() === 'requiring_body'
-      ? 'requiring_body@landsync.gov.in'
-      : id.toLowerCase() === 'state_approver'
-      ? 'state_approver@landsync.gov.in'
-      : id.toLowerCase() === 'sia_expert'
-      ? 'sia_expert@landsync.gov.in'
-      : id.toLowerCase() === 'rr_admin'
-      ? 'rr_admin@landsync.gov.in'
-      : id.toLowerCase() === 'field_officer'
-      ? 'field_officer@landsync.gov.in'
-      : `${id}@landsync.gov.in`;
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const fbUser = userCredential.user;
+    const appUser = buildUserFromFirebase(fbUser);
 
-    const res = await fetch('/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: emailToTry, password: pwd })
+    // Save active session
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(appUser));
+    sessionStorage.setItem(SESSION_ROLE_KEY, appUser.role);
+    window.dispatchEvent(new CustomEvent('landsync_session_change', { detail: appUser }));
+
+    return {
+      success: true,
+      user: appUser
+    };
+  } catch (err) {
+    return {
+      success: false,
+      error: mapFirebaseError(err)
+    };
+  }
+}
+
+/**
+ * Register new user with Firebase Authentication and attach custom role metadata
+ */
+export async function registerUser(details: RegisterDetails): Promise<LoginResult> {
+  const email = details.email.trim();
+  const password = details.password;
+
+  if (!email || !password) {
+    return {
+      success: false,
+      error: 'Please provide both email and password.'
+    };
+  }
+
+  if (password.length < 6) {
+    return {
+      success: false,
+      error: 'Password must be at least 6 characters long.'
+    };
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const fbUser = userCredential.user;
+
+    // Update Firebase display name
+    await updateProfile(fbUser, {
+      displayName: details.fullName.trim()
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      if (data.access_token) {
-        sessionStorage.setItem('landsync_token', data.access_token);
-      }
+    const roleMeta = roleConfigs[details.role];
+    const profileData: Partial<User> = {
+      id: fbUser.uid,
+      name: details.fullName.trim(),
+      email,
+      role: details.role,
+      designation: roleMeta?.displayName || details.role,
+      department: details.department?.trim() || 'Department of Revenue & Land Acquisition',
+      district: details.district?.trim() || 'Gautam Buddha Nagar',
+      district_id: (details.district?.trim() || 'Gautam Buddha Nagar').toLowerCase().replace(/\s+/g, '_'),
+      state: details.state?.trim() || 'Uttar Pradesh',
+      phone: details.phone?.trim(),
+      isOfficial: details.role !== 'CITIZEN'
+    };
 
-      const roleMapping: Record<string, Role> = {
-        district_collector: 'COLLECTOR',
-        requiring_body: 'REQUIRING_BODY',
-        state_approver: 'STATE_APPROVER',
-        sia_expert: 'SIA_EXPERT',
-        rr_administrator: 'RR_ADMIN',
-        rr_admin: 'RR_ADMIN',
-        field_officer: 'FIELD_OFFICER',
-        policy_viewer: 'POLICY_VIEWER'
-      };
+    saveStoredUserProfile(fbUser.uid, profileData);
 
-      const backendRole = data.user?.role?.toLowerCase() || 'district_collector';
-      const mappedRole: Role = roleMapping[backendRole] || 'COLLECTOR';
-      const mockUserMatch = mockUsers.find((u) => u.role === mappedRole) || mockUsers[0];
+    const appUser = buildUserFromFirebase(fbUser);
 
-      const authenticatedUser: User = {
-        id: String(data.user?.id || mockUserMatch.id),
-        name: data.user?.name || mockUserMatch.name,
-        email: data.user?.email || emailToTry,
-        role: mappedRole,
-        designation: mockUserMatch.designation,
-        department: mockUserMatch.department,
-        district: mockUserMatch.district,
-        district_id: mockUserMatch.district_id,
-        state: mockUserMatch.state,
-        isOfficial: true
-      };
+    // Save active session
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(appUser));
+    sessionStorage.setItem(SESSION_ROLE_KEY, appUser.role);
+    window.dispatchEvent(new CustomEvent('landsync_session_change', { detail: appUser }));
 
-      sessionStorage.setItem('landsync_session_user', JSON.stringify(authenticatedUser));
-      sessionStorage.setItem('landsync_role', authenticatedUser.role);
-
-      return {
-        success: true,
-        user: authenticatedUser
-      };
-    }
-  } catch (backendErr) {
-    console.warn('[LandSync] Backend login unreachable, falling back to local verification:', backendErr);
-  }
-
-  // Local fallback for mock accounts and offline development
-  const idLower = id.toLowerCase();
-  const foundUser = mockUsers.find(
-    (u) =>
-      u.email.toLowerCase() === idLower ||
-      u.role.toLowerCase() === idLower ||
-      u.id.toLowerCase() === idLower ||
-      u.name.toLowerCase().includes(idLower)
-  );
-
-  if (foundUser) {
-    sessionStorage.setItem('landsync_session_user', JSON.stringify(foundUser));
-    sessionStorage.setItem('landsync_role', foundUser.role);
     return {
       success: true,
-      user: foundUser
+      user: appUser
     };
-  }
-
-  if (
-    id.includes('@') ||
-    /^\d{10}$/.test(id) ||
-    idLower.includes('collector') ||
-    idLower.includes('admin') ||
-    idLower === 'demo' ||
-    idLower === 'official' ||
-    idLower === 'nalams'
-  ) {
-    sessionStorage.setItem('landsync_session_user', JSON.stringify(mockUsers[0]));
-    sessionStorage.setItem('landsync_role', mockUsers[0].role);
+  } catch (err) {
     return {
-      success: true,
-      user: mockUsers[0]
+      success: false,
+      error: mapFirebaseError(err)
     };
   }
+}
 
-  return {
-    success: false,
-    error: 'Invalid username or password. Please check your credentials and try again.'
-  };
+/**
+ * Send Password Reset email via Firebase Auth
+ */
+export async function resetPassword(email: string): Promise<{ success: boolean; error?: string }> {
+  if (!email.trim()) {
+    return { success: false, error: 'Please enter your registered email address.' };
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email.trim());
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error: mapFirebaseError(err)
+    };
+  }
+}
+
+/**
+ * Sign out from Firebase Auth and clear session state
+ */
+export async function logoutUser(): Promise<void> {
+  try {
+    await signOut(auth);
+  } catch (e) {
+    console.warn('Firebase signOut error:', e);
+  } finally {
+    sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_ROLE_KEY);
+    sessionStorage.removeItem('landsync_token');
+    window.dispatchEvent(new CustomEvent('landsync_session_change', { detail: null }));
+  }
 }

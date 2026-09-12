@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import type { Role } from '../../types/user';
+import { roleConfigs } from '../../mock-data/users';
 import { loginUser } from './authApi';
 import { IndianFlagIcon } from './IndianFlagIcon';
 import { useTranslation } from '../../locales';
@@ -102,39 +103,22 @@ export function LoginPage({ onLogin: _onLogin }: LoginPageProps) {
 
     try {
       const result = await loginUser({
-        identifier,
+        identifier: identifier.trim(),
         password,
         rememberMe
       });
 
       if (result.success && result.user) {
-        navigate('/auth/otp', {
-          state: {
-            user: result.user,
-            identifier: identifier.trim()
-          }
-        });
+        _onLogin(result.user.role);
+        const targetDashboard = roleConfigs[result.user.role]?.dashboardPath || '/dashboard';
+        navigate(targetDashboard);
       } else {
         setAuthError(result.error || t('auth.errorInvalidCredentials'));
       }
-    } catch {
+    } catch (err: unknown) {
       setAuthError(t('auth.errorInvalidCredentials'));
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleFillDemo = (type: 'valid' | 'invalid') => {
-    setAuthError(null);
-    setIdentifierError(null);
-    setPasswordError(null);
-
-    if (type === 'valid') {
-      setIdentifier('collector.pauri@uk.gov.in');
-      setPassword('Admin@123');
-    } else {
-      setIdentifier('unknown.user@example.com');
-      setPassword('wrong');
     }
   };
 
@@ -379,29 +363,6 @@ export function LoginPage({ onLogin: _onLogin }: LoginPageProps) {
               <Link to="/register" className="login-register-link">
                 {t('auth.registerHere')}
               </Link>
-            </div>
-
-            {/* Quick Demo Test Helper for review */}
-            <div className="login-demo-helper">
-              <span>{t('auth.quickTestLabel')}</span>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <button
-                  type="button"
-                  className="login-demo-btn"
-                  onClick={() => handleFillDemo('valid')}
-                  title="Fill working District Collector credentials"
-                >
-                  {t('auth.quickTestCollector')}
-                </button>
-                <button
-                  type="button"
-                  className="login-demo-btn"
-                  onClick={() => handleFillDemo('invalid')}
-                  title="Fill credentials that trigger error banner"
-                >
-                  Fill Invalid
-                </button>
-              </div>
             </div>
           </form>
         </div>

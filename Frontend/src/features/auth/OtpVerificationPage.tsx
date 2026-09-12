@@ -18,8 +18,14 @@ export const OtpVerificationPage: React.FC<OtpVerificationPageProps> = ({ onLogi
 
   // Retrieve user or identifier passed from login state
   const state = location.state as { user?: User; identifier?: string } | null;
-  const user = state?.user || mockUsers[0];
-  const identifier = state?.identifier || user.email;
+  const user = state?.user;
+  const identifier = state?.identifier || user?.email || '';
+
+  useEffect(() => {
+    if (!user && !identifier) {
+      navigate('/login');
+    }
+  }, [user, identifier, navigate]);
 
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
   const [error, setError] = useState<string | null>(null);
@@ -80,16 +86,14 @@ export const OtpVerificationPage: React.FC<OtpVerificationPageProps> = ({ onLogi
     setIsVerifying(true);
     setTimeout(() => {
       setIsVerifying(false);
-      // Successful verification
-      onLogin(user.role);
-      const dest = roleConfigs[user.role]?.dashboardPath || '/collector';
-      navigate(dest);
+      if (user) {
+        onLogin(user.role);
+        const dest = roleConfigs[user.role]?.dashboardPath || '/collector';
+        navigate(dest);
+      } else {
+        navigate('/login');
+      }
     }, 600);
-  };
-
-  const handleFillDemoOtp = () => {
-    setOtp(['1', '2', '3', '4', '5', '6']);
-    setError(null);
   };
 
   // Masked identifier
@@ -224,15 +228,7 @@ export const OtpVerificationPage: React.FC<OtpVerificationPageProps> = ({ onLogi
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginTop: '4px' }}>
-              <button
-                type="button"
-                onClick={handleFillDemoOtp}
-                style={{ background: 'none', border: 'none', color: 'var(--color-accent-kesari)', cursor: 'pointer', fontWeight: 600, padding: 0 }}
-              >
-                Auto-fill Demo OTP (123456)
-              </button>
-
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', fontSize: '0.85rem', marginTop: '4px' }}>
               <span style={{ color: 'var(--color-text-secondary)' }}>
                 {resendTimer > 0 ? (
                   `${t('auth.resendIn')} ${resendTimer}s`

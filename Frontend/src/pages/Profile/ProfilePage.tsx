@@ -57,6 +57,11 @@ function getInitials(name: string) {
 export function ProfilePage() {
   const { user } = useAuth();
   const { t, language, setLanguage, languages } = useTranslation();
+
+  if (!user) {
+    return null;
+  }
+
   const roleConfig = roleConfigs[user.role];
 
   const [section, setSection] = useState<ProfileSection>('personal');
@@ -70,7 +75,7 @@ export function ProfilePage() {
   const [about, setAbout] = useState(
     'Committed to transparent, efficient and people-centric land acquisition and rehabilitation processes.'
   );
-  const [phone, setPhone] = useState('+91-9876543210');
+  const [phone, setPhone] = useState(user.phone || '+91-9876543210');
   const [altEmail, setAltEmail] = useState(user.email);
   const [officeAddr, setOfficeAddr] = useState(`Collectorate, ${user.district}`);
 

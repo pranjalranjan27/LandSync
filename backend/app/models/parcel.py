@@ -42,7 +42,7 @@ class Parcel(Base):
     district: Mapped[str] = mapped_column(String(150), nullable=False, index=True)
     state: Mapped[str] = mapped_column(String(150), nullable=False)
     revenue_sheet_no: Mapped[str] = mapped_column(String(50), nullable=False)
-    geometry = mapped_column(Geometry(geometry_type="POLYGON", srid=4326), nullable=False)
+    geometry = mapped_column(Geometry(geometry_type="POLYGON", srid=4326, spatial_index=False), nullable=False)
     centroid_lat: Mapped[float] = mapped_column(Float, nullable=False)
     centroid_lng: Mapped[float] = mapped_column(Float, nullable=False)
     area_sqm: Mapped[float] = mapped_column(Float, nullable=False)
