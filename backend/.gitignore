@@ -1,0 +1,29 @@
+# ==============================================================================
+# Layer: Version Control Exclusion (.gitignore)
+# ALLOWED:
+#   - Exclude virtual environments, environment files (.env), runtime caches, logs, uploaded files.
+# NOT ALLOWED:
+#   - Do not ignore project source code, migrations, or schema specifications.
+# ==============================================================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+.env
+.env.local
+
+# Test & coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local uploads
+uploads/
+*.sqlite3
+*.db
