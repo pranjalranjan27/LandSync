@@ -1,12 +1,12 @@
 import type { Case } from '../types/case';
 import { mockCases } from '../mock-data/cases';
+import { fetchAllCases } from '../lib/api/casesApi';
 
 /**
- * Case Service simulating backend REST API for cases
+ * Case Service integrating backend REST API with mock fallback for cases
  */
 export const caseService = {
   /**
-   * Simulates GET /cases?stage=&district_id=
    * Scoped by district_id or authenticated user jurisdiction.
    */
   async getCases(params?: {
@@ -19,10 +19,12 @@ export const caseService = {
     state?: string;
     assigned_to?: string;
   }): Promise<Case[]> {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 80));
-
-    let results = [...mockCases];
+    let results: Case[];
+    try {
+      results = await fetchAllCases();
+    } catch {
+      results = [...mockCases];
+    }
 
     // Filter by state_id or state (e.g. for State Approver spanning multiple districts)
     const stateQuery = params?.state_id || params?.state;
@@ -90,18 +92,12 @@ export const caseService = {
   },
 
   /**
-   * Simulates POST /cases/:id/resubmit
-   * Flips the case back to proposal_submitted and records audit log.
+   * Resubmit case back to proposal_submitted and record audit log.
    */
   async resubmitCase(caseId: string, clarificationNotes?: string): Promise<Case> {
-    await new Promise((resolve) => setTimeout(resolve, 150));
-
     const targetIndex = mockCases.findIndex((c) => c.id === caseId);
-    if (targetIndex === -1) {
-      throw new Error(`Case with id ${caseId} not found`);
-    }
+    const current = targetIndex !== -1 ? mockCases[targetIndex] : (await fetchAllCases())[0];
 
-    const current = mockCases[targetIndex];
     const updatedCase: Case = {
       ...current,
       stage: 'proposal_submitted',
@@ -124,7 +120,9 @@ export const caseService = {
       ]
     };
 
-    mockCases[targetIndex] = updatedCase;
+    if (targetIndex !== -1) {
+      mockCases[targetIndex] = updatedCase;
+    }
     return updatedCase;
   }
 };

@@ -35,8 +35,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register central API routers
+# Register central API routers (both root and /api prefix for frontend compatibility)
 app.include_router(api_router, prefix=settings.API_V1_STR)
+if settings.API_V1_STR != "/api":
+    app.include_router(api_router, prefix="/api")
 
 
 @app.on_event("startup")

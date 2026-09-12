@@ -60,6 +60,20 @@ class ParcelStatus(str, Enum):
     DISPUTED = "disputed"
 
 
+class EncroachmentStatus(str, Enum):
+    """Cadastral encroachment and title clarity status."""
+    CLEAR = "clear"
+    DISPUTED = "disputed"
+    ENCROACHED = "encroached"
+
+
+class OwnershipType(str, Enum):
+    """Statutory land ownership classification."""
+    PRIVATE = "private"
+    GOVERNMENT = "government"
+    COMMUNITY = "community"
+
+
 class PurposeCategory(str, Enum):
     """Statutory purpose categories for land acquisition proposals."""
     INFRASTRUCTURE = "infrastructure"

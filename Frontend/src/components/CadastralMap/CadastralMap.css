@@ -1,0 +1,538 @@
+/* ==============================================================================
+   CadastralMap.css — LandSync Production-Grade Cadastral GIS Styling
+   Compliant with NALAMS Design Tokens & GIGW 3.0 Standard
+   ============================================================================== */
+
+.cadastral-gis-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+  width: 100%;
+  font-family: inherit;
+}
+
+/* Header Strip */
+.cadastral-header-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: var(--spacing-3, 12px);
+  border-bottom: 1px solid var(--color-border-slate, #e2e8f0);
+}
+
+.cadastral-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cadastral-title-badge {
+  background: var(--color-primary-navy-surface, #eef3fb);
+  color: var(--color-primary-navy, #1B3F75);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm, 4px);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cadastral-title-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-primary-navy, #1B3F75);
+  margin: 0;
+}
+
+.cadastral-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.cadastral-pill-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  font-weight: 600;
+  color: var(--color-primary-navy, #1B3F75);
+}
+
+/* Toolbar & Filter Bar */
+.cadastral-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: var(--color-surface-offwhite, #f8f9fa);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-border-slate, #e2e8f0);
+}
+
+.cadastral-search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  max-width: 380px;
+}
+
+.cadastral-search-input {
+  width: 100%;
+  padding: 6px 10px 6px 32px;
+  font-size: 0.85rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cadastral-search-input:focus {
+  border-color: var(--color-primary-navy, #1B3F75);
+  box-shadow: 0 0 0 2px rgba(27, 63, 117, 0.15);
+}
+
+.cadastral-search-icon {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.cadastral-search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.cadastral-search-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.82rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.12s ease;
+}
+
+.cadastral-search-item:hover {
+  background: var(--color-primary-navy-surface, #eef3fb);
+}
+
+.cadastral-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cadastral-filter-chip {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.cadastral-filter-chip.active {
+  background: var(--color-primary-navy, #1B3F75);
+  color: #ffffff;
+  border-color: var(--color-primary-navy, #1B3F75);
+}
+
+.cadastral-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary-navy, #1B3F75);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cadastral-btn-secondary:hover {
+  background: var(--color-primary-navy-surface, #eef3fb);
+  border-color: var(--color-primary-navy, #1B3F75);
+}
+
+/* Map Grid Layout (Map Canvas + Inspector Sidebar) */
+.cadastral-viewport-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--spacing-3, 12px);
+  min-height: 480px;
+}
+
+@media (max-width: 960px) {
+  .cadastral-viewport-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Leaflet Canvas Container */
+.cadastral-map-canvas {
+  width: 100%;
+  height: 480px;
+  min-height: 480px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-border-slate, #cbd5e1);
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Legend inside map */
+.cadastral-map-legend {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-size: 0.75rem;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cadastral-legend-title {
+  font-weight: 700;
+  color: var(--color-primary-navy, #1B3F75);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cadastral-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.cadastral-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1.5px solid;
+}
+
+.cadastral-legend-swatch.clear {
+  background: rgba(34, 197, 94, 0.35);
+  border-color: #16a34a;
+}
+
+.cadastral-legend-swatch.disputed {
+  background: rgba(245, 158, 11, 0.45);
+  border-color: #d97706;
+}
+
+.cadastral-legend-swatch.encroached {
+  background: rgba(239, 68, 68, 0.55);
+  border-color: #dc2626;
+}
+
+/* Inspector Sidebar Panel */
+.cadastral-inspector-panel {
+  background: #ffffff;
+  border: 1px solid var(--color-border-slate, #e2e8f0);
+  border-radius: var(--radius-sm, 6px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.cadastral-inspector-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #94a3b8;
+  gap: 8px;
+  padding: 24px 12px;
+}
+
+.cadastral-inspector-header {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+.cadastral-khasra-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-primary-navy, #1B3F75);
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.cadastral-inspector-sub {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Inspector Metric Rows */
+.cadastral-metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.cadastral-metric-box {
+  background: var(--color-surface-offwhite, #f8f9fa);
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.cadastral-metric-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.03em;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.cadastral-metric-val {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+  word-break: break-all;
+}
+
+/* Status Pill Badges */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.status-pill.clear {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.status-pill.disputed {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.status-pill.encroached {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+/* Inspector Action Buttons */
+.cadastral-inspector-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.cadastral-action-btn-primary {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--color-primary-navy, #1B3F75);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.cadastral-action-btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-navy-hover, #14315c);
+}
+
+.cadastral-action-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cadastral-action-btn-outline {
+  width: 100%;
+  padding: 7px 12px;
+  background: transparent;
+  color: var(--color-primary-navy, #1B3F75);
+  border: 1px solid var(--color-primary-navy, #1B3F75);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.cadastral-action-btn-outline:hover {
+  background: var(--color-primary-navy-surface, #eef3fb);
+}
+
+/* Modal Form for Encroachment Updates */
+.cadastral-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.cadastral-modal-dialog {
+  background: #ffffff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  border: 1px solid #cbd5e1;
+  overflow: hidden;
+  animation: modalIn 0.18s ease-out;
+}
+
+@keyframes modalIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.cadastral-modal-header {
+  padding: 14px 18px;
+  background: var(--color-surface-offwhite, #f8f9fa);
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cadastral-modal-header h4 {
+  margin: 0;
+  color: var(--color-primary-navy, #1B3F75);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.cadastral-modal-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cadastral-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cadastral-form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.cadastral-form-select,
+.cadastral-form-input,
+.cadastral-form-textarea {
+  padding: 7px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #1e293b;
+  outline: none;
+}
+
+.cadastral-form-select:focus,
+.cadastral-form-input:focus,
+.cadastral-form-textarea:focus {
+  border-color: var(--color-primary-navy, #1B3F75);
+  box-shadow: 0 0 0 2px rgba(27, 63, 117, 0.12);
+}
+
+.cadastral-modal-footer {
+  padding: 12px 18px;
+  background: #f8f9fa;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

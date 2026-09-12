@@ -3,9 +3,16 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "npm --prefix Frontend run dev",
+    "dev": "concurrently -k -n \"frontend,backend\" -c \"cyan,green\" \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "npm --prefix Frontend run dev",
+    "dev:backend": "node start-backend.js",
+    "backend": "node start-backend.js",
+    "frontend": "npm --prefix Frontend run dev",
     "build": "npm --prefix Frontend run build",
     "lint": "npm --prefix Frontend run lint",
     "preview": "npm --prefix Frontend run preview"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }

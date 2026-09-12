@@ -28,6 +28,8 @@ from app.schemas.case import (
 )
 from app.schemas.audit import AuditLogRead, AuditLogFlagRequest
 from app.schemas.document import DocumentCreate, DocumentRead
+from app.schemas.parcel import GeoJSONFeatureCollection
+from app.services.parcel_service import ParcelService
 from app.schemas.workflow import (
     SIAVerdictCreate,
     SIAVerdictRead,
@@ -42,7 +44,7 @@ from app.schemas.workflow import (
 from app.services.case_service import CaseService
 from app.services.workflow_service import WorkflowService
 
-router = APIRouter(prefix="/cases", tags=["Acquisition Cases & Workflows"])
+router = APIRouter(tags=["Acquisition Cases & Workflows"])
 
 
 # --- 1. Core Case Lifecycle ---
@@ -103,6 +105,24 @@ def get_case_detail(
     Enforces that the caller has jurisdiction over the case's district/state.
     """
     return CaseService.get_case_by_id(db=db, case_id=id, user=current_user)
+
+
+@router.get(
+    "/{case_id}/parcels",
+    response_model=GeoJSONFeatureCollection,
+    status_code=status.HTTP_200_OK,
+    summary="Retrieve GeoJSON parcels linked to this acquisition case"
+)
+def get_case_parcels(
+    case_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieve all cadastral parcels linked to an acquisition case formatted as a GeoJSON FeatureCollection.
+    Populates the Case Detail Map tab.
+    """
+    return ParcelService.list_parcels_by_case(db=db, case_id=case_id, user=current_user)
 
 
 # --- 2. Statutory Stage Actions ---

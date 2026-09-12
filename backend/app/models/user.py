@@ -36,7 +36,6 @@ class District(Base):
     state_id: Mapped[int] = mapped_column(Integer, ForeignKey("states.id", ondelete="CASCADE"), nullable=False)
 
     state: Mapped["State"] = relationship("State", back_populates="districts")
-    parcels: Mapped[List["Parcel"]] = relationship("Parcel", back_populates="district")
 
 
 class User(Base):

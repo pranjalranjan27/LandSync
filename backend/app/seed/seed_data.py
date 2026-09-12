@@ -50,7 +50,7 @@ def seed_database():
     """Populates the demo database with states, districts, parcels, users, and multi-stage cases."""
     db = SessionLocal()
     try:
-        print("🌱 [1/6] Seeding statutory stage SLA durations...")
+        print("[INFO] [1/6] Seeding statutory stage SLA durations...")
         stage_slas = {
             CaseStage.PROPOSAL_SUBMITTED.value: 15,
             CaseStage.DISTRICT_REVIEW.value: 21,
@@ -72,7 +72,7 @@ def seed_database():
                 db.add(StageDurationConfig(stage=stage_name, expected_days=days))
         db.commit()
 
-        print("🌱 [2/6] Seeding administrative geography (States & Districts)...")
+        print("[INFO] [2/6] Seeding administrative geography (States & Districts)...")
         up = db.query(State).filter_by(name="Uttar Pradesh").first()
         if not up:
             up = State(name="Uttar Pradesh")
@@ -105,7 +105,7 @@ def seed_database():
             db.flush()
         db.commit()
 
-        print("🌱 [3/6] Seeding 7 RBAC + ABAC Demo Users (password: password123)...")
+        print("[INFO] [3/6] Seeding 7 RBAC + ABAC Demo Users (password: password123)...")
         hashed_pwd = get_password_hash("password123")
         demo_users = [
             {
@@ -177,7 +177,7 @@ def seed_database():
             user_lookup[u_data["role"]] = u
         db.commit()
 
-        print("🌱 [4/6] Seeding 50 Cadastral Parcels in Gautam Buddha Nagar (Jewar area)...")
+        print("[INFO] [4/6] Seeding 50 Cadastral Parcels in Gautam Buddha Nagar (Jewar area)...")
         # Generate 5x10 realistic polygon grid around Jewar coordinates (lat 28.18 to 28.23, lon 77.50 to 77.60)
         base_lat = 28.1800
         base_lon = 77.5000
@@ -211,7 +211,7 @@ def seed_database():
             parcels_list.append(p)
         db.commit()
 
-        print("🌱 [5/6] Seeding 5 Demonstration Cases across distinct workflow stages...")
+        print("[INFO] [5/6] Seeding 5 Demonstration Cases across distinct workflow stages...")
         req_user = user_lookup[UserRole.REQUIRING_BODY.value]
         coll_user = user_lookup[UserRole.DISTRICT_COLLECTOR.value]
         state_user = user_lookup[UserRole.STATE_APPROVER.value]
@@ -453,14 +453,14 @@ def seed_database():
             ))
 
         db.commit()
-        print("✅ [6/6] LandSync Demo Database Seeded Successfully!")
+        print("[SUCCESS] [6/6] LandSync Demo Database Seeded Successfully!")
         print("\n--- Demo Login Credentials (all passwords: 'password123') ---")
         for u in demo_users:
             print(f"Role: {u['role']:<22} Email: {u['email']}")
 
     except Exception as e:
         db.rollback()
-        print(f"❌ Error seeding database: {e}")
+        print(f"[ERROR] Error seeding database: {e}")
         raise
     finally:
         db.close()

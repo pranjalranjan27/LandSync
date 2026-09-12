@@ -66,7 +66,7 @@ class Case(Base):
     district: Mapped["District"] = relationship("District", foreign_keys=[district_id])
     state: Mapped["State"] = relationship("State", foreign_keys=[state_id])
 
-    parcels: Mapped[List["Parcel"]] = relationship("Parcel", secondary=case_parcels, back_populates="cases")
+    parcels: Mapped[List["Parcel"]] = relationship("Parcel", back_populates="case")
     audit_logs: Mapped[List["AuditLog"]] = relationship(
         "AuditLog", back_populates="case", cascade="all, delete-orphan", order_by="AuditLog.created_at.desc()"
     )
