@@ -11,12 +11,14 @@ import {
   ShieldCheck,
   X,
   Compass,
+  AlertTriangle,
 } from 'lucide-react';
 import type {
   GeoJSONFeatureCollection,
   GeoJSONFeature,
   ParcelProperties,
   EncroachmentStatus,
+  DisputeStatus,
   ParcelSearchItem,
 } from '../../types/parcel';
 import {
@@ -62,7 +64,7 @@ export function CadastralMap({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchSuggestions, setSearchSuggestions] = useState<ParcelSearchItem[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [filterStatus, setFilterStatus] = useState<'all' | EncroachmentStatus>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'clear' | 'under_litigation' | 'prohibited'>('all');
 
   // Encroachment update modal state
   const [showEncroachModal, setShowEncroachModal] = useState<boolean>(false);
@@ -72,26 +74,27 @@ export function CadastralMap({
   const [isUpdatingEncroachment, setIsUpdatingEncroachment] = useState<boolean>(false);
   const [isLinking, setIsLinking] = useState<boolean>(false);
 
-  // Style generators based on encroachment status
+  // Style generators based on dispute status:
+  // green fill for clear, amber/orange for under_litigation, red for prohibited
   const getFeatureStyle = useCallback(
     (feature?: any): L.PathOptions => {
-      const status: EncroachmentStatus = feature?.properties?.encroachment_status || 'clear';
-      if (status === 'encroached') {
+      const dispute: DisputeStatus = feature?.properties?.dispute_status || 'clear';
+      if (dispute === 'prohibited') {
         return {
           color: '#dc2626',
           weight: 2,
-          opacity: 0.9,
+          opacity: 0.95,
           fillColor: '#ef4444',
-          fillOpacity: 0.45,
+          fillOpacity: 0.55,
         };
       }
-      if (status === 'disputed') {
+      if (dispute === 'under_litigation') {
         return {
           color: '#d97706',
           weight: 2,
-          opacity: 0.9,
+          opacity: 0.95,
           fillColor: '#f59e0b',
-          fillOpacity: 0.4,
+          fillOpacity: 0.45,
         };
       }
       // 'clear' default
@@ -219,7 +222,7 @@ export function CadastralMap({
       filterStatus === 'all'
         ? parcelsData.features
         : parcelsData.features.filter(
-            (f) => f.properties.encroachment_status === filterStatus
+            (f) => (f.properties.dispute_status || 'clear') === filterStatus
           );
 
     const filteredCollection: GeoJSONFeatureCollection = {
@@ -232,21 +235,22 @@ export function CadastralMap({
       onEachFeature: (feature: any, featureLayer: L.Layer) => {
         const props: ParcelProperties = feature.properties;
         const pLayer = featureLayer as L.Path;
+        const disp = props.dispute_status || 'clear';
 
-        // Hover tooltip with cadastral summary
+        // Hover tooltip with cadastral summary & dispute status
         pLayer.bindTooltip(
           `
           <div style="font-family: inherit; font-size: 12px; line-height: 1.4;">
             <strong style="color: #1B3F75;">Khasra ${props.khasra_number}</strong><br/>
             <span>Mauza: ${props.village} (${props.revenue_sheet_no})</span><br/>
             <span>Area: ${props.area_hectares} ha (${props.area_sqm.toLocaleString()} m²)</span><br/>
-            <span style="font-weight: 600; text-transform: capitalize; color: ${
-              props.encroachment_status === 'clear'
-                ? '#15803d'
-                : props.encroachment_status === 'disputed'
-                ? '#b45309'
-                : '#b91c1c'
-            };">Status: ${props.encroachment_status}</span>
+            <span style="font-weight: 700; text-transform: capitalize; color: ${
+              disp === 'prohibited'
+                ? '#dc2626'
+                : disp === 'under_litigation'
+                ? '#d97706'
+                : '#16a34a'
+            };">Dispute: ${disp.replace(/_/g, ' ')}</span>
           </div>
           `,
           { sticky: true, direction: 'top', opacity: 0.95 }
@@ -443,11 +447,11 @@ export function CadastralMap({
     (parcelsData?.features.reduce((sum, f) => sum + (f.properties.area_hectares || 0), 0) || 0)
   ).toFixed(2);
   const clearCount =
-    parcelsData?.features.filter((f) => f.properties.encroachment_status === 'clear').length || 0;
-  const disputedCount =
-    parcelsData?.features.filter((f) => f.properties.encroachment_status === 'disputed').length || 0;
-  const encroachedCount =
-    parcelsData?.features.filter((f) => f.properties.encroachment_status === 'encroached').length || 0;
+    parcelsData?.features.filter((f) => (f.properties.dispute_status || 'clear') === 'clear').length || 0;
+  const litigationCount =
+    parcelsData?.features.filter((f) => f.properties.dispute_status === 'under_litigation').length || 0;
+  const prohibitedCount =
+    parcelsData?.features.filter((f) => f.properties.dispute_status === 'prohibited').length || 0;
 
   return (
     <div className="cadastral-gis-container">
@@ -523,17 +527,17 @@ export function CadastralMap({
           </button>
           <button
             type="button"
-            className={`cadastral-filter-chip ${filterStatus === 'disputed' ? 'active' : ''}`}
-            onClick={() => setFilterStatus('disputed')}
+            className={`cadastral-filter-chip ${filterStatus === 'under_litigation' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('under_litigation')}
           >
-            <span style={{ color: '#d97706' }}>●</span> Disputed ({disputedCount})
+            <span style={{ color: '#d97706' }}>●</span> Litigation ({litigationCount})
           </button>
           <button
             type="button"
-            className={`cadastral-filter-chip ${filterStatus === 'encroached' ? 'active' : ''}`}
-            onClick={() => setFilterStatus('encroached')}
+            className={`cadastral-filter-chip ${filterStatus === 'prohibited' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('prohibited')}
           >
-            <span style={{ color: '#dc2626' }}>●</span> Encroached ({encroachedCount})
+            <span style={{ color: '#dc2626' }}>●</span> Prohibited ({prohibitedCount})
           </button>
 
           <button
@@ -554,18 +558,18 @@ export function CadastralMap({
         <div className="cadastral-map-canvas" ref={mapContainerRef}>
           {/* Status Legend Overlay */}
           <div className="cadastral-map-legend">
-            <div className="cadastral-legend-title">Statutory Title Status</div>
+            <div className="cadastral-legend-title">Statutory Title & Dispute Status</div>
             <div className="cadastral-legend-item">
               <div className="cadastral-legend-swatch clear" />
-              <span>Clear Title (Nil Encroachment)</span>
+              <span>Clear Title (Admissible)</span>
             </div>
             <div className="cadastral-legend-item">
-              <div className="cadastral-legend-swatch disputed" />
-              <span>Disputed Boundary / Title</span>
+              <div className="cadastral-legend-swatch disputed" style={{ backgroundColor: '#f59e0b', borderColor: '#d97706' }} />
+              <span>Under Litigation (NJDG Flag)</span>
             </div>
             <div className="cadastral-legend-item">
-              <div className="cadastral-legend-swatch encroached" />
-              <span>Physical Encroachment Verified</span>
+              <div className="cadastral-legend-swatch encroached" style={{ backgroundColor: '#ef4444', borderColor: '#dc2626' }} />
+              <span>Prohibited Land (NGDRS Reserve)</span>
             </div>
           </div>
         </div>
@@ -579,14 +583,130 @@ export function CadastralMap({
                   <div className="cadastral-khasra-badge">
                     {selectedFeature.properties.khasra_number}
                   </div>
-                  <span className={`status-pill ${selectedFeature.properties.encroachment_status}`}>
-                    {selectedFeature.properties.encroachment_status}
-                  </span>
+                  {/* Prominent Dispute Status Badge */}
+                  {selectedFeature.properties.dispute_status === 'prohibited' ? (
+                    <span style={{
+                      backgroundColor: '#fee2e2',
+                      color: '#b91c1c',
+                      border: '1px solid #f87171',
+                      padding: '3px 8px',
+                      borderRadius: '9999px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}>
+                      <AlertTriangle size={12} /> Prohibited
+                    </span>
+                  ) : selectedFeature.properties.dispute_status === 'under_litigation' ? (
+                    <span style={{
+                      backgroundColor: '#fef3c7',
+                      color: '#b45309',
+                      border: '1px solid #fcd34d',
+                      padding: '3px 8px',
+                      borderRadius: '9999px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}>
+                      <AlertTriangle size={12} /> Under Litigation
+                    </span>
+                  ) : (
+                    <span style={{
+                      backgroundColor: '#dcfce7',
+                      color: '#15803d',
+                      border: '1px solid #86efac',
+                      padding: '3px 8px',
+                      borderRadius: '9999px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}>
+                      <ShieldCheck size={12} /> Clear Title
+                    </span>
+                  )}
                 </div>
                 <div className="cadastral-inspector-sub">
                   Mauza {selectedFeature.properties.village}, Tehsil {selectedFeature.properties.tehsil}
                 </div>
               </div>
+
+              {/* Prominent Dispute & Litigation Notice Box */}
+              {selectedFeature.properties.dispute_status && selectedFeature.properties.dispute_status !== 'clear' ? (
+                <div style={{
+                  background: selectedFeature.properties.dispute_status === 'prohibited' ? '#fef2f2' : '#fffbeb',
+                  border: `1px solid ${selectedFeature.properties.dispute_status === 'prohibited' ? '#fca5a5' : '#fde68a'}`,
+                  borderRadius: 8,
+                  padding: '10px 12px',
+                  marginBottom: 14
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: selectedFeature.properties.dispute_status === 'prohibited' ? '#991b1b' : '#92400e',
+                      textTransform: 'uppercase'
+                    }}>
+                      <AlertTriangle size={14} />
+                      {selectedFeature.properties.dispute_status === 'prohibited'
+                        ? 'Statutory Acquisition Prohibition'
+                        : 'Active Judicial Litigation (NJDG)'}
+                    </span>
+                    {selectedFeature.properties.dispute_source && (
+                      <span style={{
+                        fontSize: '0.68rem',
+                        background: 'white',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: 4,
+                        padding: '1px 6px',
+                        fontWeight: 600,
+                        color: '#475569'
+                      }}>
+                        Source: {selectedFeature.properties.dispute_source}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{
+                    fontSize: '0.76rem',
+                    color: selectedFeature.properties.dispute_status === 'prohibited' ? '#b91c1c' : '#78350f',
+                    lineHeight: 1.4,
+                    fontWeight: 500
+                  }}>
+                    {selectedFeature.properties.dispute_notes || 'Judicial or statutory restriction recorded.'}
+                  </div>
+                </div>
+              ) : (
+                <div style={{
+                  background: '#f0fdf4',
+                  border: '1px solid #bbf7d0',
+                  borderRadius: 8,
+                  padding: '8px 12px',
+                  marginBottom: 14,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: '0.76rem',
+                  color: '#166534',
+                  fontWeight: 600
+                }}>
+                  <ShieldCheck size={15} />
+                  <span>NJDG & NGDRS Verified: Clear Title (Nil Litigation)</span>
+                </div>
+              )}
 
               {/* Metric Grid */}
               <div className="cadastral-metric-grid">

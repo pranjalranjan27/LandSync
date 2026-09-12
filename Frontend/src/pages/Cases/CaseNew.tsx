@@ -12,6 +12,9 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Button } from '../../components/Button/Button';
 import { ParcelSelectStub, type Parcel } from '../../components/ParcelSelectStub/ParcelSelectStub';
+import { DisputeBlockModal } from '../../features/cases/DisputeBlockModal';
+import { validateParcelSelection } from '../../lib/api/parcelsApi';
+import type { DisputeValidationResult } from '../../types/parcel';
 import { caseService } from '../../services/caseService';
 import './CaseNew.css';
 
@@ -19,14 +22,14 @@ import './CaseNew.css';
 /*  Demo parcel pool — in prod comes from /parcels?mauza=  */
 /* ──────────────────────────────────────────────────────── */
 const POOL_RAMPUR: Parcel[] = [
-  { khasraNumber: '442/19-A', mauza: 'Mauza Rampur', soilType: 'Terraced Irrigated (Talaon)', areaHectares: 12.4, ownerName: 'Surendra Singh Rawat', circleRatePerSqMtr: 1450, solatiumMultiplier: 2.0 },
-  { khasraNumber: '442/19-B', mauza: 'Mauza Rampur', soilType: 'Non-irrigated (Upraon)', areaHectares: 8.1, ownerName: 'Govind Ram Bhatt', circleRatePerSqMtr: 950, solatiumMultiplier: 2.0 },
-  { khasraNumber: '445/02', mauza: 'Mauza Rampur', soilType: 'Settlement Residential', areaHectares: 4.75, ownerName: 'Kamala Devi Negi', circleRatePerSqMtr: 2800, solatiumMultiplier: 2.0 },
-  { khasraNumber: '448/11-C', mauza: 'Mauza Rampur', soilType: 'Pasture / Barren', areaHectares: 9.0, ownerName: 'Gram Sabha Rampur', circleRatePerSqMtr: 600, solatiumMultiplier: 2.0 },
-  { khasraNumber: '450/A', mauza: 'Mauza Rampur', soilType: 'Orchard / Horticulture', areaHectares: 2.3, ownerName: 'Prema Devi', circleRatePerSqMtr: 1900, solatiumMultiplier: 2.0 },
-  { khasraNumber: '101/A', mauza: 'Mauza Kanda', soilType: 'Terraced Irrigated (Talaon)', areaHectares: 3.2, ownerName: 'Ramesh Kumar Singh', circleRatePerSqMtr: 1200, solatiumMultiplier: 2.0 },
-  { khasraNumber: '102/B', mauza: 'Mauza Kanda', soilType: 'Non-irrigated (Upraon)', areaHectares: 1.8, ownerName: 'Suresh Prasad Rawat', circleRatePerSqMtr: 900, solatiumMultiplier: 2.0 },
-  { khasraNumber: '103/C', mauza: 'Mauza Shivpuri', soilType: 'Forest Adjacent', areaHectares: 5.5, ownerName: 'Parbati Devi', circleRatePerSqMtr: 750, solatiumMultiplier: 2.0 },
+  { khasraNumber: '442/19-A', mauza: 'Mauza Rampur', soilType: 'Terraced Irrigated (Talaon)', areaHectares: 12.4, ownerName: 'Surendra Singh Rawat', circleRatePerSqMtr: 1450, solatiumMultiplier: 2.0, dispute_status: 'clear' },
+  { khasraNumber: '442/19-B', mauza: 'Mauza Rampur', soilType: 'Non-irrigated (Upraon)', areaHectares: 8.1, ownerName: 'Govind Ram Bhatt', circleRatePerSqMtr: 950, solatiumMultiplier: 2.0, dispute_status: 'under_litigation', dispute_source: 'NJDG', dispute_notes: 'Active partition suit in Civil Court Dadri (O.S. 312/2024)' },
+  { khasraNumber: '445/02', mauza: 'Mauza Rampur', soilType: 'Settlement Residential', areaHectares: 4.75, ownerName: 'Kamala Devi Negi', circleRatePerSqMtr: 2800, solatiumMultiplier: 2.0, dispute_status: 'prohibited', dispute_source: 'NGDRS', dispute_notes: 'Statutory injunction — High Court stay order in PIL 1402/2023' },
+  { khasraNumber: '448/11-C', mauza: 'Mauza Rampur', soilType: 'Pasture / Barren', areaHectares: 9.0, ownerName: 'Gram Sabha Rampur', circleRatePerSqMtr: 600, solatiumMultiplier: 2.0, dispute_status: 'clear' },
+  { khasraNumber: '450/A', mauza: 'Mauza Rampur', soilType: 'Orchard / Horticulture', areaHectares: 2.3, ownerName: 'Prema Devi', circleRatePerSqMtr: 1900, solatiumMultiplier: 2.0, dispute_status: 'clear' },
+  { khasraNumber: '101/A', mauza: 'Mauza Kanda', soilType: 'Terraced Irrigated (Talaon)', areaHectares: 3.2, ownerName: 'Ramesh Kumar Singh', circleRatePerSqMtr: 1200, solatiumMultiplier: 2.0, dispute_status: 'clear' },
+  { khasraNumber: '102/B', mauza: 'Mauza Kanda', soilType: 'Non-irrigated (Upraon)', areaHectares: 1.8, ownerName: 'Suresh Prasad Rawat', circleRatePerSqMtr: 900, solatiumMultiplier: 2.0, dispute_status: 'under_litigation', dispute_source: 'State IGR', dispute_notes: 'Succession title dispute pending before Sub-Divisional Officer' },
+  { khasraNumber: '103/C', mauza: 'Mauza Shivpuri', soilType: 'Forest Adjacent', areaHectares: 5.5, ownerName: 'Parbati Devi', circleRatePerSqMtr: 750, solatiumMultiplier: 2.0, dispute_status: 'clear' },
 ];
 
 /* ──────────────────────────────────────────────────────── */
@@ -69,6 +72,9 @@ export function CaseNew() {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [globalError, setGlobalError] = useState('');
+
+  const [disputeValidation, setDisputeValidation] = useState<DisputeValidationResult | null>(null);
+  const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
 
   const set = useCallback(
     <K extends keyof FormState>(key: K) =>
@@ -115,21 +121,99 @@ export function CaseNew() {
     if (validateParcels()) setStep('review');
   }
 
-  /* ── Submit ── */
+  /* ── Submit Proposal Action ── */
+  async function doSubmitProposal(hasDisputeWarning: boolean) {
+    setSubmitting(true);
+    setGlobalError('');
+    try {
+      const token = sessionStorage.getItem('landsync_token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch('/cases', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          project_name: form.projectTitle,
+          justification: form.projectPurpose,
+          total_area_hectares: totalArea,
+          estimated_affected_families: Math.max(1, Math.round(totalArea * 3)),
+          parcel_ids: selectedParcels,
+          has_dispute_warning: hasDisputeWarning,
+          is_urgent_sec40: form.isUrgentSec40,
+        }),
+      });
+
+      if (res.status === 409) {
+        const errData = await res.json();
+        setGlobalError(errData.detail?.message || 'Proposal rejected by pre-submission dispute gate.');
+        setSubmitting(false);
+        return;
+      }
+
+      void caseService.getCases({ mine: true });
+      navigate('/requiring-body', {
+        state: { submitted: true, title: form.projectTitle, hasDisputeWarning },
+      });
+    } catch {
+      // Fallback simulation for offline demo
+      void caseService.getCases({ mine: true });
+      navigate('/requiring-body', {
+        state: { submitted: true, title: form.projectTitle, hasDisputeWarning },
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  /* ── Pre-Submission Dispute Gate Check ── */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (selectedParcels.length === 0) return;
-    setSubmitting(true);
-    try {
-      await new Promise((r) => setTimeout(r, 800)); // simulate POST /cases
-      void caseService.getCases({ mine: true }); // invalidate cache hint
-      navigate('/requiring-body', {
-        state: { submitted: true, title: form.projectTitle },
-      });
-    } catch {
-      setGlobalError('Submission failed. Please retry.');
-      setSubmitting(false);
+
+    // Check pool and API for disputes
+    const poolFlagged = POOL_RAMPUR.filter(
+      (p) => selectedParcels.includes(p.khasraNumber) && p.dispute_status && p.dispute_status !== 'clear'
+    );
+
+    let validation = await validateParcelSelection(selectedParcels);
+
+    // Merge any POOL_RAMPUR mock disputes if offline/demo
+    if (poolFlagged.length > 0 && validation.flagged_parcels.length === 0) {
+      const flaggedItems = poolFlagged.map((p) => ({
+        parcel_id: p.khasraNumber,
+        khasra_number: p.khasraNumber,
+        village: p.mauza.replace('Mauza ', ''),
+        dispute_status: p.dispute_status!,
+        dispute_source: p.dispute_source || 'NGDRS',
+        dispute_notes: p.dispute_notes || 'Judicial encumbrance on record',
+      }));
+
+      const prohibited = flaggedItems.filter((f) => f.dispute_status === 'prohibited');
+      const litigation = flaggedItems.filter((f) => f.dispute_status === 'under_litigation');
+
+      validation = {
+        is_valid: prohibited.length === 0,
+        has_prohibited: prohibited.length > 0,
+        has_litigation: litigation.length > 0,
+        prohibited_parcels: prohibited,
+        litigation_parcels: litigation,
+        flagged_parcels: flaggedItems,
+      };
     }
+
+    // If any parcel is under litigation or prohibited, trigger the explanatory data-integrity modal
+    if (validation.flagged_parcels.length > 0) {
+      setDisputeValidation(validation);
+      setIsDisputeModalOpen(true);
+      return;
+    }
+
+    // All clear -> proceed directly
+    await doSubmitProposal(false);
   }
 
   /* ── Computed ── */
@@ -511,6 +595,18 @@ export function CaseNew() {
           </div>
         </form>
       )}
+
+      {/* ── Pre-Submission GIS Dispute Gate Modal ── */}
+      <DisputeBlockModal
+        isOpen={isDisputeModalOpen}
+        validationResult={disputeValidation}
+        onClose={() => setIsDisputeModalOpen(false)}
+        onConfirm={async () => {
+          setIsDisputeModalOpen(false);
+          await doSubmitProposal(true);
+        }}
+        isSubmitting={submitting}
+      />
     </div>
   );
 }

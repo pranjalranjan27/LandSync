@@ -62,6 +62,7 @@ class ObjectionRead(ObjectionCreate):
 class AwardCreate(BaseModel):
     compensation_amount: Decimal = Field(..., gt=0, decimal_places=2, max_digits=14)
     award_document_id: Optional[int] = None
+    evidence_document_id: Optional[int] = None
     remarks: Optional[str] = None
 
 

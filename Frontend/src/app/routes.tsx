@@ -22,6 +22,7 @@ import { DesignSystemPage } from '../features/design-system/DesignSystemPage';
 import { NotificationsPage } from '../pages/Notifications/NotificationsPage';
 import { ProfilePage } from '../pages/Profile/ProfilePage';
 import { DocumentsPage } from '../pages/Documents/DocumentsPage';
+import { AuthorityDashboardShell } from '../features/authority-dashboard/AuthorityDashboardShell';
 
 export function getAppRoutes(
   currentUser: User | null,
@@ -133,6 +134,17 @@ export function getAppRoutes(
       element: (
         <ProtectedRoute currentUser={currentUser} allowedRoles={['FIELD_OFFICER']}>
           <FieldOfficerView />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: '/authority',
+      element: (
+        <ProtectedRoute
+          currentUser={currentUser}
+          allowedRoles={['LARR_AUTHORITY', 'INDEPENDENT_SIA_EXPERT', 'RR_MONITORING_COMMITTEE']}
+        >
+          <AuthorityDashboardShell currentUser={currentUser} />
         </ProtectedRoute>
       )
     },

@@ -34,6 +34,38 @@ class ParcelRepository:
         return db.get(Parcel, parcel_id)
 
     @staticmethod
+    def get_by_ids(db: Session, parcel_ids: List[Union[uuid.UUID, str, int]]) -> List[Parcel]:
+        """Fetch multiple parcels by a list of IDs (UUIDs, string UUIDs, or ints)."""
+        if not parcel_ids:
+            return []
+        
+        parsed_uuids = []
+        string_ids = []
+        for pid in parcel_ids:
+            if isinstance(pid, uuid.UUID):
+                parsed_uuids.append(pid)
+            elif isinstance(pid, str):
+                try:
+                    parsed_uuids.append(uuid.UUID(pid))
+                except ValueError:
+                    string_ids.append(pid)
+            else:
+                string_ids.append(str(pid))
+
+        clauses = []
+        if parsed_uuids:
+            clauses.append(Parcel.id.in_(parsed_uuids))
+        if string_ids:
+            clauses.append(func.cast(Parcel.id, str).in_(string_ids))
+            clauses.append(Parcel.khasra_number.in_(string_ids))
+
+        if not clauses:
+            return []
+
+        stmt = select(Parcel).where(or_(*clauses))
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
     def get_by_khasra(db: Session, khasra_number: str, district: str) -> Optional[Parcel]:
         """Lookup an exact Khasra parcel within a specified district."""
         stmt = select(Parcel).where(
@@ -172,6 +204,9 @@ class ParcelRepository:
             centroid_lng=parcel_data["centroid_lng"],
             area_sqm=parcel_data["area_sqm"],
             encroachment_status=parcel_data.get("encroachment_status", "clear"),
+            dispute_status=parcel_data.get("dispute_status", "clear"),
+            dispute_source=parcel_data.get("dispute_source"),
+            dispute_notes=parcel_data.get("dispute_notes"),
             ownership_type=parcel_data.get("ownership_type", "private"),
             case_id=parcel_data.get("case_id")
         )

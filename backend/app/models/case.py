@@ -10,11 +10,11 @@
 
 from datetime import datetime, timezone
 from typing import Optional, List, TYPE_CHECKING
-from sqlalchemy import String, Integer, Text, DateTime, ForeignKey, Table, Column
+from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.enums import CaseStage, PurposeCategory
+from app.models.enums import CaseStage, PurposeCategory, LocationSensitivity
 
 if TYPE_CHECKING:
     from app.models.user import User, District, State
@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from app.models.audit import AuditLog
     from app.models.document import Document
     from app.models.workflow import SIAVerdict, Objection, Award, RRScheme, AffectedFamily
+    from app.models.document_signature import DocumentSignature
+    from app.models.dispute_referral import DisputeReferral
 
 # Many-to-many join table between Cases and Parcels
 case_parcels = Table(
@@ -45,6 +47,10 @@ class Case(Base):
     purpose_category: Mapped[str] = mapped_column(String(50), nullable=False)
     justification: Mapped[str] = mapped_column(Text, nullable=False)
     estimated_affected_families: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    has_dispute_warning: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    location_sensitivity: Mapped[str] = mapped_column(
+        String(50), default=LocationSensitivity.STANDARD.value, nullable=False
+    )
     district_id: Mapped[int] = mapped_column(Integer, ForeignKey("districts.id"), nullable=False, index=True)
     state_id: Mapped[int] = mapped_column(Integer, ForeignKey("states.id"), nullable=False)
     current_stage: Mapped[str] = mapped_column(
@@ -71,6 +77,9 @@ class Case(Base):
         "AuditLog", back_populates="case", cascade="all, delete-orphan", order_by="AuditLog.created_at.desc()"
     )
     documents: Mapped[List["Document"]] = relationship("Document", back_populates="case", cascade="all, delete-orphan")
+    signatures: Mapped[List["DocumentSignature"]] = relationship(
+        "DocumentSignature", back_populates="case", cascade="all, delete-orphan", order_by="DocumentSignature.signed_at.desc()"
+    )
     sia_verdict: Mapped[Optional["SIAVerdict"]] = relationship(
         "SIAVerdict", back_populates="case", uselist=False, cascade="all, delete-orphan"
     )
@@ -81,4 +90,7 @@ class Case(Base):
     )
     affected_families: Mapped[List["AffectedFamily"]] = relationship(
         "AffectedFamily", back_populates="case", cascade="all, delete-orphan"
+    )
+    dispute_referrals: Mapped[List["DisputeReferral"]] = relationship(
+        "DisputeReferral", back_populates="case", cascade="all, delete-orphan", order_by="DisputeReferral.referred_at.desc()"
     )

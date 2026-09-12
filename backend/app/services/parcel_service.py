@@ -19,7 +19,7 @@ from shapely.geometry import mapping
 from app.models.parcel import Parcel
 from app.models.case import Case
 from app.models.user import User, District
-from app.models.enums import UserRole, JurisdictionLevel
+from app.models.enums import UserRole, JurisdictionLevel, DisputeStatus
 from app.repositories.parcel_repo import ParcelRepository
 from app.repositories.audit_repo import AuditRepository
 from app.schemas.parcel import (
@@ -28,6 +28,8 @@ from app.schemas.parcel import (
     GeoJSONGeometry,
     ParcelSearchItem,
     ParcelEncroachmentUpdateRequest,
+    DisputeValidationItem,
+    DisputeValidationResult,
 )
 
 
@@ -65,6 +67,9 @@ class ParcelService:
             "state": parcel.state,
             "revenue_sheet_no": parcel.revenue_sheet_no,
             "encroachment_status": parcel.encroachment_status,
+            "dispute_status": parcel.dispute_status or DisputeStatus.CLEAR.value,
+            "dispute_source": parcel.dispute_source,
+            "dispute_notes": parcel.dispute_notes,
             "ownership_type": parcel.ownership_type,
             "case_id": parcel.case_id,
             "centroid_lat": parcel.centroid_lat,
@@ -391,3 +396,62 @@ class ParcelService:
         db.refresh(updated_parcel)
 
         return cls._parcel_to_feature(updated_parcel, full_properties=True)
+
+    @classmethod
+    def validate_parcel_selection(
+        cls,
+        db: Session,
+        parcel_ids: List[Union[uuid.UUID, str, int]]
+    ) -> DisputeValidationResult:
+        """
+        Pre-Submission GIS Gate: Validates a list of selected parcel IDs against
+        statutory litigation and prohibition registries (NGDRS / NJDG / State IGR).
+
+        Returns a structured DisputeValidationResult listing flagged parcels.
+        Does NOT raise an exception itself — delegating blocking/warning decisions
+        to the calling service layer (e.g. CaseService.create_case).
+        """
+        if not parcel_ids:
+            return DisputeValidationResult(
+                is_valid=True,
+                has_prohibited=False,
+                has_litigation=False,
+                prohibited_parcels=[],
+                litigation_parcels=[],
+                flagged_parcels=[]
+            )
+
+        parcels = ParcelRepository.get_by_ids(db, parcel_ids)
+
+        prohibited_items: List[DisputeValidationItem] = []
+        litigation_items: List[DisputeValidationItem] = []
+        all_flagged: List[DisputeValidationItem] = []
+
+        for p in parcels:
+            status_val = (p.dispute_status or DisputeStatus.CLEAR.value).lower()
+            if status_val != DisputeStatus.CLEAR.value:
+                item = DisputeValidationItem(
+                    parcel_id=str(p.id),
+                    khasra_number=p.khasra_number,
+                    village=p.village,
+                    dispute_status=DisputeStatus(status_val) if status_val in [s.value for s in DisputeStatus] else DisputeStatus.CLEAR,
+                    dispute_source=p.dispute_source,
+                    dispute_notes=p.dispute_notes
+                )
+                all_flagged.append(item)
+                if status_val == DisputeStatus.PROHIBITED.value:
+                    prohibited_items.append(item)
+                elif status_val == DisputeStatus.UNDER_LITIGATION.value:
+                    litigation_items.append(item)
+
+        has_proh = len(prohibited_items) > 0
+        has_lit = len(litigation_items) > 0
+
+        return DisputeValidationResult(
+            is_valid=not has_proh,
+            has_prohibited=has_proh,
+            has_litigation=has_lit,
+            prohibited_parcels=prohibited_items,
+            litigation_parcels=litigation_items,
+            flagged_parcels=all_flagged
+        )

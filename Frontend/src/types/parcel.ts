@@ -4,6 +4,7 @@
  */
 
 export type EncroachmentStatus = 'clear' | 'disputed' | 'encroached';
+export type DisputeStatus = 'clear' | 'under_litigation' | 'prohibited';
 export type OwnershipType = 'private' | 'government' | 'community';
 
 export interface ParcelProperties {
@@ -19,6 +20,9 @@ export interface ParcelProperties {
   area_sqm: number;
   area_hectares: number;
   encroachment_status: EncroachmentStatus;
+  dispute_status?: DisputeStatus;
+  dispute_source?: string | null;
+  dispute_notes?: string | null;
   ownership_type: OwnershipType;
   case_id: number | string | null;
   created_at?: string;
@@ -55,4 +59,22 @@ export interface ParcelEncroachmentUpdatePayload {
   encroachment_status: EncroachmentStatus;
   evidence_document_id: string | number;
   remarks?: string;
+}
+
+export interface DisputeValidationItem {
+  parcel_id: string;
+  khasra_number: string;
+  village: string;
+  dispute_status: DisputeStatus;
+  dispute_source?: string | null;
+  dispute_notes?: string | null;
+}
+
+export interface DisputeValidationResult {
+  is_valid: boolean;
+  has_prohibited: boolean;
+  has_litigation: boolean;
+  prohibited_parcels: DisputeValidationItem[];
+  litigation_parcels: DisputeValidationItem[];
+  flagged_parcels: DisputeValidationItem[];
 }

@@ -11,16 +11,18 @@ import { CaseHeader } from './CaseHeader';
 import { OverviewTab } from './tabs/OverviewTab';
 import { ProposalTab } from './tabs/ProposalTab';
 import { MapTab } from './tabs/MapTab';
+import { DocumentsTab } from './tabs/DocumentsTab';
 import { TimelineTab } from './tabs/TimelineTab';
 import { mockCases } from '../mock-data/cases';
 import './CaseDetailPage.css';
 
-type TabKey = 'overview' | 'proposal' | 'map' | 'timeline';
+type TabKey = 'overview' | 'proposal' | 'map' | 'documents' | 'timeline';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'overview', label: 'Case Overview & Parcels' },
   { key: 'proposal', label: 'Section 4 Proposal' },
   { key: 'map', label: 'Cadastral GIS Map' },
+  { key: 'documents', label: 'Documents & Signatures' },
   { key: 'timeline', label: 'Audit Ledger & Timeline' },
 ];
 
@@ -92,6 +94,7 @@ export function CaseDetailPage() {
         )}
         {activeTab === 'proposal' && <ProposalTab caseItem={caseItem} />}
         {activeTab === 'map' && <MapTab caseItem={caseItem} />}
+        {activeTab === 'documents' && <DocumentsTab caseItem={caseItem} />}
         {activeTab === 'timeline' && <TimelineTab caseItem={caseItem} />}
       </div>
     </div>

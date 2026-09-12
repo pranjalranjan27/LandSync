@@ -12,12 +12,12 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
-from sqlalchemy import String, Integer, Float, DateTime, ForeignKey, UniqueConstraint, Index, Uuid
+from sqlalchemy import String, Integer, Float, DateTime, ForeignKey, UniqueConstraint, Index, Uuid, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
 
 from app.db.base import Base
-from app.models.enums import EncroachmentStatus, OwnershipType
+from app.models.enums import EncroachmentStatus, OwnershipType, DisputeStatus
 
 if TYPE_CHECKING:
     from app.models.case import Case
@@ -51,6 +51,21 @@ class Parcel(Base):
         nullable=False,
         default=EncroachmentStatus.CLEAR.value,
         index=True
+    )
+    # Real-world integration: NGDRS (prohibition registry) & NJDG (pending civil/revenue litigation)
+    dispute_status: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default=DisputeStatus.CLEAR.value,
+        index=True
+    )
+    dispute_source: Mapped[Optional[str]] = mapped_column(
+        String(100),
+        nullable=True
+    )
+    dispute_notes: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
     )
     ownership_type: Mapped[str] = mapped_column(
         String(50),

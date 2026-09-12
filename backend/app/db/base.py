@@ -32,3 +32,6 @@ from app.models.workflow import (  # noqa: E402, F401
     FamilyStatusLog,
     StageDurationConfig,
 )
+from app.models.village_circle_rate import VillageCircleRate  # noqa: E402, F401
+from app.models.document_signature import DocumentSignature  # noqa: E402, F401
+from app.models.dispute_referral import DisputeReferral  # noqa: E402, F401

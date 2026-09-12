@@ -89,6 +89,39 @@ export const mockUsers: User[] = [
     district: 'Pauri Garhwal',
     state: 'Uttarakhand',
     isOfficial: false
+  },
+  {
+    id: 'user-009',
+    name: 'Hon. Justice V.K. Sharma',
+    email: 'larr_authority@landsync.gov.in',
+    role: 'LARR_AUTHORITY',
+    designation: 'Presiding Officer, LARR Authority',
+    department: 'Land Acquisition, Rehabilitation and Resettlement Authority',
+    district: 'Gautam Buddha Nagar',
+    state: 'Uttar Pradesh',
+    isOfficial: true
+  },
+  {
+    id: 'user-010',
+    name: 'Prof. Ananya Sen',
+    email: 'independent_sia_expert@landsync.gov.in',
+    role: 'INDEPENDENT_SIA_EXPERT',
+    designation: 'National SIA Evaluator',
+    department: 'Independent SIA Expert Group (National)',
+    district: 'National',
+    state: 'National',
+    isOfficial: true
+  },
+  {
+    id: 'user-011',
+    name: 'Dr. K. Radhakrishnan',
+    email: 'rr_committee@landsync.gov.in',
+    role: 'RR_MONITORING_COMMITTEE',
+    designation: 'Member Secretary, National R&R Monitoring Committee',
+    department: 'National Monitoring Committee for R&R (MoRD)',
+    district: 'National',
+    state: 'National',
+    isOfficial: true
   }
 ];
 
@@ -155,6 +188,30 @@ export const roleConfigs: Record<string, RoleConfig> = {
     hindiName: 'नागरिक / भू-स्वामी',
     dashboardPath: '/cases',
     description: 'Tracks status of ancestral land, compensation disbursement, and files Section 15 objections.',
+    canMutate: false
+  },
+  LARR_AUTHORITY: {
+    role: 'LARR_AUTHORITY',
+    displayName: 'LARR Authority',
+    hindiName: 'भूमि अर्जन, पुनर्वास एवं पुनर्व्यवस्था प्राधिकरण',
+    dashboardPath: '/authority',
+    description: 'Adjudicates statutory compensation disputes and enhanced claims under Chapter VIII.',
+    canMutate: true
+  },
+  INDEPENDENT_SIA_EXPERT: {
+    role: 'INDEPENDENT_SIA_EXPERT',
+    displayName: 'Independent SIA Expert Group',
+    hindiName: 'स्वतंत्र एसआईए विशेषज्ञ समूह',
+    dashboardPath: '/authority',
+    description: 'Evaluates and reviews Social Impact Assessment reports nationwide under Section 7-8.',
+    canMutate: true
+  },
+  RR_MONITORING_COMMITTEE: {
+    role: 'RR_MONITORING_COMMITTEE',
+    displayName: 'National R&R Monitoring Committee',
+    hindiName: 'राष्ट्रीय पुनर्वास एवं पुनर्व्यवस्था निगरानी समिति',
+    dashboardPath: '/authority',
+    description: 'Statutory national oversight over implementation of Rehabilitation & Resettlement schemes (Read-Only).',
     canMutate: false
   }
 };

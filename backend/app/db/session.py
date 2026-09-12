@@ -93,13 +93,18 @@ def _init_engine():
         with sqlite_engine.connect() as conn:
             try:
                 cols = [r[1] for r in conn.execute(text("PRAGMA table_info(parcels)")).fetchall()]
-                if cols and "village" not in cols:
-                    print("[LandSync] Upgrading SQLite parcels schema to full PostGIS cadastral model...")
+                if cols and ("village" not in cols or "dispute_status" not in cols):
+                    print("[LandSync] Upgrading SQLite parcels schema to full PostGIS cadastral model with dispute tracking...")
                     conn.execute(text("DROP TABLE IF EXISTS case_parcels;"))
                     conn.execute(text("DROP TABLE IF EXISTS parcels;"))
                     conn.commit()
-            except Exception:
-                pass
+                case_cols = [r[1] for r in conn.execute(text("PRAGMA table_info(cases)")).fetchall()]
+                if case_cols and "has_dispute_warning" not in case_cols:
+                    conn.execute(text("ALTER TABLE cases ADD COLUMN has_dispute_warning BOOLEAN NOT NULL DEFAULT 0;"))
+                    conn.execute(text("ALTER TABLE cases ADD COLUMN location_sensitivity VARCHAR(50) NOT NULL DEFAULT 'standard';"))
+                    conn.commit()
+            except Exception as e:
+                print(f"[LandSync] Schema upgrade notice: {e}")
 
     from app.db.base import Base
     Base.metadata.create_all(sqlite_engine)

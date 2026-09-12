@@ -109,6 +109,58 @@ def test_setup(db_session: Session):
         )
         db_session.add(pv)
 
+    # Requiring Body user
+    rb = db_session.query(User).filter_by(email="requiring_body@test.gov.in").first()
+    if not rb:
+        rb = User(
+            name="Test Requiring Body",
+            email="requiring_body@test.gov.in",
+            hashed_password=get_password_hash("password123"),
+            role=UserRole.REQUIRING_BODY,
+            jurisdiction_level=JurisdictionLevel.DISTRICT,
+            jurisdiction_id=gb_nagar.id
+        )
+        db_session.add(rb)
+
+    # LARR Authority user (state UP jurisdiction, referral-based access)
+    larr = db_session.query(User).filter_by(email="larr_auth@test.gov.in").first()
+    if not larr:
+        larr = User(
+            name="Test LARR Authority",
+            email="larr_auth@test.gov.in",
+            hashed_password=get_password_hash("password123"),
+            role=UserRole.LARR_AUTHORITY,
+            jurisdiction_level=JurisdictionLevel.STATE,
+            jurisdiction_id=up.id
+        )
+        db_session.add(larr)
+
+    # Independent SIA Expert Group user (national jurisdiction)
+    sia_ind = db_session.query(User).filter_by(email="sia_ind@test.gov.in").first()
+    if not sia_ind:
+        sia_ind = User(
+            name="Test Independent SIA Expert",
+            email="sia_ind@test.gov.in",
+            hashed_password=get_password_hash("password123"),
+            role=UserRole.INDEPENDENT_SIA_EXPERT,
+            jurisdiction_level=JurisdictionLevel.NATIONAL,
+            jurisdiction_id=None
+        )
+        db_session.add(sia_ind)
+
+    # R&R Monitoring Committee user (national jurisdiction, read-only)
+    rr_comm = db_session.query(User).filter_by(email="rr_comm@test.gov.in").first()
+    if not rr_comm:
+        rr_comm = User(
+            name="Test RR Monitoring Committee",
+            email="rr_comm@test.gov.in",
+            hashed_password=get_password_hash("password123"),
+            role=UserRole.RR_MONITORING_COMMITTEE,
+            jurisdiction_level=JurisdictionLevel.NATIONAL,
+            jurisdiction_id=None
+        )
+        db_session.add(rr_comm)
+
     db_session.commit()
 
     return {
@@ -119,8 +171,24 @@ def test_setup(db_session: Session):
         "c2_id": c2.id,
         "sa_id": sa.id,
         "fo_id": fo.id,
-        "pv_id": pv.id
+        "pv_id": pv.id,
+        "rb_id": rb.id,
+        "larr_id": larr.id,
+        "sia_ind_id": sia_ind.id,
+        "rr_comm_id": rr_comm.id
     }
+
+
+@pytest.fixture(scope="session")
+def token_requiring_body(test_setup) -> str:
+    return create_access_token(
+        subject=test_setup["rb_id"],
+        claims={
+            "role": UserRole.REQUIRING_BODY.value,
+            "jurisdiction_level": JurisdictionLevel.DISTRICT.value,
+            "jurisdiction_id": test_setup["gb_nagar_id"]
+        }
+    )
 
 
 @pytest.fixture(scope="session")
@@ -177,6 +245,42 @@ def token_policy_viewer(test_setup) -> str:
         subject=test_setup["pv_id"],
         claims={
             "role": UserRole.POLICY_VIEWER.value,
+            "jurisdiction_level": JurisdictionLevel.NATIONAL.value,
+            "jurisdiction_id": None
+        }
+    )
+
+
+@pytest.fixture(scope="session")
+def token_larr_authority(test_setup) -> str:
+    return create_access_token(
+        subject=test_setup["larr_id"],
+        claims={
+            "role": UserRole.LARR_AUTHORITY.value,
+            "jurisdiction_level": JurisdictionLevel.STATE.value,
+            "jurisdiction_id": test_setup["up_id"]
+        }
+    )
+
+
+@pytest.fixture(scope="session")
+def token_independent_sia_expert(test_setup) -> str:
+    return create_access_token(
+        subject=test_setup["sia_ind_id"],
+        claims={
+            "role": UserRole.INDEPENDENT_SIA_EXPERT.value,
+            "jurisdiction_level": JurisdictionLevel.NATIONAL.value,
+            "jurisdiction_id": None
+        }
+    )
+
+
+@pytest.fixture(scope="session")
+def token_rr_committee(test_setup) -> str:
+    return create_access_token(
+        subject=test_setup["rr_comm_id"],
+        claims={
+            "role": UserRole.RR_MONITORING_COMMITTEE.value,
             "jurisdiction_level": JurisdictionLevel.NATIONAL.value,
             "jurisdiction_id": None
         }

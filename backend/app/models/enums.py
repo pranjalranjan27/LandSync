@@ -21,6 +21,7 @@ class CaseStage(str, Enum):
     DISTRICT_REVIEW = "district_review"
     STATE_REVIEW = "state_review"
     SIA_IN_PROGRESS = "sia_in_progress"
+    SIA_COMPLETE = "sia_complete"
     NOTIFICATION_PUBLISHED = "notification_published"
     OBJECTIONS_WINDOW = "objections_window"
     AWARD_DECLARED = "award_declared"
@@ -43,6 +44,18 @@ class UserRole(str, Enum):
     RR_ADMINISTRATOR = "rr_administrator"
     FIELD_OFFICER = "field_officer"
     POLICY_VIEWER = "policy_viewer"
+    LARR_AUTHORITY = "larr_authority"
+    INDEPENDENT_SIA_EXPERT = "independent_sia_expert"
+    RR_MONITORING_COMMITTEE = "rr_monitoring_committee"
+
+
+class DisputeReferralStatus(str, Enum):
+    """Statutory status of a compensation dispute referred to LARR Authority under Chapter VIII."""
+    REFERRED = "referred"
+    UNDER_HEARING = "under_hearing"
+    DECIDED = "decided"
+    APPEALED_HIGH_COURT = "appealed_high_court"
+    CLOSED = "closed"
 
 
 class JurisdictionLevel(str, Enum):
@@ -120,3 +133,33 @@ class RRStatus(str, Enum):
     COMPENSATION_PROCESSED = "compensation_processed"
     RELOCATED = "relocated"
     RESETTLEMENT_VERIFIED = "resettlement_verified"
+
+
+class DisputeStatus(str, Enum):
+    """
+    Statutory parcel litigation and acquisition admissibility status.
+    Direct integration point for NJDG (National Judicial Data Grid) and NGDRS.
+    """
+    CLEAR = "clear"
+    UNDER_LITIGATION = "under_litigation"
+    PROHIBITED = "prohibited"
+
+
+class LocationSensitivity(str, Enum):
+    """
+    Environmental and urban density sensitivity categorization for risk assessment.
+    """
+    STANDARD = "standard"
+    NEAR_FOREST = "near_forest"
+    NEAR_PROTECTED_AREA = "near_protected_area"
+    DENSE_URBAN = "dense_urban"
+
+
+class SignatureActionType(str, Enum):
+    """
+    High-stakes statutory decision actions requiring tamper-evident digital signature.
+    Under Section 3 of the Information Technology Act, 2000.
+    """
+    NOTIFICATION_PUBLISHED = "notification_published"
+    AWARD_DECLARED = "award_declared"
+    REJECTED = "rejected"

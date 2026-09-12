@@ -21,10 +21,33 @@ from app.schemas.parcel import (
     ParcelSearchItem,
     ParcelLinkCaseRequest,
     ParcelEncroachmentUpdateRequest,
+    DisputeValidationResult,
+    ParcelValidateSelectionRequest,
 )
 from app.services.parcel_service import ParcelService
 
 router = APIRouter(tags=["Cadastral Parcels (GIS)"])
+
+
+@router.post(
+    "/validate-selection",
+    response_model=DisputeValidationResult,
+    status_code=status.HTTP_200_OK,
+    summary="Validate parcel selection for disputes prior to proposal submission"
+)
+def validate_parcel_selection(
+    payload: ParcelValidateSelectionRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Validates selected cadastral parcel IDs against litigation and statutory prohibition status.
+    Called by Requiring Body during Form-1 proposal drafting.
+    """
+    return ParcelService.validate_parcel_selection(
+        db=db,
+        parcel_ids=payload.parcel_ids
+    )
 
 
 @router.get(

@@ -117,6 +117,9 @@ export interface Case {
   verificationTaskPending?: boolean;
   rrFamiliesTotal?: number;
   rrFamiliesVerified?: number;
+  has_active_dispute?: boolean;
+  active_dispute?: import('./referral').DisputeReferral | null;
+  dispute_referrals?: import('./referral').DisputeReferral[];
 }
 
 export const CASE_DOMAIN_VERSION = '1.0.0';

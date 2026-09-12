@@ -7,6 +7,8 @@ import React, { useState } from 'react';
 import { MapPin, CheckSquare, Square, Search, Info } from 'lucide-react';
 import './ParcelSelectStub.css';
 
+import type { DisputeStatus } from '../../types/parcel';
+
 export interface Parcel {
   khasraNumber: string;
   mauza: string;
@@ -15,6 +17,9 @@ export interface Parcel {
   ownerName: string;
   circleRatePerSqMtr: number;
   solatiumMultiplier: number;
+  dispute_status?: DisputeStatus;
+  dispute_source?: string;
+  dispute_notes?: string;
 }
 
 interface ParcelSelectStubProps {
@@ -158,7 +163,19 @@ export function ParcelSelectStub({
 
               {/* Khasra badge */}
               <div className="pss-khasra">
-                <span className="khasra-badge">{parcel.khasraNumber}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span className="khasra-badge">{parcel.khasraNumber}</span>
+                  {parcel.dispute_status === 'prohibited' && (
+                    <span style={{ fontSize: '10px', fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: '#fee2e2', color: '#991b1b', border: '1px solid #f87171' }}>
+                      PROHIBITED
+                    </span>
+                  )}
+                  {parcel.dispute_status === 'under_litigation' && (
+                    <span style={{ fontSize: '10px', fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>
+                      LITIGATION
+                    </span>
+                  )}
+                </div>
                 <span className="pss-mauza">{parcel.mauza}</span>
               </div>
 

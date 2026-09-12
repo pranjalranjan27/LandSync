@@ -33,6 +33,12 @@ ALLOWED_TRANSITIONS: Dict[CaseStage, List[CaseStage]] = {
         CaseStage.REJECTED
     ],
     CaseStage.SIA_IN_PROGRESS: [
+        CaseStage.SIA_COMPLETE,
+        CaseStage.NOTIFICATION_PUBLISHED,
+        CaseStage.RETURNED_FOR_CLARIFICATION,
+        CaseStage.REJECTED
+    ],
+    CaseStage.SIA_COMPLETE: [
         CaseStage.NOTIFICATION_PUBLISHED,
         CaseStage.RETURNED_FOR_CLARIFICATION,
         CaseStage.REJECTED

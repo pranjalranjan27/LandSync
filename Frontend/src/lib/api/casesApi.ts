@@ -58,7 +58,10 @@ function mapBackendCaseToFrontend(bc: any): Case {
     assignedFieldOfficerId: match?.assignedFieldOfficerId,
     verificationTaskPending: match?.verificationTaskPending,
     rrFamiliesTotal: match?.rrFamiliesTotal,
-    rrFamiliesVerified: match?.rrFamiliesVerified
+    rrFamiliesVerified: match?.rrFamiliesVerified,
+    has_active_dispute: bc.has_active_dispute ?? match?.has_active_dispute ?? false,
+    active_dispute: bc.active_dispute ?? match?.active_dispute,
+    dispute_referrals: bc.dispute_referrals ?? match?.dispute_referrals ?? []
   };
 }
 

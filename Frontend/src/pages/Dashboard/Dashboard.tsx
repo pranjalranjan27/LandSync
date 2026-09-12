@@ -46,6 +46,11 @@ export const Dashboard: React.FC = () => {
       // Citizen tracks cases directly
       return <Navigate to="/cases" replace />;
 
+    case 'LARR_AUTHORITY':
+    case 'INDEPENDENT_SIA_EXPERT':
+    case 'RR_MONITORING_COMMITTEE':
+      return <Navigate to="/authority" replace />;
+
     default:
       return <CollectorView />;
   }

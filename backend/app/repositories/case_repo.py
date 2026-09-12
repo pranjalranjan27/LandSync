@@ -10,7 +10,7 @@
 # ==============================================================================
 
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List, Optional, Any
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select, func
 
@@ -27,6 +27,7 @@ class CaseRepository:
             select(Case)
             .options(
                 selectinload(Case.parcels),
+                selectinload(Case.signatures),
                 selectinload(Case.requiring_body),
                 selectinload(Case.district),
                 selectinload(Case.state),
@@ -49,7 +50,7 @@ class CaseRepository:
         state_id: Optional[int] = None,
         requiring_body_user_id: Optional[int] = None
     ) -> List[Case]:
-        stmt = select(Case).options(selectinload(Case.parcels))
+        stmt = select(Case).options(selectinload(Case.parcels), selectinload(Case.signatures))
 
         if stage:
             stmt = stmt.where(Case.current_stage == stage)
@@ -64,7 +65,7 @@ class CaseRepository:
         return list(db.scalars(stmt).all())
 
     @staticmethod
-    def create_case(db: Session, case_data: dict, parcel_ids: List[int]) -> Case:
+    def create_case(db: Session, case_data: dict, parcel_ids: List[Any]) -> Case:
         now = datetime.now(timezone.utc)
         case = Case(
             project_name=case_data["project_name"],
@@ -72,6 +73,8 @@ class CaseRepository:
             purpose_category=case_data["purpose_category"],
             justification=case_data["justification"],
             estimated_affected_families=case_data.get("estimated_affected_families", 0),
+            has_dispute_warning=case_data.get("has_dispute_warning", False),
+            location_sensitivity=case_data.get("location_sensitivity", "standard"),
             district_id=case_data["district_id"],
             state_id=case_data["state_id"],
             current_stage=case_data.get("current_stage", "proposal_submitted"),
@@ -83,12 +86,12 @@ class CaseRepository:
 
         # Link requested parcels
         if parcel_ids:
-            parcels = list(db.scalars(select(Parcel).where(Parcel.id.in_(parcel_ids))).all())
-            case.parcels.extend(parcels)
-            # Update parcels status to under_process
+            from app.repositories.parcel_repo import ParcelRepository
+            parcels = ParcelRepository.get_by_ids(db, parcel_ids)
             for p in parcels:
-                p.status = "under_process"
-                p.current_case_id = case.id
+                if p not in case.parcels:
+                    case.parcels.append(p)
+                p.case_id = case.id
             db.flush()
 
         return case

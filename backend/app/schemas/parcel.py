@@ -12,7 +12,7 @@ import uuid
 from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.enums import EncroachmentStatus, OwnershipType
+from app.models.enums import EncroachmentStatus, OwnershipType, DisputeStatus
 
 
 class ParcelBase(BaseModel):
@@ -26,6 +26,9 @@ class ParcelBase(BaseModel):
     centroid_lng: float
     area_sqm: float
     encroachment_status: EncroachmentStatus = EncroachmentStatus.CLEAR
+    dispute_status: DisputeStatus = DisputeStatus.CLEAR
+    dispute_source: Optional[str] = None
+    dispute_notes: Optional[str] = None
     ownership_type: OwnershipType = OwnershipType.PRIVATE
     case_id: Optional[Union[int, str]] = None
 
@@ -88,4 +91,39 @@ class ParcelEncroachmentUpdateRequest(BaseModel):
         None,
         max_length=500,
         description="Field inspection notes or surveyor remarks"
+    )
+
+
+# Pre-Submission GIS Dispute Gate Schemas
+class DisputeValidationItem(BaseModel):
+    parcel_id: str
+    khasra_number: str
+    village: str
+    dispute_status: DisputeStatus
+    dispute_source: Optional[str] = None
+    dispute_notes: Optional[str] = None
+
+
+class DisputeValidationResult(BaseModel):
+    is_valid: bool = Field(
+        ...,
+        description="True if no parcels are prohibited (creation can proceed, with or without litigation warning)"
+    )
+    has_prohibited: bool = Field(
+        ...,
+        description="True if any parcel has dispute_status == 'prohibited'"
+    )
+    has_litigation: bool = Field(
+        ...,
+        description="True if any parcel has dispute_status == 'under_litigation'"
+    )
+    prohibited_parcels: List[DisputeValidationItem] = []
+    litigation_parcels: List[DisputeValidationItem] = []
+    flagged_parcels: List[DisputeValidationItem] = []
+
+
+class ParcelValidateSelectionRequest(BaseModel):
+    parcel_ids: List[Union[uuid.UUID, str, int]] = Field(
+        ...,
+        description="List of parcel IDs to check for legal disputes or prohibitions"
     )

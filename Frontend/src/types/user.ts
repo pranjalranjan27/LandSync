@@ -10,7 +10,10 @@ export type Role =
   | 'RR_ADMIN'
   | 'FIELD_OFFICER'
   | 'POLICY_VIEWER'
-  | 'CITIZEN';
+  | 'CITIZEN'
+  | 'LARR_AUTHORITY'
+  | 'INDEPENDENT_SIA_EXPERT'
+  | 'RR_MONITORING_COMMITTEE';
 
 export interface User {
   id: string;
@@ -44,6 +47,9 @@ export const USER_ROLES_LIST: Role[] = [
   'RR_ADMIN',
   'FIELD_OFFICER',
   'POLICY_VIEWER',
-  'CITIZEN'
+  'CITIZEN',
+  'LARR_AUTHORITY',
+  'INDEPENDENT_SIA_EXPERT',
+  'RR_MONITORING_COMMITTEE'
 ];
 

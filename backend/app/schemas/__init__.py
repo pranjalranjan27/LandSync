@@ -53,6 +53,9 @@ from app.schemas.workflow import (
     StageDurationConfigRead,
 )
 from app.schemas.analytics import DashboardAnalyticsResponse, StageDistribution
+from app.schemas.risk import RiskComponentBreakdown, RiskAssessmentResponse
+from app.schemas.signature import SignatureRequest, SignatureResponse
+from app.schemas.parcel import DisputeValidationItem, DisputeValidationResult
 
 __all__ = [
     "StateRead",
@@ -69,6 +72,8 @@ __all__ = [
     "GeoJSONGeometry",
     "GeoJSONFeature",
     "GeoJSONFeatureCollection",
+    "DisputeValidationItem",
+    "DisputeValidationResult",
     "CaseBase",
     "CaseCreate",
     "CaseRead",
@@ -81,6 +86,10 @@ __all__ = [
     "AuditLogFlagRequest",
     "DocumentCreate",
     "DocumentRead",
+    "RiskComponentBreakdown",
+    "RiskAssessmentResponse",
+    "SignatureRequest",
+    "SignatureResponse",
     "SIAVerdictCreate",
     "SIAVerdictRead",
     "HearingLogRequest",

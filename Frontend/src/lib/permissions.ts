@@ -3,7 +3,7 @@ import type { CaseStage } from '../types/case';
 
 export function isReadOnlyRole(role: Role | string): boolean {
   const r = (role || '').toUpperCase();
-  return r === 'POLICY_VIEWER' || r === 'CITIZEN';
+  return r === 'POLICY_VIEWER' || r === 'CITIZEN' || r === 'RR_MONITORING_COMMITTEE';
 }
 
 export function canPerformCaseAction(role: Role | string, stage: CaseStage | string): boolean {
@@ -25,7 +25,7 @@ export function canPerformCaseAction(role: Role | string, stage: CaseStage | str
     case 'sia_in_progress':
     case 'sia_complete':
     case 'stage_3_sia_evaluation':
-      return r === 'SIA_EXPERT' || r === 'STATE_APPROVER';
+      return r === 'SIA_EXPERT' || r === 'INDEPENDENT_SIA_EXPERT' || r === 'STATE_APPROVER';
     case 'stage_4_sec11_notification':
       return r === 'COLLECTOR';
     case 'objections_window':

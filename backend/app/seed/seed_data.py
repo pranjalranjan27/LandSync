@@ -28,12 +28,17 @@ from app.models.enums import (
     SIACostRating,
     SIARecommendation,
     RRStatus,
+    DisputeReferralStatus,
+    EncroachmentStatus,
+    DisputeStatus,
+    OwnershipType,
 )
 from app.models.user import State, District, User
 from app.models.parcel import Parcel
 from app.models.case import Case
 from app.models.audit import AuditLog
 from app.models.document import Document
+from app.models.dispute_referral import DisputeReferral
 from app.models.workflow import (
     SIAVerdict,
     Objection,
@@ -156,6 +161,27 @@ def seed_database():
                 "role": UserRole.POLICY_VIEWER.value,
                 "jurisdiction_level": JurisdictionLevel.NATIONAL.value,
                 "jurisdiction_id": None
+            },
+            {
+                "name": "Hon. Justice V.K. Sharma (Presiding Officer LARR Authority)",
+                "email": "larr_authority@landsync.gov.in",
+                "role": UserRole.LARR_AUTHORITY.value,
+                "jurisdiction_level": JurisdictionLevel.STATE.value,
+                "jurisdiction_id": up.id
+            },
+            {
+                "name": "Prof. Ananya Sen (Independent SIA Expert Group Chair)",
+                "email": "independent_sia_expert@landsync.gov.in",
+                "role": UserRole.INDEPENDENT_SIA_EXPERT.value,
+                "jurisdiction_level": JurisdictionLevel.NATIONAL.value,
+                "jurisdiction_id": None
+            },
+            {
+                "name": "Dr. K. Radhakrishnan (National R&R Monitoring Committee)",
+                "email": "rr_committee@landsync.gov.in",
+                "role": UserRole.RR_MONITORING_COMMITTEE.value,
+                "jurisdiction_level": JurisdictionLevel.NATIONAL.value,
+                "jurisdiction_id": None
             }
         ]
 
@@ -201,10 +227,18 @@ def seed_database():
 
                 p = Parcel(
                     khasra_number=khasra,
-                    district_id=gb_nagar.id,
+                    village="Dayanatpur",
+                    tehsil="Jewar",
+                    district="Gautam Buddha Nagar",
+                    state="Uttar Pradesh",
+                    revenue_sheet_no=f"RS-{100 + i}",
                     geometry=WKTElement(wkt_poly, srid=4326),
-                    area_hectares=area,
-                    status=ParcelStatus.NOT_STARTED.value
+                    centroid_lat=(lat1 + lat2) / 2.0,
+                    centroid_lng=(lon1 + lon2) / 2.0,
+                    area_sqm=float(area) * 10000.0,
+                    encroachment_status=EncroachmentStatus.CLEAR.value,
+                    dispute_status=DisputeStatus.CLEAR.value,
+                    ownership_type=OwnershipType.PRIVATE.value
                 )
                 db.add(p)
                 db.flush()
@@ -239,8 +273,6 @@ def seed_database():
             # Link parcels 0 to 4
             for p in parcels_list[0:5]:
                 case1.parcels.append(p)
-                p.status = ParcelStatus.UNDER_PROCESS.value
-                p.current_case_id = case1.id
             # Audit log
             db.add(AuditLog(
                 case_id=case1.id,
@@ -269,8 +301,6 @@ def seed_database():
             db.flush()
             for p in parcels_list[5:13]:
                 case2.parcels.append(p)
-                p.status = ParcelStatus.UNDER_PROCESS.value
-                p.current_case_id = case2.id
 
             # Chronological Audit Trail
             db.add(AuditLog(
@@ -328,8 +358,6 @@ def seed_database():
             db.flush()
             for p in parcels_list[13:23]:
                 case3.parcels.append(p)
-                p.status = ParcelStatus.UNDER_PROCESS.value
-                p.current_case_id = case3.id
 
             # Statutory Award
             db.add(Award(
@@ -412,8 +440,6 @@ def seed_database():
             db.flush()
             for p in parcels_list[23:27]:
                 case4.parcels.append(p)
-                p.status = ParcelStatus.ACQUIRED.value
-                p.current_case_id = case4.id
 
             db.add(AuditLog(
                 case_id=case4.id, actor_user_id=coll_user.id, action="completed",
@@ -440,8 +466,6 @@ def seed_database():
             db.flush()
             for p in parcels_list[27:33]:
                 case5.parcels.append(p)
-                p.status = ParcelStatus.UNDER_PROCESS.value
-                p.current_case_id = case5.id
 
             db.add(AuditLog(
                 case_id=case5.id, actor_user_id=req_user.id, action="proposal_submitted",
@@ -450,6 +474,74 @@ def seed_database():
             db.add(AuditLog(
                 case_id=case5.id, actor_user_id=coll_user.id, action="approved_to_district_review",
                 remarks="Under scrutiny by Additional District Magistrate (Land Acquisition).", created_at=now - timedelta(days=8)
+            ))
+
+        # Case 6: compensation_disbursed with active LARR Dispute Referrals
+        case6 = db.query(Case).filter_by(project_name="Jewar Aerocity Commercial Sector Phase 2").first()
+        if not case6:
+            case6 = Case(
+                project_name="Jewar Aerocity Commercial Sector Phase 2",
+                requiring_body_user_id=req_user.id,
+                purpose_category=PurposeCategory.URBAN_DEVELOPMENT.value,
+                justification="Aerotropolis hospitality, cargo logistics, and transit facilities.",
+                estimated_affected_families=65,
+                district_id=gb_nagar.id,
+                state_id=up.id,
+                current_stage=CaseStage.COMPENSATION_DISBURSED.value,
+                stage_entered_at=now - timedelta(days=15),
+                created_at=now - timedelta(days=210)
+            )
+            db.add(case6)
+            db.flush()
+            for p in parcels_list[33:38]:
+                case6.parcels.append(p)
+
+            # Statutory Award
+            db.add(Award(
+                case_id=case6.id,
+                compensation_amount=Decimal("340000000.00"),
+                declared_by_user_id=coll_user.id,
+                declared_at=now - timedelta(days=45)
+            ))
+
+            db.add(AuditLog(
+                case_id=case6.id, actor_user_id=coll_user.id, action="compensation_disbursed",
+                remarks="Compensation disbursed via PFMS / Aadhaar DBT to 65 affected landowners.",
+                created_at=now - timedelta(days=15)
+            ))
+
+            # Dispute Referral 1 (Under Hearing with assigned case number and hearing dates)
+            ref1 = DisputeReferral(
+                case_id=case6.id,
+                referred_by_user_id=coll_user.id,
+                reason="Landowners filed Section 64 objection: 40% valuation disparity with prevailing commercial circle rates.",
+                larr_case_number="LARR/UP/2026/042",
+                hearing_dates=["2026-09-24", "2026-10-08"],
+                status=DisputeReferralStatus.UNDER_HEARING.value,
+                referred_at=now - timedelta(days=12)
+            )
+            # Dispute Referral 2 (Freshly referred, pending hearing assignment)
+            ref2 = DisputeReferral(
+                case_id=case6.id,
+                referred_by_user_id=coll_user.id,
+                reason="Dispute regarding apportionment of 100% solatium and standing timber asset valuation under Section 30.",
+                larr_case_number="LARR/UP/2026/058",
+                hearing_dates=[],
+                status=DisputeReferralStatus.REFERRED.value,
+                referred_at=now - timedelta(days=5)
+            )
+            db.add_all([ref1, ref2])
+            db.flush()
+
+            db.add(AuditLog(
+                case_id=case6.id, actor_user_id=coll_user.id, action="dispute_referred_to_larr",
+                remarks="Referred commercial circle rate valuation dispute to LARR Authority under Section 64.",
+                created_at=now - timedelta(days=12)
+            ))
+            db.add(AuditLog(
+                case_id=case6.id, actor_user_id=coll_user.id, action="dispute_referred_to_larr",
+                remarks="Referred Section 30 solatium apportionment dispute to LARR Authority.",
+                created_at=now - timedelta(days=5)
             ))
 
         db.commit()

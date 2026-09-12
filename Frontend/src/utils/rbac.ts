@@ -113,6 +113,28 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'cases:view',
     'workflow:log_objection',
     'documents:view'
+  ],
+
+  // 9. LARR Authority (Chapter VIII - Compensation Disputes)
+  LARR_AUTHORITY: [
+    'cases:view',
+    'documents:view'
+  ],
+
+  // 10. Independent SIA Expert Group (National SIA Evaluation)
+  INDEPENDENT_SIA_EXPERT: [
+    'cases:view',
+    'workflow:conduct_sia',
+    'workflow:submit_sia_report',
+    'documents:view',
+    'analytics:view_all'
+  ],
+
+  // 11. National R&R Monitoring Committee (Section 50 RFCTLARR - Strictly Read-only Oversight)
+  RR_MONITORING_COMMITTEE: [
+    'cases:view',
+    'documents:view',
+    'analytics:view_all'
   ]
 };
 
@@ -128,7 +150,10 @@ export const ROLE_DASHBOARD_ROUTES: Record<Role, string> = {
   RR_ADMIN: '/rr-admin',
   FIELD_OFFICER: '/field-officer',
   POLICY_VIEWER: '/analytics',
-  CITIZEN: '/cases'
+  CITIZEN: '/cases',
+  LARR_AUTHORITY: '/authority',
+  INDEPENDENT_SIA_EXPERT: '/authority',
+  RR_MONITORING_COMMITTEE: '/authority'
 };
 
 /**
@@ -142,7 +167,8 @@ export const ROUTE_ACCESS_RULES: Record<string, Role[]> = {
   '/sia-expert': ['SIA_EXPERT'],
   '/rr-admin': ['RR_ADMIN'],
   '/field-officer': ['FIELD_OFFICER'],
-  '/cases/new': ['REQUIRING_BODY']
+  '/cases/new': ['REQUIRING_BODY'],
+  '/authority': ['LARR_AUTHORITY', 'INDEPENDENT_SIA_EXPERT', 'RR_MONITORING_COMMITTEE']
 };
 
 /**

@@ -8,6 +8,7 @@ import type {
   GeoJSONFeature,
   ParcelSearchItem,
   ParcelEncroachmentUpdatePayload,
+  DisputeValidationResult,
 } from '../../types/parcel';
 
 function getAuthHeaders(): Record<string, string> {
@@ -204,6 +205,65 @@ export async function updateEncroachmentStatus(
 }
 
 /**
+ * Pre-submission GIS dispute validation gate
+ */
+export async function validateParcelSelection(
+  parcelIds: (string | number)[]
+): Promise<DisputeValidationResult> {
+  const endpoints = [
+    '/api/v1/parcels/validate-selection',
+    '/parcels/validate-selection'
+  ];
+
+  for (const ep of endpoints) {
+    try {
+      const res = await fetch(ep, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ parcel_ids: parcelIds })
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (err) {
+      console.warn(`[LandSync GIS] validateParcelSelection error on ${ep}:`, err);
+    }
+  }
+
+  // Client-side fallback if backend API is offline
+  const fallback = getFallbackParcels();
+  const matched = fallback.features.filter((f) =>
+    parcelIds.some((id) => String(id) === String(f.id) || String(id) === String(f.properties.khasra_number))
+  );
+
+  const flagged = matched
+    .filter((f) => f.properties.dispute_status && f.properties.dispute_status !== 'clear')
+    .map((f) => ({
+      parcel_id: String(f.id),
+      khasra_number: f.properties.khasra_number,
+      village: f.properties.village,
+      dispute_status: f.properties.dispute_status!,
+      dispute_source: f.properties.dispute_source,
+      dispute_notes: f.properties.dispute_notes
+    }));
+
+  const prohibited = flagged.filter((p) => p.dispute_status === 'prohibited');
+  const litigation = flagged.filter((p) => p.dispute_status === 'under_litigation');
+
+  return {
+    is_valid: prohibited.length === 0,
+    has_prohibited: prohibited.length > 0,
+    has_litigation: litigation.length > 0,
+    prohibited_parcels: prohibited,
+    litigation_parcels: litigation,
+    flagged_parcels: flagged
+  };
+}
+
+/**
  * High-fidelity synthetic fallback parcel collection in Gautam Buddha Nagar
  * (~28.40-28.60° N, 77.40-77.60° E)
  */
@@ -251,6 +311,21 @@ function getFallbackParcels(districtFilter?: string): GeoJSONFeatureCollection {
       const status = statuses[pIdx % statuses.length];
       const ownership = ownerships[pIdx % ownerships.length];
 
+      // 80% clear, 15% litigation, 5% prohibited
+      let disputeStatus: 'clear' | 'under_litigation' | 'prohibited' = 'clear';
+      let disputeSource: string | undefined = undefined;
+      let disputeNotes: string | undefined = undefined;
+
+      if (counter % 20 === 0) {
+        disputeStatus = 'prohibited';
+        disputeSource = 'NGDRS';
+        disputeNotes = 'Statutory stay order by High Court / Waqf/Gram Sabha prohibited parcel.';
+      } else if (counter % 7 === 0) {
+        disputeStatus = 'under_litigation';
+        disputeSource = 'NJDG';
+        disputeNotes = 'Title dispute under civil suit in District Court Gautam Buddha Nagar.';
+      }
+
       features.push({
         type: 'Feature',
         id: `mock-parcel-${counter}`,
@@ -271,6 +346,9 @@ function getFallbackParcels(districtFilter?: string): GeoJSONFeatureCollection {
           area_sqm: Number((45000 + (counter % 17) * 2350).toFixed(1)),
           area_hectares: Number(((45000 + (counter % 17) * 2350) / 10000).toFixed(4)),
           encroachment_status: status,
+          dispute_status: disputeStatus,
+          dispute_source: disputeSource,
+          dispute_notes: disputeNotes,
           ownership_type: ownership,
           case_id: v.caseId,
         },

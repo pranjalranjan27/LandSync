@@ -41,8 +41,10 @@ from app.schemas.workflow import (
     AffectedFamilyRead,
     FamilyStatusUpdate,
 )
+from app.schemas.signature import SignatureRequest, SignatureResponse
 from app.services.case_service import CaseService
 from app.services.workflow_service import WorkflowService
+from app.services.signature_service import SignatureService
 
 router = APIRouter(tags=["Acquisition Cases & Workflows"])
 
@@ -164,8 +166,15 @@ def reject_case_proposal(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Reject proposal with mandatory statutory justification."""
-    return CaseService.reject_case(db=db, case_id=id, user=current_user, remarks=payload.remarks)
+    """Reject proposal with mandatory statutory justification and digital signature."""
+    doc_id = payload.evidence_document_id or payload.document_id
+    return CaseService.reject_case(
+        db=db,
+        case_id=id,
+        user=current_user,
+        remarks=payload.remarks,
+        evidence_document_id=doc_id
+    )
 
 
 @router.post(
@@ -242,7 +251,7 @@ def publish_preliminary_notification(
 ):
     """Publish statutory preliminary notification and open public objections window."""
     notif_num = payload.notification_number if payload else None
-    doc_id = payload.document_id if payload else None
+    doc_id = (payload.document_id or payload.evidence_document_id) if payload else None
     remarks = payload.remarks if payload else None
     return CaseService.publish_notification(
         db=db,
@@ -452,3 +461,48 @@ def list_affected_families(
 ):
     """List project-affected families along with their R&R status milestone history."""
     return WorkflowService.get_families_for_case(db=db, case_id=id, user=current_user)
+
+
+# --- 6. Digital Signatures & Non-Repudiation ---
+@router.get(
+    "/{id}/signatures",
+    response_model=List[SignatureResponse],
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_jurisdiction_match("case"))]
+)
+def list_case_signatures(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """List all cryptographic digital signatures associated with an acquisition case."""
+    return SignatureService.list_signatures_by_case(db=db, case_id=id)
+
+
+@router.post(
+    "/{id}/signatures",
+    response_model=SignatureResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[
+        Depends(require_role(UserRole.DISTRICT_COLLECTOR, UserRole.STATE_APPROVER)),
+        Depends(require_jurisdiction_match("case"))
+    ]
+)
+def create_case_signature(
+    id: int,
+    payload: SignatureRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Apply a cryptographic digital signature to a statutory decision under Section 3 of IT Act, 2000.
+    Signer identity is extracted strictly from the authenticated user session.
+    """
+    return SignatureService.sign_action(
+        db=db,
+        case_id=id,
+        action_type=payload.action_type,
+        user=current_user,
+        document_id=payload.document_id,
+        auto_commit=True
+    )
