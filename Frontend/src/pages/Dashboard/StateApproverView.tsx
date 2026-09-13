@@ -5,6 +5,7 @@ import { caseService } from '../../services/caseService';
 import type { Case } from '../../types/case';
 import { CaseCard } from '../../components/CaseCard/CaseCard';
 import { StatusBadge } from '../../components/StatusBadge/StatusBadge';
+import { ExportButton } from '../../components/ExportButton';
 import {
   Landmark,
   ShieldCheck,
@@ -120,31 +121,39 @@ export const StateApproverView: React.FC = () => {
         </div>
 
         {activeTab === 'all_state_cases' && (
-          <div className="state-filter-area">
-            <label htmlFor="state-stage-filter" style={{ fontSize: '0.85rem', color: '#64748B' }}>
-              {t('dashboard.filterByStage', 'Filter by Stage:')}
-            </label>
-            <select
-              id="state-stage-filter"
-              value={selectedStage}
-              onChange={(e) => setSelectedStage(e.target.value)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '6px',
-                border: '1px solid #E2E8F0',
-                fontSize: '0.85rem'
-              }}
-            >
-              <option value="ALL">All Stages</option>
-              <option value="proposal_submitted">Proposal Submitted</option>
-              <option value="state_review">State Review</option>
-              <option value="sia_complete">SIA Complete</option>
-              <option value="objections_window">Objections Window</option>
-              <option value="award_issued">Award Issued</option>
-              <option value="rr_in_progress">R&amp;R In Progress</option>
-              <option value="compensation_disbursed">Compensation Disbursed</option>
-              <option value="possession_taken">Possession Taken</option>
-            </select>
+          <div className="state-filter-area" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label htmlFor="state-stage-filter" style={{ fontSize: '0.85rem', color: '#64748B' }}>
+                {t('dashboard.filterByStage', 'Filter by Stage:')}
+              </label>
+              <select
+                id="state-stage-filter"
+                value={selectedStage}
+                onChange={(e) => setSelectedStage(e.target.value)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #E2E8F0',
+                  fontSize: '0.85rem'
+                }}
+              >
+                <option value="ALL">All Stages</option>
+                <option value="proposal_submitted">Proposal Submitted</option>
+                <option value="state_review">State Review</option>
+                <option value="sia_complete">SIA Complete</option>
+                <option value="objections_window">Objections Window</option>
+                <option value="award_issued">Award Issued</option>
+                <option value="rr_in_progress">R&amp;R In Progress</option>
+                <option value="compensation_disbursed">Compensation Disbursed</option>
+                <option value="possession_taken">Possession Taken</option>
+              </select>
+            </div>
+            <ExportButton
+              resource="cases"
+              filters={{ stage: selectedStage !== 'ALL' ? selectedStage : undefined }}
+              label="Export Cases"
+              size="sm"
+            />
           </div>
         )}
       </div>

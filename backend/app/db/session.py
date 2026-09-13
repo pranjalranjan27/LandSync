@@ -103,6 +103,15 @@ def _init_engine():
                     conn.execute(text("ALTER TABLE cases ADD COLUMN has_dispute_warning BOOLEAN NOT NULL DEFAULT 0;"))
                     conn.execute(text("ALTER TABLE cases ADD COLUMN location_sensitivity VARCHAR(50) NOT NULL DEFAULT 'standard';"))
                     conn.commit()
+                doc_cols = [r[1] for r in conn.execute(text("PRAGMA table_info(documents)")).fetchall()]
+                if doc_cols and "document_type" not in doc_cols:
+                    conn.execute(text("ALTER TABLE documents ADD COLUMN document_type VARCHAR(100);"))
+                    conn.execute(text("ALTER TABLE documents ADD COLUMN title VARCHAR(255);"))
+                    conn.execute(text("ALTER TABLE documents ADD COLUMN filename VARCHAR(255);"))
+                    conn.execute(text("ALTER TABLE documents ADD COLUMN storage_key VARCHAR(500);"))
+                    conn.execute(text("ALTER TABLE documents ADD COLUMN mime_type VARCHAR(100) NOT NULL DEFAULT 'application/pdf';"))
+                    conn.execute(text("ALTER TABLE documents ADD COLUMN file_size_bytes INTEGER DEFAULT 0;"))
+                    conn.commit()
             except Exception as e:
                 print(f"[LandSync] Schema upgrade notice: {e}")
 
@@ -142,6 +151,16 @@ def check_and_seed_db():
                     seed_cadastral_parcels(check_sess)
             except Exception as parcel_err:
                 print(f"[LandSync] Parcel auto-seed notice: {parcel_err}")
+
+            # Ensure realistic demo statutory documents are seeded
+            try:
+                from app.models.document import Document
+                if check_sess.query(Document).count() < 8:
+                    print("[LandSync] Seeding statutory demo documents and storage files...")
+                    from app.db.seed_documents import seed_documents
+                    seed_documents(check_sess)
+            except Exception as doc_err:
+                print(f"[LandSync] Document auto-seed notice: {doc_err}")
     except Exception as seed_err:
         print(f"[LandSync] Seed check notice: {seed_err}")
 

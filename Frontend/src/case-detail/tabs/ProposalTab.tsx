@@ -1,6 +1,6 @@
 import type { Case } from '../../types/case';
-import { FileText, Download } from 'lucide-react';
-import { Button } from '../../components/Button/Button';
+import { FileText } from 'lucide-react';
+import { ExportButton } from '../../components/ExportButton';
 
 interface ProposalTabProps {
   caseItem: Case;
@@ -14,9 +14,12 @@ export function ProposalTab({ caseItem }: ProposalTabProps) {
           <FileText size={20} color="var(--color-primary-navy)" />
           <h4 style={{ margin: 0 }}>Section 4 Proposal Submission File</h4>
         </div>
-        <Button variant="secondary" size="sm" onClick={() => alert('Downloading official signed Form-1 PDF...')}>
-          <Download size={14} /> Download Form-1 PDF
-        </Button>
+        <ExportButton
+          resource="cases"
+          filters={{ case_id: caseItem.id }}
+          label="Export Form-1 Requisition"
+          size="sm"
+        />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>

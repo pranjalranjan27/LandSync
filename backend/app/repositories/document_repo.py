@@ -23,10 +23,16 @@ class DocumentRepository:
         doc = Document(
             case_id=doc_data["case_id"],
             stage=doc_data["stage"],
-            doc_type=doc_data["doc_type"],
-            file_url=doc_data["file_url"],
+            doc_type=doc_data.get("doc_type") or doc_data.get("document_type") or "other",
+            document_type=doc_data.get("document_type") or doc_data.get("doc_type"),
+            title=doc_data.get("title"),
+            filename=doc_data.get("filename"),
+            storage_key=doc_data.get("storage_key"),
+            mime_type=doc_data.get("mime_type", "application/pdf"),
+            file_size_bytes=doc_data.get("file_size_bytes", 0),
+            file_url=doc_data.get("file_url", ""),
             uploaded_by_user_id=doc_data["uploaded_by_user_id"],
-            uploaded_at=datetime.now(timezone.utc)
+            uploaded_at=doc_data.get("uploaded_at") or datetime.now(timezone.utc)
         )
         db.add(doc)
         db.flush()

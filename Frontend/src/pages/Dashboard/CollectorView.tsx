@@ -5,6 +5,7 @@ import { caseService } from '../../services/caseService';
 import type { Case, CaseStage } from '../../types/case';
 import { CaseCard, type ActionTagConfig } from '../../components/CaseCard/CaseCard';
 import { StatusBadge } from '../../components/StatusBadge/StatusBadge';
+import { ExportButton } from '../../components/ExportButton';
 import {
   Landmark,
   FileText,
@@ -210,26 +211,37 @@ export const CollectorView: React.FC = () => {
         </div>
 
         {activeTab === 'all_cases' && (
-          <div className="collector-filter-area">
-            <label htmlFor="stage-filter" className="filter-label">
-              {t('dashboard.filterByStage', 'Filter by Stage:')}
-            </label>
-            <select
-              id="stage-filter"
-              value={selectedStage}
-              onChange={(e) => setSelectedStage(e.target.value)}
-              className="filter-select"
-            >
-              <option value="ALL">{t('common.all', 'All Stages')}</option>
-              <option value="proposal_submitted">{t('cases.stages.preliminary', 'Proposal Submitted')}</option>
-              <option value="state_review">State Review</option>
-              <option value="sia_complete">{t('cases.stages.sia', 'SIA Complete')}</option>
-              <option value="objections_window">Objections Window</option>
-              <option value="award_issued">{t('cases.stages.award', 'Award Issued')}</option>
-              <option value="rr_in_progress">R&amp;R In Progress</option>
-              <option value="compensation_disbursed">Compensation Disbursed</option>
-              <option value="possession_taken">{t('cases.stages.possession', 'Possession Taken')}</option>
-            </select>
+          <div className="collector-filter-area" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label htmlFor="stage-filter" className="filter-label">
+                {t('dashboard.filterByStage', 'Filter by Stage:')}
+              </label>
+              <select
+                id="stage-filter"
+                value={selectedStage}
+                onChange={(e) => setSelectedStage(e.target.value)}
+                className="filter-select"
+              >
+                <option value="ALL">{t('common.all', 'All Stages')}</option>
+                <option value="proposal_submitted">{t('cases.stages.preliminary', 'Proposal Submitted')}</option>
+                <option value="state_review">State Review</option>
+                <option value="sia_complete">{t('cases.stages.sia', 'SIA Complete')}</option>
+                <option value="objections_window">Objections Window</option>
+                <option value="award_issued">{t('cases.stages.award', 'Award Issued')}</option>
+                <option value="rr_in_progress">R&amp;R In Progress</option>
+                <option value="compensation_disbursed">Compensation Disbursed</option>
+                <option value="possession_taken">{t('cases.stages.possession', 'Possession Taken')}</option>
+              </select>
+            </div>
+            <ExportButton
+              resource="cases"
+              filters={{
+                district_id: collectorDistrictId,
+                stage: selectedStage !== 'ALL' ? selectedStage : undefined
+              }}
+              label="Export Cases"
+              size="sm"
+            />
           </div>
         )}
       </div>

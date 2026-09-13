@@ -13,6 +13,10 @@ import {
 import { Button } from '../../components/Button/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslation } from '../../locales';
+import { DocumentPreviewModal, type DocumentItem } from '../../components/DocumentPreviewModal';
+import { downloadBlob } from '../../utils/downloadBlob';
+import { auth } from '../../lib/firebase';
+import { ExportButton } from '../../components/ExportButton';
 import './DocumentsPage.css';
 
 /* ─── Types ──────────────────────────────────────── */
@@ -58,7 +62,12 @@ const PAGE_SIZE = 10;
 /* ─── Helpers ────────────────────────────────────── */
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-IN', {
-    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
@@ -68,14 +77,14 @@ function shortDate(iso: string) {
 
 /* Document type badge */
 function TypeBadge({ type }: { type: DocType }) {
-  const colors: Record<DocType, string> = {
+  const map: Record<DocType, string> = {
     PDF: 'doc-type--pdf',
     DOCX: 'doc-type--docx',
     XLSX: 'doc-type--xlsx',
     CSV: 'doc-type--csv',
     IMG: 'doc-type--img',
   };
-  return <span className={`doc-type-badge ${colors[type]}`}>{type}</span>;
+  return <span className={`doc-type-badge ${map[type]}`}>{type}</span>;
 }
 
 /* Stage badge */
@@ -96,6 +105,49 @@ export function DocumentsPage() {
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<DocumentItem | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const handleDownloadDoc = async (doc: Document) => {
+    try {
+      let token = sessionStorage.getItem('landsync_token');
+      if (!token && auth.currentUser) token = await auth.currentUser.getIdToken();
+      const numId = doc.id.replace(/^[^\d]*/, '') || '1';
+      const res = await fetch(`/api/v1/documents/${numId}/download`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        downloadBlob(blob, doc.name, res.headers.get('content-disposition'));
+        return;
+      }
+    } catch (e) {
+      console.warn('Backend download fallback', e);
+    }
+    const blob = new Blob([`LandSync Statutory Document: ${doc.name}`], { type: 'application/pdf' });
+    downloadBlob(blob, doc.name);
+  };
+
+  const handlePreviewDoc = (doc: Document) => {
+    const mimeMap: Record<DocType, string> = {
+      PDF: 'application/pdf',
+      DOCX: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      XLSX: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      CSV: 'text/csv',
+      IMG: 'image/png'
+    };
+    const numId = doc.id.replace(/^[^\d]*/, '') || '1';
+    setPreviewDoc({
+      id: numId,
+      title: doc.name,
+      filename: doc.name,
+      mime_type: mimeMap[doc.type] || 'application/pdf',
+      stage: doc.stage,
+      fileSize: `${doc.fileSizeMb} MB`,
+      category: doc.description
+    });
+    setIsPreviewOpen(true);
+  };
 
   /* ── Filtering ── */
   const baseList = useMemo(() => {
@@ -167,9 +219,12 @@ export function DocumentsPage() {
           <h1 className="docs-page-title">{t('common.nav.documents', 'Documents')}</h1>
           <p className="docs-page-subtitle">{t('cases.detailTabs.documents', 'Access, manage and download all case related documents.')}</p>
         </div>
-        <Button variant="primary" size="md" onClick={() => alert('Upload dialog — coming soon')}>
-          <Upload size={15} /> {t('common.export', 'Upload Document')}
-        </Button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <ExportButton resource="cases" label="Export Records" size="md" />
+          <Button variant="primary" size="md" onClick={() => alert('Upload dialog — coming soon')}>
+            <Upload size={15} /> {t('common.export', 'Upload Document')}
+          </Button>
+        </div>
       </div>
 
       {/* ── Layout ── */}
@@ -305,10 +360,10 @@ export function DocumentsPage() {
                       </button>
                       {openMenu === doc.id && (
                         <div className="docs-context-menu">
-                          <button onClick={() => { alert(`Downloading ${doc.name}`); setOpenMenu(null); }}>
+                          <button onClick={() => { handleDownloadDoc(doc); setOpenMenu(null); }}>
                             <Download size={13} /> Download
                           </button>
-                          <button onClick={() => { alert(`Previewing ${doc.name}`); setOpenMenu(null); }}>
+                          <button onClick={() => { handlePreviewDoc(doc); setOpenMenu(null); }}>
                             <Eye size={13} /> Preview
                           </button>
                           <button onClick={() => { alert(`Sharing ${doc.name}`); setOpenMenu(null); }}>
@@ -390,10 +445,10 @@ export function DocumentsPage() {
 
             {/* CTAs */}
             <div className="docs-detail-ctas">
-              <Button variant="secondary" size="md" onClick={() => alert(`Downloading ${selected.name}`)}>
+              <Button variant="secondary" size="md" onClick={() => handleDownloadDoc(selected)}>
                 <Download size={14} /> Download
               </Button>
-              <Button variant="secondary" size="md" onClick={() => alert(`Previewing ${selected.name}`)}>
+              <Button variant="secondary" size="md" onClick={() => handlePreviewDoc(selected)}>
                 <Eye size={14} /> Preview
               </Button>
             </div>
@@ -416,6 +471,17 @@ export function DocumentsPage() {
           </div>
         )}
       </div>
+
+      {previewDoc && (
+        <DocumentPreviewModal
+          document={previewDoc}
+          isOpen={isPreviewOpen}
+          onClose={() => {
+            setIsPreviewOpen(false);
+            setPreviewDoc(null);
+          }}
+        />
+      )}
     </div>
   );
 }

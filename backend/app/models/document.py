@@ -8,7 +8,7 @@
 # ==============================================================================
 
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class Document(Base):
     """
     Official statutory document record attached to a case stage.
-    Points to file storage via file_url.
+    Points to file storage via storage_key / file_url.
     """
     __tablename__ = "documents"
 
@@ -30,6 +30,12 @@ class Document(Base):
     case_id: Mapped[int] = mapped_column(Integer, ForeignKey("cases.id", ondelete="CASCADE"), nullable=False, index=True)
     stage: Mapped[str] = mapped_column(String(50), nullable=False)
     doc_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    document_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    filename: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    storage_key: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    mime_type: Mapped[str] = mapped_column(String(100), nullable=False, default="application/pdf")
+    file_size_bytes: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, default=0)
     file_url: Mapped[str] = mapped_column(String(500), nullable=False)
     uploaded_by_user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     uploaded_at: Mapped[datetime] = mapped_column(

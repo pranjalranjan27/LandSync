@@ -1,6 +1,7 @@
 import { ReadOnlyWrapper } from './ReadOnlyWrapper';
 import { BarChart3, TrendingUp, ShieldAlert, Award, FileSpreadsheet } from 'lucide-react';
 import { Button } from '../../components/Button/Button';
+import { ExportButton } from '../../components/ExportButton';
 
 export function AnalyticsPage() {
   return (
@@ -14,9 +15,7 @@ export function AnalyticsPage() {
             </p>
           </div>
 
-          <Button variant="secondary" size="sm" onClick={() => alert('Exporting Official National Land Acquisition Report (CSV/PDF)...')}>
-            <FileSpreadsheet size={14} /> Export National Report
-          </Button>
+          <ExportButton resource="cases" label="Export National Report" variant="secondary" size="sm" />
         </div>
 
         {/* Aggregate KPI Grid */}
