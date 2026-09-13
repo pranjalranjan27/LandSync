@@ -43,7 +43,7 @@ export async function fetchParcels(params?: {
       const res = await fetch(ep, { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
-        if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+        if (data && data.type === 'FeatureCollection' && Array.isArray(data.features) && data.features.length > 0) {
           return data;
         }
       }
@@ -71,7 +71,7 @@ export async function fetchCaseParcels(caseId: string | number): Promise<GeoJSON
       const res = await fetch(ep, { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
-        if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+        if (data && data.type === 'FeatureCollection' && Array.isArray(data.features) && data.features.length > 0) {
           return data;
         }
       }

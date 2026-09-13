@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth, getSessionUser } from '../../hooks/useAuth';
 import { RequiringBodyView } from './RequiringBodyView';
 import { CollectorView } from './CollectorView';
 import { StateApproverView } from './StateApproverView';
@@ -15,10 +15,22 @@ import { TehsildarView } from './TehsildarView';
  * For policy_viewer, redirects immediately to /analytics.
  */
 export const Dashboard: React.FC = () => {
-  const { role } = useAuth();
+  const { role, user, isLoading } = useAuth();
+
+  const sessionUser = getSessionUser();
+  const effectiveRole = role || user?.role || sessionUser?.role;
+
+  // Root cause fix: Do not prematurely fall back to CollectorView if Firebase auth is still resolving
+  if (isLoading && !effectiveRole) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+        <div className="login-spinner" style={{ width: '32px', height: '32px', borderTopColor: 'var(--color-primary-navy)' }} />
+      </div>
+    );
+  }
 
   // Normalize role string to handle uppercase or lowercase session storage values
-  const normalizedRole = role ? role.toUpperCase() : 'COLLECTOR';
+  const normalizedRole = effectiveRole ? effectiveRole.toUpperCase() : 'COLLECTOR';
 
   switch (normalizedRole) {
     case 'POLICY_VIEWER':

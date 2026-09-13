@@ -34,14 +34,20 @@ function mapBackendCaseToFrontend(bc: any): Case {
     projectTitle: bc.project_name || match?.projectTitle || 'Infrastructure Acquisition Project',
     projectPurpose: bc.justification || match?.projectPurpose || 'Statutory public purpose land acquisition',
     requiringDepartment: match?.requiringDepartment || 'National Highways Authority of India (NHAI)',
-    state: bc.state_id === 1 ? 'Uttar Pradesh' : match?.state || 'Uttar Pradesh',
-    district: bc.district_id === 1 ? 'Gautam Buddha Nagar' : match?.district || 'Gautam Buddha Nagar',
-    tehsil: match?.tehsil || 'Dadri',
-    mauza: match?.mauza || 'Chhapraula',
-    khasraNumbers: bc.parcels?.map((p: any) => p.khasra_number) || match?.khasraNumbers || ['102/1', '102/2'],
+    state: bc.parcels?.[0]?.state || (bc.state_id === 1 ? 'Uttar Pradesh' : match?.state || 'Uttar Pradesh'),
+    district: bc.parcels?.[0]?.district || (bc.district_id === 1 ? 'Gautam Buddha Nagar' : match?.district || 'Gautam Buddha Nagar'),
+    tehsil: bc.parcels?.[0]?.tehsil || match?.tehsil || 'Dadri',
+    mauza: bc.parcels?.[0]?.village || match?.mauza || 'Chhapraula',
+    khasraNumbers: (bc.parcels && bc.parcels.length > 0)
+      ? bc.parcels.map((p: any) => p.khasra_number)
+      : (match?.khasraNumbers || ['102/1', '102/2']),
     stage: mappedStage,
     stageNumber: match?.stageNumber || 2,
-    totalAreaHectares: bc.total_area_hectares ?? match?.totalAreaHectares ?? 12.5,
+    totalAreaHectares: bc.total_area_hectares ?? (
+      bc.parcels && bc.parcels.length > 0
+        ? bc.parcels.reduce((sum: number, p: any) => sum + (Number(p.area_hectares) || 0), 0)
+        : (match?.totalAreaHectares ?? 12.5)
+    ),
     affectedFamiliesCount: bc.estimated_affected_families ?? match?.affectedFamiliesCount ?? 42,
     totalEstimatedCompensation: match?.totalEstimatedCompensation ?? 48500000,
     disbursedCompensation: match?.disbursedCompensation ?? 0,
@@ -50,7 +56,7 @@ function mapBackendCaseToFrontend(bc: any): Case {
     isUrgentSec40: match?.isUrgentSec40 ?? false,
     rfctlarrActCitation: match?.rfctlarrActCitation ?? 'Section 11(1) of RFCTLARR Act 2013',
     auditTrail: match?.auditTrail || [],
-    parcels: match?.parcels || [],
+    parcels: (bc.parcels && bc.parcels.length > 0) ? bc.parcels : (match?.parcels || []),
     state_id: bc.state_id ? String(bc.state_id) : match?.state_id,
     district_id: bc.district_id ? String(bc.district_id) : match?.district_id,
     assignedTo: match?.assignedTo || 'Priya Singh, IAS (Collector)',
@@ -68,10 +74,14 @@ function mapBackendCaseToFrontend(bc: any): Case {
 export async function fetchAllCases(): Promise<Case[]> {
   try {
     const token = sessionStorage.getItem('landsync_token');
-    const headers: Record<string, string> = { Accept: 'application/json' };
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+    };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch('/cases', { headers });
+    const res = await fetch('/cases', { headers, cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
@@ -94,12 +104,16 @@ export async function fetchAllCases(): Promise<Case[]> {
 export async function fetchCaseById(id: string): Promise<Case | null> {
   try {
     const token = sessionStorage.getItem('landsync_token');
-    const headers: Record<string, string> = { Accept: 'application/json' };
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+    };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const numericId = id.replace(/^[^\d]*/, '');
     if (numericId) {
-      const res = await fetch(`/cases/${numericId}`, { headers });
+      const res = await fetch(`/cases/${numericId}`, { headers, cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data && data.id) {

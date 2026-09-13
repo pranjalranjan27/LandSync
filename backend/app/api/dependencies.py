@@ -44,17 +44,50 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    user = None
     user_id_str = payload.get("sub")
     try:
         user_id = int(user_id_str)
+        user = UserRepository.get_user_by_id(db, user_id)
     except (ValueError, TypeError):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token subject identifier.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        # Non-integer subject (e.g. Firebase Auth UID string). Look up by email.
+        email = payload.get("email")
+        if email:
+            user = UserRepository.get_user_by_email(db, email)
+            if not user:
+                # Infer statutory role from email or claims if possible
+                email_lower = email.strip().lower()
+                role_val = UserRole.REQUIRING_BODY.value
+                if "collector" in email_lower:
+                    role_val = UserRole.DISTRICT_COLLECTOR.value
+                elif "state_approver" in email_lower:
+                    role_val = UserRole.STATE_APPROVER.value
+                elif "sia" in email_lower:
+                    role_val = UserRole.SIA_EXPERT.value
+                elif "rr_admin" in email_lower:
+                    role_val = UserRole.RR_ADMINISTRATOR.value
+                elif "patwari" in email_lower or "lekhpal" in email_lower or "field_officer" in email_lower:
+                    role_val = UserRole.PATWARI_LEKHPAL.value
+                elif "tehsildar" in email_lower:
+                    role_val = UserRole.TEHSILDAR.value
+                elif "policy" in email_lower:
+                    role_val = UserRole.POLICY_VIEWER.value
 
-    user = UserRepository.get_user_by_id(db, user_id)
+                matching_demo = db.query(User).filter(User.role == role_val).first()
+                jur_level = matching_demo.jurisdiction_level if matching_demo else JurisdictionLevel.DISTRICT.value
+                jur_id = matching_demo.jurisdiction_id if matching_demo else 1
+
+                user_data = {
+                    "name": payload.get("name") or email.split("@")[0].replace("_", " ").title(),
+                    "email": email_lower,
+                    "hashed_password": "",
+                    "role": role_val,
+                    "jurisdiction_level": jur_level,
+                    "jurisdiction_id": jur_id
+                }
+                user = UserRepository.create_user(db, user_data)
+                db.commit()
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

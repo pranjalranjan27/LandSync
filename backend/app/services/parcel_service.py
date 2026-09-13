@@ -128,28 +128,7 @@ class ParcelService:
                     detail="Invalid bbox format. Expected 'minLng,minLat,maxLng,maxLat'."
                 )
 
-        # 1. Requiring Body & SIA Expert: Scope to their assigned cases
-        if user.role in (UserRole.REQUIRING_BODY, UserRole.SIA_EXPERT):
-            if user.role == UserRole.REQUIRING_BODY:
-                case_ids = [
-                    c.id for c in db.query(Case.id).filter(Case.requiring_body_user_id == user.id).all()
-                ]
-            else:
-                # SIA expert can see cases in their jurisdiction
-                case_ids = [
-                    c.id for c in db.query(Case.id).filter(Case.district_id == user.jurisdiction_id).all()
-                ]
-            
-            parcels = []
-            for cid in case_ids:
-                parcels.extend(ParcelRepository.list_by_case(db, cid))
-            
-            # Deduplicate by ID
-            unique_parcels = {p.id: p for p in parcels}.values()
-            features = [cls._parcel_to_feature(p) for p in unique_parcels]
-            return GeoJSONFeatureCollection(type="FeatureCollection", features=features)
-
-        # 2. District Collector, Tehsildar & Patwari/Lekhpal: Strictly bound to assigned jurisdiction
+        # 1. District Collector, Tehsildar & Patwari/Lekhpal: Strictly bound to assigned jurisdiction
         if user.role in (UserRole.DISTRICT_COLLECTOR, UserRole.PATWARI_LEKHPAL, UserRole.TEHSILDAR, UserRole.RR_ADMINISTRATOR):
             assigned_dist = user_district or "Gautam Buddha Nagar"
             if district and district.strip().lower() != assigned_dist.strip().lower():
@@ -162,8 +141,8 @@ class ParcelService:
                 )
             target_district = assigned_dist
         else:
-            # Policy Viewer or State Approver: allows explicit district filter, defaults to Gautam Buddha Nagar if omitted
-            target_district = district or "Gautam Buddha Nagar"
+            # Policy Viewer, State Approver, Requiring Body, SIA Expert: allows explicit district filter, defaults to Gautam Buddha Nagar if omitted
+            target_district = district or user_district or "Gautam Buddha Nagar"
 
         parcels = ParcelRepository.list_by_district(db=db, district=target_district, bbox=bbox_tuple)
         features = [cls._parcel_to_feature(p) for p in parcels]

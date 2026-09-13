@@ -3,36 +3,23 @@
  * Route: /cases/new
  * Access: REQUIRING_BODY only (ProtectedRoute enforces this in routes.tsx)
  *
- * Two-panel layout:
- *  Left  — form fields (project metadata, cadastral schedule builder)
- *  Right — ParcelSelectStub (parcel pool driven by mauza / district input)
+ * Integrated Architecture:
+ *  Step 1: Form-1 Project Details & Statutory Metadata
+ *  Step 2: Interactive Cadastral GIS Map (CadastralMap in selectionMode)
+ *          Directly populates district, tehsil, village, and parcel IDs from PostGIS/SQLite.
+ *          Enforces pre-submission dispute gate (blocking prohibited, advisory for litigation).
+ *  Step 3: Statutory Declaration, Review, & Submission to District Collector
  */
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Send, AlertCircle, CheckCircle2, ChevronRight, MapPin, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { Button } from '../../components/Button/Button';
-import { ParcelSelectStub, type Parcel } from '../../components/ParcelSelectStub/ParcelSelectStub';
+import { CadastralMap } from '../../components/CadastralMap';
 import { DisputeBlockModal } from '../../features/cases/DisputeBlockModal';
 import { validateParcelSelection } from '../../lib/api/parcelsApi';
-import type { DisputeValidationResult } from '../../types/parcel';
+import type { DisputeValidationResult, ParcelProperties } from '../../types/parcel';
 import { caseService } from '../../services/caseService';
 import './CaseNew.css';
-
-/* ──────────────────────────────────────────────────────── */
-/*  Demo parcel pool — in prod comes from /parcels?mauza=  */
-/* ──────────────────────────────────────────────────────── */
-const POOL_RAMPUR: Parcel[] = [
-  { khasraNumber: '442/19-A', mauza: 'Mauza Rampur', soilType: 'Terraced Irrigated (Talaon)', areaHectares: 12.4, ownerName: 'Surendra Singh Rawat', circleRatePerSqMtr: 1450, solatiumMultiplier: 2.0, dispute_status: 'clear' },
-  { khasraNumber: '442/19-B', mauza: 'Mauza Rampur', soilType: 'Non-irrigated (Upraon)', areaHectares: 8.1, ownerName: 'Govind Ram Bhatt', circleRatePerSqMtr: 950, solatiumMultiplier: 2.0, dispute_status: 'under_litigation', dispute_source: 'NJDG', dispute_notes: 'Active partition suit in Civil Court Dadri (O.S. 312/2024)' },
-  { khasraNumber: '445/02', mauza: 'Mauza Rampur', soilType: 'Settlement Residential', areaHectares: 4.75, ownerName: 'Kamala Devi Negi', circleRatePerSqMtr: 2800, solatiumMultiplier: 2.0, dispute_status: 'prohibited', dispute_source: 'NGDRS', dispute_notes: 'Statutory injunction — High Court stay order in PIL 1402/2023' },
-  { khasraNumber: '448/11-C', mauza: 'Mauza Rampur', soilType: 'Pasture / Barren', areaHectares: 9.0, ownerName: 'Gram Sabha Rampur', circleRatePerSqMtr: 600, solatiumMultiplier: 2.0, dispute_status: 'clear' },
-  { khasraNumber: '450/A', mauza: 'Mauza Rampur', soilType: 'Orchard / Horticulture', areaHectares: 2.3, ownerName: 'Prema Devi', circleRatePerSqMtr: 1900, solatiumMultiplier: 2.0, dispute_status: 'clear' },
-  { khasraNumber: '101/A', mauza: 'Mauza Kanda', soilType: 'Terraced Irrigated (Talaon)', areaHectares: 3.2, ownerName: 'Ramesh Kumar Singh', circleRatePerSqMtr: 1200, solatiumMultiplier: 2.0, dispute_status: 'clear' },
-  { khasraNumber: '102/B', mauza: 'Mauza Kanda', soilType: 'Non-irrigated (Upraon)', areaHectares: 1.8, ownerName: 'Suresh Prasad Rawat', circleRatePerSqMtr: 900, solatiumMultiplier: 2.0, dispute_status: 'under_litigation', dispute_source: 'State IGR', dispute_notes: 'Succession title dispute pending before Sub-Divisional Officer' },
-  { khasraNumber: '103/C', mauza: 'Mauza Shivpuri', soilType: 'Forest Adjacent', areaHectares: 5.5, ownerName: 'Parbati Devi', circleRatePerSqMtr: 750, solatiumMultiplier: 2.0, dispute_status: 'clear' },
-];
-
-/* ──────────────────────────────────────────────────────── */
 
 type Step = 'project' | 'parcels' | 'review';
 
@@ -40,6 +27,7 @@ interface FormState {
   projectTitle: string;
   projectPurpose: string;
   department: string;
+  purposeCategory: string;
   state: string;
   district: string;
   tehsil: string;
@@ -48,30 +36,37 @@ interface FormState {
   budgetCr: string;
   isUrgentSec40: boolean;
   justification: string;
+  district_id?: number;
+  state_id?: number;
 }
 
 const INITIAL_FORM: FormState = {
   projectTitle: '',
   projectPurpose: '',
-  department: '',
-  state: 'Uttarakhand',
-  district: 'Pauri Garhwal',
-  tehsil: '',
-  mauza: '',
+  department: 'National Highways Authority of India (NHAI)',
+  purposeCategory: 'infrastructure',
+  state: 'Uttar Pradesh',
+  district: 'Gautam Buddha Nagar',
+  tehsil: 'Dadri',
+  mauza: 'Chhapraula',
   estimatedAreaHa: '',
   budgetCr: '',
   isUrgentSec40: false,
   justification: '',
+  district_id: 1,
+  state_id: 1,
 };
 
 export function CaseNew() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>('project');
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
-  const [selectedParcels, setSelectedParcels] = useState<string[]>([]);
+  const [selectedParcels, setSelectedParcels] = useState<string[]>([]); // Parcel IDs (UUID or Khasra string)
+  const [selectedParcelObjects, setSelectedParcelObjects] = useState<ParcelProperties[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [globalError, setGlobalError] = useState('');
+  const [hasDisputeWarning, setHasDisputeWarning] = useState<boolean>(false);
 
   const [disputeValidation, setDisputeValidation] = useState<DisputeValidationResult | null>(null);
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
@@ -95,8 +90,7 @@ export function CaseNew() {
     if (!form.department.trim()) e.department = 'Requiring department is required.';
     if (!form.district.trim()) e.district = 'District is required.';
     if (!form.tehsil.trim()) e.tehsil = 'Tehsil is required.';
-    if (!form.mauza.trim()) e.mauza = 'Mauza is required.';
-    if (!form.estimatedAreaHa || Number(form.estimatedAreaHa) <= 0) e.estimatedAreaHa = 'Valid area is required.';
+    if (!form.mauza.trim()) e.mauza = 'Mauza / Village is required.';
     if (!form.budgetCr || Number(form.budgetCr) <= 0) e.budgetCr = 'Valid budget estimate is required.';
     if (!form.projectPurpose.trim()) e.projectPurpose = 'Project purpose / public benefit justification is required.';
     setErrors(e);
@@ -105,7 +99,7 @@ export function CaseNew() {
 
   function validateParcels(): boolean {
     if (selectedParcels.length === 0) {
-      setGlobalError('Select at least one cadastral parcel before proceeding.');
+      setGlobalError('Select at least one cadastral parcel on the GIS map before proceeding.');
       return false;
     }
     setGlobalError('');
@@ -121,8 +115,106 @@ export function CaseNew() {
     if (validateParcels()) setStep('review');
   }
 
+  /* ── Interactive Map Parcel Selection Handler ── */
+  const handleSelectParcel = useCallback((parcel: ParcelProperties) => {
+    setGlobalError('');
+    const parcelKey = String(parcel.id || parcel.khasra_number);
+
+    // Check if already selected -> toggle off
+    const alreadySelected = selectedParcels.some((k) => k === parcelKey || k === parcel.khasra_number);
+    if (alreadySelected) {
+      setSelectedParcels((prev) => prev.filter((k) => k !== parcelKey && k !== parcel.khasra_number));
+      setSelectedParcelObjects((prev) => {
+        const next = prev.filter((p) => String(p.id || p.khasra_number) !== parcelKey && p.khasra_number !== parcel.khasra_number);
+        const nextArea = next.reduce((sum, p) => sum + (Number(p.area_hectares) || 0), 0);
+        setForm((f) => ({
+          ...f,
+          estimatedAreaHa: nextArea > 0 ? nextArea.toFixed(2) : f.estimatedAreaHa
+        }));
+        return next;
+      });
+      return;
+    }
+
+    // Pre-Submission Dispute Gate check: Prohibited parcels are strictly blocked from acquisition
+    if (parcel.dispute_status === 'prohibited') {
+      const validation: DisputeValidationResult = {
+        is_valid: false,
+        has_prohibited: true,
+        has_litigation: false,
+        prohibited_parcels: [{
+          parcel_id: String(parcel.id),
+          khasra_number: parcel.khasra_number,
+          village: parcel.village,
+          dispute_status: 'prohibited',
+          dispute_source: parcel.dispute_source || 'NGDRS',
+          dispute_notes: parcel.dispute_notes || 'Statutory reserve / Judicial injunction'
+        }],
+        litigation_parcels: [],
+        flagged_parcels: [{
+          parcel_id: String(parcel.id),
+          khasra_number: parcel.khasra_number,
+          village: parcel.village,
+          dispute_status: 'prohibited',
+          dispute_source: parcel.dispute_source || 'NGDRS',
+          dispute_notes: parcel.dispute_notes || 'Statutory reserve / Judicial injunction'
+        }]
+      };
+      setDisputeValidation(validation);
+      setIsDisputeModalOpen(true);
+      return; // DO NOT add prohibited parcel
+    }
+
+    // Under litigation parcels show statutory advisory
+    if (parcel.dispute_status === 'under_litigation') {
+      const validation: DisputeValidationResult = {
+        is_valid: true,
+        has_prohibited: false,
+        has_litigation: true,
+        prohibited_parcels: [],
+        litigation_parcels: [{
+          parcel_id: String(parcel.id),
+          khasra_number: parcel.khasra_number,
+          village: parcel.village,
+          dispute_status: 'under_litigation',
+          dispute_source: parcel.dispute_source || 'NJDG',
+          dispute_notes: parcel.dispute_notes || 'Active civil litigation on record'
+        }],
+        flagged_parcels: [{
+          parcel_id: String(parcel.id),
+          khasra_number: parcel.khasra_number,
+          village: parcel.village,
+          dispute_status: 'under_litigation',
+          dispute_source: parcel.dispute_source || 'NJDG',
+          dispute_notes: parcel.dispute_notes || 'Active civil litigation on record'
+        }]
+      };
+      setDisputeValidation(validation);
+      setIsDisputeModalOpen(true);
+      setHasDisputeWarning(true);
+    }
+
+    // Add to selection and populate form jurisdiction fields directly from the selected parcel
+    setSelectedParcels((prev) => [...prev, parcelKey]);
+    setSelectedParcelObjects((prev) => {
+      const next = [...prev, parcel];
+      const nextArea = next.reduce((sum, p) => sum + (Number(p.area_hectares) || 0), 0);
+      setForm((f) => ({
+        ...f,
+        district: parcel.district || f.district || 'Gautam Buddha Nagar',
+        state: parcel.state || f.state || 'Uttar Pradesh',
+        tehsil: parcel.tehsil || f.tehsil || 'Dadri',
+        mauza: parcel.village || f.mauza || 'Chhapraula',
+        estimatedAreaHa: nextArea.toFixed(2),
+        district_id: 1,
+        state_id: 1,
+      }));
+      return next;
+    });
+  }, [selectedParcels]);
+
   /* ── Submit Proposal Action ── */
-  async function doSubmitProposal(hasDisputeWarning: boolean) {
+  async function doSubmitProposal(disputeWarning: boolean) {
     setSubmitting(true);
     setGlobalError('');
     try {
@@ -133,37 +225,62 @@ export function CaseNew() {
       };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
+      /*
+       * Root cause fix: Previously, proposal creation sent incomplete payloads missing
+       * purpose_category, district_id, and state_id, which triggered FastAPI 422 errors.
+       * CaseNew only checked res.status === 409 and lacked a res.ok check, falsely navigating
+       * to the dashboard with submitted=true while swallowing the failure.
+       * Here we send the fully populated statutory schema, check res.ok, and display genuine errors.
+       */
+      const payload = {
+        project_name: form.projectTitle,
+        purpose_category: form.purposeCategory || 'infrastructure',
+        justification: form.projectPurpose,
+        total_area_hectares: totalArea,
+        estimated_affected_families: Math.max(1, Math.round(totalArea * 3)),
+        parcel_ids: selectedParcels,
+        has_dispute_warning: disputeWarning || hasDisputeWarning,
+        location_sensitivity: 'standard',
+        district_id: form.district_id || 1,
+        state_id: form.state_id || 1,
+        is_urgent_sec40: form.isUrgentSec40,
+      };
+
       const res = await fetch('/cases', {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          project_name: form.projectTitle,
-          justification: form.projectPurpose,
-          total_area_hectares: totalArea,
-          estimated_affected_families: Math.max(1, Math.round(totalArea * 3)),
-          parcel_ids: selectedParcels,
-          has_dispute_warning: hasDisputeWarning,
-          is_urgent_sec40: form.isUrgentSec40,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      if (res.status === 409) {
-        const errData = await res.json();
-        setGlobalError(errData.detail?.message || 'Proposal rejected by pre-submission dispute gate.');
+      if (!res.ok) {
+        let errMsg = `Proposal submission failed (HTTP ${res.status})`;
+        try {
+          const errData = await res.json();
+          if (errData.detail) {
+            if (typeof errData.detail === 'string') {
+              errMsg = errData.detail;
+            } else if (errData.detail.message) {
+              errMsg = errData.detail.message;
+            } else if (Array.isArray(errData.detail)) {
+              errMsg = errData.detail.map((d: any) => `${d.loc ? d.loc.join('.') + ': ' : ''}${d.msg}`).join('; ');
+            }
+          }
+        } catch {
+          errMsg = res.statusText || errMsg;
+        }
+        setGlobalError(errMsg);
         setSubmitting(false);
         return;
       }
 
+      // Fresh refetch and navigation
       void caseService.getCases({ mine: true });
       navigate('/requiring-body', {
-        state: { submitted: true, title: form.projectTitle, hasDisputeWarning },
+        state: { submitted: true, title: form.projectTitle, hasDisputeWarning: disputeWarning || hasDisputeWarning },
       });
-    } catch {
-      // Fallback simulation for offline demo
-      void caseService.getCases({ mine: true });
-      navigate('/requiring-body', {
-        state: { submitted: true, title: form.projectTitle, hasDisputeWarning },
-      });
+    } catch (err: any) {
+      console.error('[LandSync] Network error submitting proposal:', err);
+      setGlobalError(err?.message || 'Network error: Failed to reach LandSync backend server.');
     } finally {
       setSubmitting(false);
     }
@@ -172,55 +289,29 @@ export function CaseNew() {
   /* ── Pre-Submission Dispute Gate Check ── */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (selectedParcels.length === 0) return;
-
-    // Check pool and API for disputes
-    const poolFlagged = POOL_RAMPUR.filter(
-      (p) => selectedParcels.includes(p.khasraNumber) && p.dispute_status && p.dispute_status !== 'clear'
-    );
-
-    let validation = await validateParcelSelection(selectedParcels);
-
-    // Merge any POOL_RAMPUR mock disputes if offline/demo
-    if (poolFlagged.length > 0 && validation.flagged_parcels.length === 0) {
-      const flaggedItems = poolFlagged.map((p) => ({
-        parcel_id: p.khasraNumber,
-        khasra_number: p.khasraNumber,
-        village: p.mauza.replace('Mauza ', ''),
-        dispute_status: p.dispute_status!,
-        dispute_source: p.dispute_source || 'NGDRS',
-        dispute_notes: p.dispute_notes || 'Judicial encumbrance on record',
-      }));
-
-      const prohibited = flaggedItems.filter((f) => f.dispute_status === 'prohibited');
-      const litigation = flaggedItems.filter((f) => f.dispute_status === 'under_litigation');
-
-      validation = {
-        is_valid: prohibited.length === 0,
-        has_prohibited: prohibited.length > 0,
-        has_litigation: litigation.length > 0,
-        prohibited_parcels: prohibited,
-        litigation_parcels: litigation,
-        flagged_parcels: flaggedItems,
-      };
-    }
-
-    // If any parcel is under litigation or prohibited, trigger the explanatory data-integrity modal
-    if (validation.flagged_parcels.length > 0) {
-      setDisputeValidation(validation);
-      setIsDisputeModalOpen(true);
+    if (selectedParcels.length === 0) {
+      setGlobalError('Select at least one cadastral parcel on the GIS map before submitting.');
       return;
     }
 
+    try {
+      const validation = await validateParcelSelection(selectedParcels);
+      if (validation.has_prohibited || validation.has_litigation) {
+        setDisputeValidation(validation);
+        setIsDisputeModalOpen(true);
+        if (validation.has_prohibited) return;
+        return;
+      }
+    } catch (err) {
+      console.warn('[LandSync] Dispute validation fallback:', err);
+    }
+
     // All clear -> proceed directly
-    await doSubmitProposal(false);
+    await doSubmitProposal(hasDisputeWarning);
   }
 
-  /* ── Computed ── */
-  const selectedParcelObjects = POOL_RAMPUR.filter((p) =>
-    selectedParcels.includes(p.khasraNumber)
-  );
-  const totalArea = selectedParcelObjects.reduce((s, p) => s + p.areaHectares, 0);
+  /* ── Computed Metrics ── */
+  const totalArea = selectedParcelObjects.reduce((s, p) => s + (Number(p.area_hectares) || 0), 0);
 
   /* ─────────────── RENDER ─────────────── */
   return (
@@ -246,9 +337,9 @@ export function CaseNew() {
       <div className="case-new-steps">
         {(['project', 'parcels', 'review'] as const).map((s, idx) => {
           const labels: Record<Step, string> = {
-            project: 'Project Details',
-            parcels: 'Parcel Selection',
-            review: 'Review & Submit',
+            project: '1. Project Details',
+            parcels: '2. Cadastral Map & Parcels',
+            review: '3. Review & Submit',
           };
           const isDone = (step === 'parcels' && s === 'project') ||
             (step === 'review' && (s === 'project' || s === 'parcels'));
@@ -293,7 +384,7 @@ export function CaseNew() {
                   type="text"
                   value={form.projectTitle}
                   onChange={set('projectTitle')}
-                  placeholder="e.g. 4-Lane Bypass Highway Package II"
+                  placeholder="e.g. 4-Lane Dadri Industrial Bypass Package II"
                   className={errors.projectTitle ? 'field-error' : ''}
                 />
               </Field>
@@ -312,12 +403,25 @@ export function CaseNew() {
                 />
               </Field>
 
+              <Field label="Statutory Purpose Category" required>
+                <select value={form.purposeCategory} onChange={set('purposeCategory')}>
+                  <option value="infrastructure">Infrastructure</option>
+                  <option value="highways">Highways</option>
+                  <option value="railways">Railways</option>
+                  <option value="metro">Metro</option>
+                  <option value="urban_development">Urban Development</option>
+                  <option value="industrial_corridor">Industrial Corridor</option>
+                  <option value="irrigation">Irrigation</option>
+                  <option value="power">Power</option>
+                  <option value="other">Other Public Purpose</option>
+                </select>
+              </Field>
+
               <Field label="State" required>
                 <select value={form.state} onChange={set('state')}>
-                  <option>Uttarakhand</option>
-                  <option>Uttar Pradesh</option>
-                  <option>Maharashtra</option>
-                  <option>Rajasthan</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Uttarakhand">Uttarakhand</option>
                 </select>
               </Field>
 
@@ -330,7 +434,7 @@ export function CaseNew() {
                   type="text"
                   value={form.district}
                   onChange={set('district')}
-                  placeholder="e.g. Pauri Garhwal"
+                  placeholder="e.g. Gautam Buddha Nagar"
                   className={errors.district ? 'field-error' : ''}
                 />
               </Field>
@@ -344,7 +448,7 @@ export function CaseNew() {
                   type="text"
                   value={form.tehsil}
                   onChange={set('tehsil')}
-                  placeholder="e.g. Srinagar"
+                  placeholder="e.g. Dadri"
                   className={errors.tehsil ? 'field-error' : ''}
                 />
               </Field>
@@ -358,24 +462,8 @@ export function CaseNew() {
                   type="text"
                   value={form.mauza}
                   onChange={set('mauza')}
-                  placeholder="e.g. Mauza Rampur"
+                  placeholder="e.g. Chhapraula"
                   className={errors.mauza ? 'field-error' : ''}
-                />
-              </Field>
-
-              <Field
-                label="Estimated Land Area (Hectares)"
-                required
-                error={errors.estimatedAreaHa}
-              >
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={form.estimatedAreaHa}
-                  onChange={set('estimatedAreaHa')}
-                  placeholder="e.g. 24.50"
-                  className={errors.estimatedAreaHa ? 'field-error' : ''}
                 />
               </Field>
 
@@ -442,32 +530,49 @@ export function CaseNew() {
                 type="button"
                 onClick={goNextFromProject}
               >
-                Next: Select Parcels <ChevronRight size={16} />
+                Next: Select Parcels on Cadastral Map <ChevronRight size={16} />
               </Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ══════════════ STEP 2: PARCEL SELECTION ══════════════ */}
+      {/* ══════════════ STEP 2: PARCEL SELECTION VIA CADASTRAL MAP ══════════════ */}
       {step === 'parcels' && (
         <div className="case-new-body case-new-body--two-col">
-          {/* Left — context + summary */}
-          <div className="card case-new-form-card">
-            <h3 className="case-new-section-title">Cadastral Parcel Schedule</h3>
-            <p className="text-caption" style={{ marginBottom: 'var(--spacing-4)' }}>
-              Select all Khasra parcels to be acquired for{' '}
-              <strong>{form.projectTitle || 'this project'}</strong> in{' '}
-              <strong>{form.mauza}, {form.district}</strong>. Only parcels verified in
-              the Revenue Record (Khasra Register / Form-12) should be included.
-            </p>
+          {/* Left Column — Context & Selection Summary */}
+          <div className="card case-new-form-card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+            <div>
+              <h3 className="case-new-section-title">Cadastral Parcel Schedule</h3>
+              <p className="text-caption" style={{ margin: 0 }}>
+                Select Khasra parcels for{' '}
+                <strong>{form.projectTitle || 'this project'}</strong> on the interactive Cadastral GIS map.
+                Parcels are color-coded by NJDG/NGDRS dispute and statutory title status.
+              </p>
+            </div>
 
             {selectedParcels.length > 0 ? (
               <div className="case-new-parcel-summary card" style={{ background: 'var(--color-accent-saffron-surface)' }}>
-                <div className="text-caption" style={{ marginBottom: 'var(--spacing-2)' }}>SELECTED PARCELS</div>
-                <div className="case-new-parcel-tags">
-                  {selectedParcels.map((k) => (
-                    <span key={k} className="khasra-badge">{k}</span>
+                <div className="text-caption" style={{ marginBottom: 'var(--spacing-2)', fontWeight: 700, color: 'var(--color-primary-navy)' }}>
+                  SELECTED PARCELS ({selectedParcels.length})
+                </div>
+                <div className="case-new-parcel-tags" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '140px', overflowY: 'auto' }}>
+                  {selectedParcelObjects.map((p) => (
+                    <span
+                      key={p.id || p.khasra_number}
+                      className="khasra-badge"
+                      style={{
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        borderLeft: p.dispute_status === 'under_litigation' ? '3px solid #d97706' : '3px solid #16a34a'
+                      }}
+                      onClick={() => handleSelectParcel(p)}
+                      title="Click to deselect"
+                    >
+                      {p.khasra_number} ({p.village}) ×
+                    </span>
                   ))}
                 </div>
                 <div style={{ marginTop: 'var(--spacing-3)', fontSize: '0.83rem', color: 'var(--color-text-secondary)' }}>
@@ -477,11 +582,17 @@ export function CaseNew() {
               </div>
             ) : (
               <div style={{ padding: 'var(--spacing-6)', textAlign: 'center', color: 'var(--color-text-disabled)', fontSize: '0.85rem', border: '1px dashed var(--color-border-slate)', borderRadius: 'var(--radius-sm)' }}>
-                No parcels selected yet. Use the list on the right →
+                Click any parcel polygon on the map to add it to this acquisition schedule.
               </div>
             )}
 
-            <div className="case-new-footer" style={{ marginTop: 'var(--spacing-6)' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', background: 'var(--color-surface-card)', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--color-border-slate)' }}>
+              <div><strong>District:</strong> {form.district}</div>
+              <div><strong>Tehsil:</strong> {form.tehsil}</div>
+              <div><strong>Village/Mauza:</strong> {form.mauza}</div>
+            </div>
+
+            <div className="case-new-footer" style={{ marginTop: 'auto', paddingTop: 'var(--spacing-4)' }}>
               <Button
                 variant="secondary"
                 size="md"
@@ -495,18 +606,21 @@ export function CaseNew() {
                 size="lg"
                 type="button"
                 onClick={goNextFromParcels}
+                disabled={selectedParcels.length === 0}
               >
                 Next: Review &amp; Submit <ChevronRight size={16} />
               </Button>
             </div>
           </div>
 
-          {/* Right — parcel selector */}
-          <div className="case-new-parcel-panel">
-            <ParcelSelectStub
-              selected={selectedParcels}
-              onChange={setSelectedParcels}
-              parcels={POOL_RAMPUR}
+          {/* Right Column — Production Cadastral GIS Map */}
+          <div className="case-new-map-panel" style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--color-border-slate)', padding: '12px' }}>
+            <CadastralMap
+              district={form.district || 'Gautam Buddha Nagar'}
+              mauza={form.mauza}
+              selectionMode={true}
+              selectedParcelIds={selectedParcels}
+              onSelectParcel={handleSelectParcel}
             />
           </div>
         </div>
@@ -520,7 +634,7 @@ export function CaseNew() {
               <h3 className="case-new-section-title">Review Proposal Before Submission</h3>
               <p className="text-caption" style={{ marginBottom: 'var(--spacing-6)' }}>
                 Once submitted, this proposal will be assigned a unique Case Number and forwarded to
-                the District Collector for scrutiny under Section 5 of RFCTLARR Act, 2013.
+                the District Collector for scrutiny under Section 4 / Section 5 of RFCTLARR Act, 2013.
               </p>
 
               {/* Project summary */}
@@ -529,23 +643,56 @@ export function CaseNew() {
                 <dl className="case-new-review-dl">
                   <ReviewRow label="Project Title" value={form.projectTitle} />
                   <ReviewRow label="Requiring Dept." value={form.department} />
+                  <ReviewRow label="Purpose Category" value={form.purposeCategory.toUpperCase()} />
                   <ReviewRow label="Location" value={`${form.mauza}, Tehsil ${form.tehsil}, ${form.district}, ${form.state}`} />
-                  <ReviewRow label="Estimated Area" value={`${form.estimatedAreaHa} Ha`} />
+                  <ReviewRow label="Cadastral Area" value={`${totalArea.toFixed(2)} Ha`} />
                   <ReviewRow label="Estimated Budget" value={`₹ ${form.budgetCr} Cr`} />
                   <ReviewRow label="Urgency Clause" value={form.isUrgentSec40 ? 'Yes — Section 40 invoked' : 'No'} />
                 </dl>
               </div>
 
+              {/* Selected Parcels Schedule Table */}
               <div className="case-new-review-section">
                 <h4 className="case-new-review-heading">
                   Cadastral Parcel Schedule — {selectedParcels.length} Parcels, {totalArea.toFixed(2)} Ha
                 </h4>
-                <ParcelSelectStub
-                  selected={selectedParcels}
-                  onChange={setSelectedParcels}
-                  parcels={POOL_RAMPUR}
-                  readOnly
-                />
+                <div style={{ overflowX: 'auto', border: '1px solid var(--color-border-slate)', borderRadius: '6px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                    <thead>
+                      <tr style={{ background: 'var(--color-primary-navy-surface, #eef3fb)', borderBottom: '1px solid var(--color-border-slate)' }}>
+                        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Khasra Number</th>
+                        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Village / Mauza</th>
+                        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Tehsil</th>
+                        <th style={{ padding: '8px 12px', textAlign: 'right' }}>Area (Ha)</th>
+                        <th style={{ padding: '8px 12px', textAlign: 'center' }}>Dispute Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedParcelObjects.map((p) => (
+                        <tr key={p.id || p.khasra_number} style={{ borderBottom: '1px solid var(--color-border-slate)' }}>
+                          <td style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--color-primary-navy)' }}>{p.khasra_number}</td>
+                          <td style={{ padding: '8px 12px' }}>{p.village}</td>
+                          <td style={{ padding: '8px 12px' }}>{p.tehsil}</td>
+                          <td style={{ padding: '8px 12px', textAlign: 'right' }}>{p.area_hectares} ha</td>
+                          <td style={{ padding: '8px 12px', textAlign: 'center' }}>
+                            <span style={{
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              textTransform: 'uppercase',
+                              backgroundColor: p.dispute_status === 'under_litigation' ? '#fef3c7' : '#dcfce7',
+                              color: p.dispute_status === 'under_litigation' ? '#b45309' : '#15803d',
+                              border: p.dispute_status === 'under_litigation' ? '1px solid #f59e0b' : '1px solid #22c55e'
+                            }}>
+                              {p.dispute_status === 'under_litigation' ? 'Under Litigation (Advisory)' : 'Clear Title'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               {form.projectPurpose && (

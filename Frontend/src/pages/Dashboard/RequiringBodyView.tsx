@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { Case } from '../../types/case';
 import { CaseCard } from '../../components/CaseCard/CaseCard';
 import { caseService } from '../../services/caseService';
@@ -17,12 +17,19 @@ import './RequiringBodyView.css';
 
 export const RequiringBodyView: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
 
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
   const [resubmittingId, setResubmittingId] = useState<string | null>(null);
-  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(() => {
+    const st = location.state as { submitted?: boolean; title?: string; hasDisputeWarning?: boolean } | null;
+    if (st?.submitted) {
+      return `Proposal "${st.title || 'New Proposal'}" submitted successfully under Section 4. Forwarded to District Collectorate.`;
+    }
+    return null;
+  });
 
   useEffect(() => {
     let isMounted = true;

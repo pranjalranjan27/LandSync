@@ -8,7 +8,7 @@ import {
   saveStoredUserProfile,
   getStoredUserProfile
 } from '../features/auth/authApi';
-import { roleConfigs } from '../mock-data/users';
+import { roleConfigs, mockUsers } from '../mock-data/users';
 
 const SESSION_KEY = 'landsync_session_user';
 const SESSION_ROLE_KEY = 'landsync_role';
@@ -62,6 +62,10 @@ export interface UseAuthReturn {
 
 /**
  * useAuth hook: connects with Firebase Auth state and syncs reactively.
+ * Root cause fix: onAuthStateChanged triggers asynchronously after some time (token refresh,
+ * network reconnect, tab focus). Previously it blindly passed fbUser to buildUserFromFirebase
+ * without preserving existing session or caching landsync_token, causing role downgrades to COLLECTOR.
+ * Now it preserves active sessions, caches Firebase ID tokens for backend requests, and keeps roles intact.
  */
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(() => getSessionUser());
@@ -69,11 +73,20 @@ export function useAuth(): UseAuthReturn {
 
   useEffect(() => {
     // Listen to Firebase Auth state changes
-    const unsubscribe = onAuthStateChanged(auth, (fbUser: FirebaseUser | null) => {
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser: FirebaseUser | null) => {
       if (fbUser) {
-        const appUser = buildUserFromFirebase(fbUser);
+        try {
+          const idToken = await fbUser.getIdToken();
+          sessionStorage.setItem('landsync_token', idToken);
+        } catch (e) {
+          console.warn('Could not refresh Firebase ID token', e);
+        }
+
+        const currentSession = getSessionUser();
+        const appUser = buildUserFromFirebase(fbUser, currentSession);
         setSessionUser(appUser);
         setUser(appUser);
+        saveStoredUserProfile(fbUser.uid, appUser);
       } else {
         // If Firebase is logged out, clear session unless manual session exists
         const sessionUser = getSessionUser();
@@ -108,21 +121,37 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   const login = useCallback((roleOrUser: Role | User) => {
+    let updated: User;
     if (typeof roleOrUser === 'string') {
       const roleUpper = roleOrUser.toUpperCase() as Role;
-      const currentUser = user || getSessionUser();
+      const currentUser = user || getSessionUser() || mockUsers.find(u => u.role === roleUpper);
       if (currentUser) {
-        const updated: User = {
+        updated = {
           ...currentUser,
           role: roleUpper,
           designation: roleConfigs[roleUpper]?.displayName || roleUpper
         };
-        setSessionUser(updated);
-        setUser(updated);
+      } else {
+        const meta = roleConfigs[roleUpper];
+        updated = {
+          id: auth.currentUser?.uid || `user-${Date.now()}`,
+          name: auth.currentUser?.displayName || 'Authorized Official',
+          email: auth.currentUser?.email || `${roleUpper.toLowerCase()}@landsync.gov.in`,
+          role: roleUpper,
+          designation: meta?.displayName || roleUpper,
+          department: 'Department of Revenue & Land Acquisition',
+          district: 'Gautam Buddha Nagar',
+          state: 'Uttar Pradesh',
+          isOfficial: true
+        };
       }
     } else {
-      setSessionUser(roleOrUser);
-      setUser(roleOrUser);
+      updated = roleOrUser;
+    }
+    setSessionUser(updated);
+    setUser(updated);
+    if (auth.currentUser) {
+      saveStoredUserProfile(auth.currentUser.uid, updated);
     }
   }, [user]);
 
@@ -136,7 +165,7 @@ export function useAuth(): UseAuthReturn {
         designation: roleConfigs[roleUpper]?.displayName || roleUpper
       };
       if (auth.currentUser) {
-        saveStoredUserProfile(auth.currentUser.uid, { role: roleUpper, designation: updated.designation });
+        saveStoredUserProfile(auth.currentUser.uid, updated);
       }
       setSessionUser(updated);
       setUser(updated);

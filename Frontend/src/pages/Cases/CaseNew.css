@@ -3,7 +3,7 @@
 /* ── Shell ── */
 .case-new-shell {
   padding: var(--spacing-6) var(--spacing-6);
-  max-width: 1200px;
+  max-width: 1380px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -138,9 +138,9 @@
 
 .case-new-body--two-col {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 320px 1fr;
   align-items: start;
-  gap: var(--spacing-5);
+  gap: var(--spacing-4);
 }
 
 @media (max-width: 900px) {

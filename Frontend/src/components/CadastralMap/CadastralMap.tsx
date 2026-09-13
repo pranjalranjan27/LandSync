@@ -39,6 +39,10 @@ interface CadastralMapProps {
   mauza?: string;
   /** Optional initial khasra numbers to highlight */
   khasraNumbers?: string[];
+  /** Controlled list of selected parcel IDs or khasra numbers */
+  selectedParcelIds?: string[];
+  /** Whether the map is in proposal creation selection mode */
+  selectionMode?: boolean;
   /** Callback when a parcel is clicked / selected */
   onSelectParcel?: (parcel: ParcelProperties) => void;
 }
@@ -48,6 +52,8 @@ export function CadastralMap({
   district = 'Gautam Buddha Nagar',
   mauza,
   khasraNumbers = [],
+  selectedParcelIds = [],
+  selectionMode = false,
   onSelectParcel,
 }: CadastralMapProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -74,10 +80,25 @@ export function CadastralMap({
   const [isUpdatingEncroachment, setIsUpdatingEncroachment] = useState<boolean>(false);
   const [isLinking, setIsLinking] = useState<boolean>(false);
 
-  // Style generators based on dispute status:
-  // green fill for clear, amber/orange for under_litigation, red for prohibited
+  // Style generators based on dispute status & selection state:
   const getFeatureStyle = useCallback(
     (feature?: any): L.PathOptions => {
+      const pId = feature?.id || feature?.properties?.id;
+      const khasra = feature?.properties?.khasra_number;
+      const isSelected = selectedParcelIds?.some(
+        (id) => String(id) === String(pId) || String(id) === String(khasra)
+      );
+
+      if (isSelected) {
+        return {
+          color: '#1B3F75',
+          weight: 4,
+          opacity: 1,
+          fillColor: '#4f46e5',
+          fillOpacity: 0.65,
+        };
+      }
+
       const dispute: DisputeStatus = feature?.properties?.dispute_status || 'clear';
       if (dispute === 'prohibited') {
         return {
@@ -106,7 +127,7 @@ export function CadastralMap({
         fillOpacity: 0.35,
       };
     },
-    []
+    [selectedParcelIds]
   );
 
   // Highlight selected feature on map
@@ -307,6 +328,13 @@ export function CadastralMap({
       }
     }
   }, [parcelsData, filterStatus, getFeatureStyle, handleSelectFeature, khasraNumbers, selectedFeature]);
+
+  // Dynamically update polygon styling when selection changes
+  useEffect(() => {
+    if (geoJsonLayerRef.current) {
+      geoJsonLayerRef.current.setStyle((feature) => getFeatureStyle(feature));
+    }
+  }, [selectedParcelIds, getFeatureStyle]);
 
   // Fit bounds button handler
   const handleFitBounds = useCallback(() => {
@@ -778,29 +806,83 @@ export function CadastralMap({
 
               {/* Actions Footer */}
               <div className="cadastral-inspector-actions">
-                {caseId && String(selectedFeature.properties.case_id) !== String(caseId) && (
-                  <button
-                    type="button"
-                    className="cadastral-action-btn-primary"
-                    onClick={handleLinkCase}
-                    disabled={isLinking}
-                  >
-                    <LinkIcon size={14} />
-                    {isLinking ? 'Linking...' : `Link to Case #${caseId}`}
-                  </button>
-                )}
+                {selectionMode ? (
+                  (() => {
+                    const pId = selectedFeature.id || selectedFeature.properties.id;
+                    const khasra = selectedFeature.properties.khasra_number;
+                    const isSelected = selectedParcelIds?.some(
+                      (id) => String(id) === String(pId) || String(id) === String(khasra)
+                    );
+                    return (
+                      <button
+                        type="button"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 8,
+                          width: '100%',
+                          padding: '10px 14px',
+                          backgroundColor: isSelected
+                            ? '#fee2e2'
+                            : selectedFeature.properties.dispute_status === 'prohibited'
+                            ? '#dc2626'
+                            : '#1B3F75',
+                          color: isSelected ? '#991b1b' : '#ffffff',
+                          border: isSelected ? '1px solid #f87171' : 'none',
+                          borderRadius: '6px',
+                          fontWeight: 600,
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onClick={() => onSelectParcel && onSelectParcel(selectedFeature.properties)}
+                      >
+                        {isSelected ? (
+                          <>
+                            <X size={15} />
+                            <span>Remove from Proposal ({khasra})</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check size={15} />
+                            <span>
+                              {selectedFeature.properties.dispute_status === 'prohibited'
+                                ? `Prohibited Parcel (${khasra})`
+                                : `Select Parcel for Proposal (${khasra})`}
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    );
+                  })()
+                ) : (
+                  <>
+                    {caseId && String(selectedFeature.properties.case_id) !== String(caseId) && (
+                      <button
+                        type="button"
+                        className="cadastral-action-btn-primary"
+                        onClick={handleLinkCase}
+                        disabled={isLinking}
+                      >
+                        <LinkIcon size={14} />
+                        {isLinking ? 'Linking...' : `Link to Case #${caseId}`}
+                      </button>
+                    )}
 
-                <button
-                  type="button"
-                  className="cadastral-action-btn-outline"
-                  onClick={() => {
-                    setNewStatus(selectedFeature.properties.encroachment_status);
-                    setShowEncroachModal(true);
-                  }}
-                >
-                  <ShieldCheck size={14} />
-                  Update Encroachment Status
-                </button>
+                    <button
+                      type="button"
+                      className="cadastral-action-btn-outline"
+                      onClick={() => {
+                        setNewStatus(selectedFeature.properties.encroachment_status);
+                        setShowEncroachModal(true);
+                      }}
+                    >
+                      <ShieldCheck size={14} />
+                      Update Encroachment Status
+                    </button>
+                  </>
+                )}
               </div>
             </>
           ) : (

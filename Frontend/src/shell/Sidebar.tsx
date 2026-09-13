@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { IndianFlagIcon } from '../features/auth/IndianFlagIcon';
 import { useTranslation } from '../locales';
+import { ROLE_DASHBOARD_ROUTES } from '../utils/rbac';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -20,7 +21,7 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ currentRole, isOpen, onClose }) => {
   const { t } = useTranslation();
 
   const handleNavClick = () => {
@@ -29,11 +30,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const dashboardPath = ROLE_DASHBOARD_ROUTES[currentRole] || '/dashboard';
+
   return (
     <aside className={`app-sidebar-nav ${isOpen ? 'mobile-open' : ''}`}>
       {/* Brand Header */}
       <div className="sidebar-brand-header-wrap">
-        <NavLink to="/dashboard" className="sidebar-brand-header" onClick={handleNavClick}>
+        <NavLink to={dashboardPath} className="sidebar-brand-header" onClick={handleNavClick}>
           <img
             src="/assets/Ashoka emblem.png"
             alt={t('common.emblemAlt', 'State Emblem of India')}
@@ -62,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {/* Navigation Menu */}
       <nav className="sidebar-menu">
         <NavLink
-          to="/dashboard"
+          to={dashboardPath}
           className={({ isActive }) => `sidebar-menu-item ${isActive ? 'active' : ''}`}
           onClick={handleNavClick}
         >

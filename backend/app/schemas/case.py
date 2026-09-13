@@ -20,13 +20,13 @@ from app.schemas.land_verification import LandVerificationRead
 
 class CaseBase(BaseModel):
     project_name: str = Field(..., min_length=3, max_length=255)
-    purpose_category: PurposeCategory
+    purpose_category: PurposeCategory = PurposeCategory.INFRASTRUCTURE
     justification: str = Field(..., min_length=10)
     estimated_affected_families: int = Field(default=0, ge=0)
     has_dispute_warning: bool = False
     location_sensitivity: LocationSensitivity = LocationSensitivity.STANDARD
-    district_id: int
-    state_id: int
+    district_id: Optional[int] = None
+    state_id: Optional[int] = None
 
 
 class CaseCreate(CaseBase):
@@ -48,15 +48,17 @@ class CaseRead(CaseBase):
     has_active_dispute: bool = False
     active_dispute: Optional[DisputeReferralRead] = None
 
+    # Cadastral parcel metrics included in list queries for dashboard scoping
+    total_area_hectares: float = 0.0
+    parcels: List[ParcelRead] = []
+
     model_config = ConfigDict(from_attributes=True)
 
 
 class CaseDetail(CaseRead):
-    parcels: List[ParcelRead] = []
     signatures: List[SignatureResponse] = []
     dispute_referrals: List[DisputeReferralRead] = []
     land_verification: Optional[LandVerificationRead] = None
-    total_area_hectares: float = 0.0
 
     model_config = ConfigDict(from_attributes=True)
 

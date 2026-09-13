@@ -234,3 +234,25 @@ def test_encroachment_status_update_with_audit_and_evidence(
     ).order_by(AuditLog.id.desc()).first()
     assert audit is not None
     assert "DOC-SURVEY-2026-99" in audit.remarks
+
+
+def test_requiring_body_can_list_district_parcels_for_proposal_creation(
+    client: TestClient,
+    token_requiring_body: str
+):
+    """
+    Requiring Body needs to browse district cadastral parcels on /cases/new
+    even before any case has been created or assigned to them.
+    """
+    resp = client.get(
+        "/api/v1/parcels?district=Gautam%20Buddha%20Nagar",
+        headers={"Authorization": f"Bearer {token_requiring_body}"}
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["type"] == "FeatureCollection"
+    assert len(data["features"]) >= 30
+    first = data["features"][0]
+    assert first["type"] == "Feature"
+    assert "khasra_number" in first["properties"]
+

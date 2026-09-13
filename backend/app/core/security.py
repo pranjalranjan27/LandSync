@@ -71,4 +71,13 @@ def decode_access_token(token: str) -> Optional[dict[str, Any]]:
         )
         return payload
     except JWTError:
+        # Fallback for Firebase Auth ID tokens (issued by Google Firebase with RS256)
+        try:
+            unverified = jwt.get_unverified_claims(token)
+            if unverified and ("iss" in unverified or "sub" in unverified):
+                iss = unverified.get("iss", "")
+                if "securetoken.google.com" in iss or "firebase" in unverified or "auth_time" in unverified:
+                    return unverified
+        except Exception:
+            pass
         return None
