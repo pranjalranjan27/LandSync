@@ -19,22 +19,26 @@ import uuid
 from app.models.case import Case
 from app.models.audit import AuditLog
 from app.models.document import Document
-from app.models.enums import CaseStage, UserRole, JurisdictionLevel, LocationSensitivity, SignatureActionType, DisputeReferralStatus
+from app.models.enums import CaseStage, UserRole, JurisdictionLevel, LocationSensitivity, SignatureActionType, DisputeReferralStatus, LandVerificationStatus
 from app.models.user import User
 from app.models.dispute_referral import DisputeReferral
+from app.models.land_verification import LandVerificationRecord
 from app.schemas.case import CaseCreate, CaseRead, CaseDetail
 from app.schemas.document import DocumentCreate
 from app.schemas.workflow import AwardCreate, RRSchemeCreate
 from app.schemas.signature import SignatureResponse
 from app.schemas.dispute_referral import DisputeReferralCreate, DisputeReferralUpdate, DisputeReferralRead
+from app.schemas.land_verification import LandVerificationRead
 from app.repositories.case_repo import CaseRepository
 from app.repositories.audit_repo import AuditRepository
 from app.repositories.document_repo import DocumentRepository
 from app.repositories.workflow_repo import WorkflowRepository
 from app.repositories.user_repo import UserRepository
 from app.repositories.dispute_referral_repo import DisputeReferralRepository
+from app.repositories.land_verification_repo import LandVerificationRepository
 from app.services.stage_machine import validate_stage_transition
 from app.services.jurisdiction import enforce_jurisdiction, check_user_jurisdiction
+from app.services.land_verification_service import LandVerificationService
 
 
 class CaseService:
@@ -140,6 +144,11 @@ class CaseService:
                     has_active_dispute = True
                     active_dispute_read = r_read
 
+        verification_read = None
+        latest_ver = LandVerificationRepository.get_latest_for_case(db, case.id)
+        if latest_ver:
+            verification_read = LandVerificationService._to_read(db, latest_ver)
+
         data = {
             "id": case.id,
             "project_name": case.project_name,
@@ -159,6 +168,7 @@ class CaseService:
             "has_active_dispute": has_active_dispute,
             "active_dispute": active_dispute_read,
             "dispute_referrals": referrals_data,
+            "land_verification": verification_read,
             "parcels": case.parcels,
             "signatures": signatures_data,
             "total_area_hectares": total_area
@@ -263,6 +273,8 @@ class CaseService:
             effective_district = user.jurisdiction_id
         elif user.jurisdiction_level == JurisdictionLevel.STATE.value:
             effective_state = user.jurisdiction_id
+        elif user.jurisdiction_level in (JurisdictionLevel.VILLAGE.value, JurisdictionLevel.TEHSIL.value) and user.jurisdiction_id:
+            effective_district = user.jurisdiction_id
 
         cases = CaseRepository.get_cases(
             db=db,
@@ -271,6 +283,25 @@ class CaseService:
             state_id=effective_state,
             requiring_body_user_id=requiring_body_id
         )
+
+        # Apply finer-grained village/tehsil filtering for Patwari/Tehsildar
+        if user.jurisdiction_level == JurisdictionLevel.VILLAGE.value and user.jurisdiction_value:
+            assigned = [v.strip().lower() for v in user.jurisdiction_value.split(",")]
+            filtered = []
+            for c in cases:
+                c_villages = [p.village.strip().lower() for p in c.parcels if p.village]
+                if any(v in assigned for v in c_villages):
+                    filtered.append(c)
+            cases = filtered
+        elif user.jurisdiction_level == JurisdictionLevel.TEHSIL.value and user.jurisdiction_value:
+            assigned_tehsil = user.jurisdiction_value.strip().lower()
+            filtered = []
+            for c in cases:
+                c_tehsils = [p.tehsil.strip().lower() for p in c.parcels if p.tehsil]
+                if assigned_tehsil in c_tehsils:
+                    filtered.append(c)
+            cases = filtered
+
         return [cls.to_case_read(db, c) for c in cases]
 
     @classmethod
@@ -328,6 +359,16 @@ class CaseService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Stage '{current}' cannot be advanced via generic approve action. Use specific stage endpoint."
             )
+
+        if target_stage == CaseStage.STATE_REVIEW:
+            # Statutory Legal Gate: Section 4 ground verification by Patwari/Lekhpal
+            # MUST be certified by Tehsildar before proceeding to State Review.
+            latest_ver = LandVerificationRepository.get_latest_for_case(db, case.id)
+            if not latest_ver or latest_ver.status != LandVerificationStatus.CERTIFIED.value:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Land verification not yet certified by Tehsildar"
+                )
 
         validate_stage_transition(current, target_stage.value)
 

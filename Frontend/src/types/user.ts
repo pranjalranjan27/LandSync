@@ -1,5 +1,5 @@
 /**
- * NALAMS User & Role Authorization Types
+ * LandSync User & Role Authorization Types
  */
 
 export type Role =
@@ -8,9 +8,10 @@ export type Role =
   | 'STATE_APPROVER'
   | 'SIA_EXPERT'
   | 'RR_ADMIN'
-  | 'FIELD_OFFICER'
+  | 'PATWARI_LEKHPAL'
+  | 'TEHSILDAR'
+  | 'FIELD_OFFICER' // Backward compatibility alias
   | 'POLICY_VIEWER'
-  | 'CITIZEN'
   | 'LARR_AUTHORITY'
   | 'INDEPENDENT_SIA_EXPERT'
   | 'RR_MONITORING_COMMITTEE';
@@ -28,6 +29,8 @@ export interface User {
   phone?: string;
   avatarUrl?: string;
   isOfficial: boolean;
+  jurisdiction_level?: 'national' | 'state' | 'district' | 'tehsil' | 'village' | string;
+  jurisdiction_value?: string;
 }
 
 export interface RoleConfig {
@@ -45,11 +48,11 @@ export const USER_ROLES_LIST: Role[] = [
   'STATE_APPROVER',
   'SIA_EXPERT',
   'RR_ADMIN',
+  'PATWARI_LEKHPAL',
+  'TEHSILDAR',
   'FIELD_OFFICER',
   'POLICY_VIEWER',
-  'CITIZEN',
   'LARR_AUTHORITY',
   'INDEPENDENT_SIA_EXPERT',
   'RR_MONITORING_COMMITTEE'
 ];
-

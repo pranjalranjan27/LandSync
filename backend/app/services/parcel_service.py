@@ -149,8 +149,8 @@ class ParcelService:
             features = [cls._parcel_to_feature(p) for p in unique_parcels]
             return GeoJSONFeatureCollection(type="FeatureCollection", features=features)
 
-        # 2. District Collector & Field Officer: Strictly bound to assigned district
-        if user.role in (UserRole.DISTRICT_COLLECTOR, UserRole.FIELD_OFFICER, UserRole.RR_ADMINISTRATOR):
+        # 2. District Collector, Tehsildar & Patwari/Lekhpal: Strictly bound to assigned jurisdiction
+        if user.role in (UserRole.DISTRICT_COLLECTOR, UserRole.PATWARI_LEKHPAL, UserRole.TEHSILDAR, UserRole.RR_ADMINISTRATOR):
             assigned_dist = user_district or "Gautam Buddha Nagar"
             if district and district.strip().lower() != assigned_dist.strip().lower():
                 raise HTTPException(
@@ -186,7 +186,7 @@ class ParcelService:
 
         # Check district jurisdiction for district-scoped roles
         user_district = cls.resolve_user_district_name(db, user)
-        if user.role in (UserRole.DISTRICT_COLLECTOR, UserRole.FIELD_OFFICER):
+        if user.role in (UserRole.DISTRICT_COLLECTOR, UserRole.PATWARI_LEKHPAL, UserRole.TEHSILDAR):
             if user_district and parcel.district.strip().lower() != user_district.strip().lower():
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
@@ -206,7 +206,7 @@ class ParcelService:
         """Search Khasra numbers within authorized jurisdiction scope."""
         user_district = cls.resolve_user_district_name(db, user)
 
-        if user.role in (UserRole.DISTRICT_COLLECTOR, UserRole.FIELD_OFFICER):
+        if user.role in (UserRole.DISTRICT_COLLECTOR, UserRole.PATWARI_LEKHPAL, UserRole.TEHSILDAR):
             scoped_district = user_district or "Gautam Buddha Nagar"
         else:
             scoped_district = district or "Gautam Buddha Nagar"
@@ -343,10 +343,10 @@ class ParcelService:
         Allowed roles: Field Officer only.
         Requires evidence_document_id and records an immutable audit log entry.
         """
-        if user.role != UserRole.FIELD_OFFICER:
+        if user.role not in (UserRole.PATWARI_LEKHPAL, UserRole.FIELD_OFFICER):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access denied: Only Field Officers can update parcel encroachment status."
+                detail="Access denied: Only Patwari / Lekhpal (Field Officer) can update parcel encroachment status."
             )
 
         parcel = ParcelRepository.get_by_id(db, parcel_id)
@@ -355,6 +355,14 @@ class ParcelService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Parcel '{parcel_id}' not found."
             )
+
+        if user.jurisdiction_level == JurisdictionLevel.VILLAGE.value and user.jurisdiction_value:
+            assigned = [v.strip().lower() for v in user.jurisdiction_value.split(",")]
+            if parcel.village.strip().lower() not in assigned:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"Access denied: Parcel village '{parcel.village}' lies outside your assigned village beat ({user.jurisdiction_value})."
+                )
 
         user_district = cls.resolve_user_district_name(db, user)
         if user_district and parcel.district.strip().lower() != user_district.strip().lower():

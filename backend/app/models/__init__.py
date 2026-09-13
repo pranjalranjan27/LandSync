@@ -22,6 +22,7 @@ from app.models.enums import (
     LocationSensitivity,
     SignatureActionType,
     DisputeReferralStatus,
+    LandVerificationStatus,
 )
 from app.models.user import State, District, User
 from app.models.parcel import Parcel
@@ -31,6 +32,7 @@ from app.models.document import Document
 from app.models.village_circle_rate import VillageCircleRate
 from app.models.document_signature import DocumentSignature
 from app.models.dispute_referral import DisputeReferral
+from app.models.land_verification import LandVerificationRecord
 from app.models.workflow import (
     SIAVerdict,
     Objection,
@@ -57,7 +59,9 @@ __all__ = [
     "LocationSensitivity",
     "SignatureActionType",
     "DisputeReferralStatus",
+    "LandVerificationStatus",
     "DisputeReferral",
+    "LandVerificationRecord",
     "State",
     "District",
     "User",

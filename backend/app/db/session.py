@@ -112,6 +112,10 @@ def _init_engine():
                     conn.execute(text("ALTER TABLE documents ADD COLUMN mime_type VARCHAR(100) NOT NULL DEFAULT 'application/pdf';"))
                     conn.execute(text("ALTER TABLE documents ADD COLUMN file_size_bytes INTEGER DEFAULT 0;"))
                     conn.commit()
+                user_cols = [r[1] for r in conn.execute(text("PRAGMA table_info(users)")).fetchall()]
+                if user_cols and "jurisdiction_value" not in user_cols:
+                    conn.execute(text("ALTER TABLE users ADD COLUMN jurisdiction_value VARCHAR(255);"))
+                    conn.commit()
             except Exception as e:
                 print(f"[LandSync] Schema upgrade notice: {e}")
 

@@ -6,11 +6,12 @@ import { CollectorView } from './CollectorView';
 import { StateApproverView } from './StateApproverView';
 import { SiaExpertView } from './SiaExpertView';
 import { RrAdminView } from './RrAdminView';
-import { FieldOfficerView } from './FieldOfficerView';
+import { PatwariLekhpalView } from './PatwariLekhpalView';
+import { TehsildarView } from './TehsildarView';
 
 /**
  * Dashboard Shell: Reads the current user's role from session,
- * and renders exactly one of the six role-based view components.
+ * and renders exactly one of the statutory role-based view components.
  * For policy_viewer, redirects immediately to /analytics.
  */
 export const Dashboard: React.FC = () => {
@@ -39,12 +40,12 @@ export const Dashboard: React.FC = () => {
     case 'RR_ADMIN':
       return <RrAdminView />;
 
+    case 'PATWARI_LEKHPAL':
     case 'FIELD_OFFICER':
-      return <FieldOfficerView />;
+      return <PatwariLekhpalView />;
 
-    case 'CITIZEN':
-      // Citizen tracks cases directly
-      return <Navigate to="/cases" replace />;
+    case 'TEHSILDAR':
+      return <TehsildarView />;
 
     case 'LARR_AUTHORITY':
     case 'INDEPENDENT_SIA_EXPERT':

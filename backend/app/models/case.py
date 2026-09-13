@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from app.models.workflow import SIAVerdict, Objection, Award, RRScheme, AffectedFamily
     from app.models.document_signature import DocumentSignature
     from app.models.dispute_referral import DisputeReferral
+    from app.models.land_verification import LandVerificationRecord
 
 # Many-to-many join table between Cases and Parcels
 case_parcels = Table(
@@ -93,4 +94,7 @@ class Case(Base):
     )
     dispute_referrals: Mapped[List["DisputeReferral"]] = relationship(
         "DisputeReferral", back_populates="case", cascade="all, delete-orphan", order_by="DisputeReferral.referred_at.desc()"
+    )
+    land_verifications: Mapped[List["LandVerificationRecord"]] = relationship(
+        "LandVerificationRecord", back_populates="case", cascade="all, delete-orphan", order_by="LandVerificationRecord.submitted_at.desc()"
     )

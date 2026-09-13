@@ -15,6 +15,7 @@ from app.models.enums import CaseStage, PurposeCategory, LocationSensitivity
 from app.schemas.parcel import ParcelRead
 from app.schemas.signature import SignatureResponse
 from app.schemas.dispute_referral import DisputeReferralRead
+from app.schemas.land_verification import LandVerificationRead
 
 
 class CaseBase(BaseModel):
@@ -54,6 +55,7 @@ class CaseDetail(CaseRead):
     parcels: List[ParcelRead] = []
     signatures: List[SignatureResponse] = []
     dispute_referrals: List[DisputeReferralRead] = []
+    land_verification: Optional[LandVerificationRead] = None
     total_area_hectares: float = 0.0
 
     model_config = ConfigDict(from_attributes=True)

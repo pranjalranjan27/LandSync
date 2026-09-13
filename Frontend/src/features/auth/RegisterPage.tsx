@@ -23,14 +23,17 @@ import { roleConfigs } from '../../mock-data/users';
 import './login.css';
 
 const AVAILABLE_ROLES: { role: Role; label: string; description: string }[] = [
-  { role: 'COLLECTOR', label: 'District Collector / DM', description: 'Statutory authority under Section 11 & 19 for land notifications and awards' },
-  { role: 'REQUIRING_BODY', label: 'Requiring Body (NHAI, RVNL, Metro, etc.)', description: 'Submits land proposals, project justifications, and funding commitments' },
-  { role: 'STATE_APPROVER', label: 'State Approver (Principal Secretary)', description: 'State government sanction authority for SIA and high-value approvals' },
-  { role: 'SIA_EXPERT', label: 'SIA Expert Committee', description: 'Conducts social impact hearings and submits expert assessment verdicts' },
-  { role: 'RR_ADMIN', label: 'R&R Administrator / Commissioner', description: 'Formulates Rehabilitation & Resettlement schemes and tracks solatium' },
-  { role: 'FIELD_OFFICER', label: 'Field Officer / Patwari / Kanungo', description: 'Performs on-ground cadastral surveys and ground-truthing' },
-  { role: 'POLICY_VIEWER', label: 'Policy Viewer / Auditor', description: 'Read-only nation-wide analytics and audit compliance monitoring' },
-  { role: 'CITIZEN', label: 'Citizen / Affected Landowner', description: 'Track ancestral land parcels and compensation status' }
+  { role: 'COLLECTOR', label: 'District Collector & DM', description: 'Statutory authority under Section 11 & 19 for land notifications and awards' },
+  { role: 'REQUIRING_BODY', label: 'Requiring Body / Project Proponent', description: 'Submits land proposals, project justifications, and funding commitments' },
+  { role: 'STATE_APPROVER', label: 'State Revenue Department (Approver)', description: 'State government sanction authority for SIA and high-value approvals' },
+  { role: 'SIA_EXPERT', label: 'SIA Team Leader / Expert Group', description: 'Conducts social impact hearings and submits expert assessment verdicts' },
+  { role: 'RR_ADMIN', label: 'Administrator (R&R)', description: 'Formulates Rehabilitation & Resettlement schemes and tracks solatium' },
+  { role: 'PATWARI_LEKHPAL', label: 'Patwari / Lekhpal (Village Revenue Officer)', description: 'Performs on-ground cadastral surveys, boundary verification, and asset inventory' },
+  { role: 'TEHSILDAR', label: 'Tehsildar (Quasi-Judicial Revenue Authority)', description: 'Quasi-judicial Section 4 ground-verification certification and tehsil-level supervision' },
+  { role: 'POLICY_VIEWER', label: 'Policy Viewer (National / Public Portal)', description: 'Read-only nation-wide analytics and audit compliance monitoring' },
+  { role: 'LARR_AUTHORITY', label: 'Presiding Officer (LARR Authority)', description: 'Adjudicates compensation disputes and enhanced claims under Chapter VIII' },
+  { role: 'INDEPENDENT_SIA_EXPERT', label: 'Independent SIA Expert Group', description: 'Evaluates and reviews Social Impact Assessment reports nationwide' },
+  { role: 'RR_MONITORING_COMMITTEE', label: 'State R&R Monitoring Committee', description: 'Statutory oversight over implementation of Rehabilitation & Resettlement schemes' }
 ];
 
 export const RegisterPage: React.FC = () => {

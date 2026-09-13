@@ -53,6 +53,7 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(50), nullable=False)
     jurisdiction_level: Mapped[str] = mapped_column(String(20), nullable=False)
     jurisdiction_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    jurisdiction_value: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

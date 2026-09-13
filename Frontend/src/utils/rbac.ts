@@ -93,7 +93,23 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'analytics:view_district'
   ],
 
-  // 6. Field Officer / Amin / Revenue Inspector
+  // 6. Patwari / Lekhpal (Village Revenue Officer)
+  PATWARI_LEKHPAL: [
+    'cases:view',
+    'workflow:conduct_survey',
+    'documents:view',
+    'documents:upload'
+  ],
+
+  // 7. Tehsildar (Quasi-Judicial Revenue Authority)
+  TEHSILDAR: [
+    'cases:view',
+    'workflow:conduct_survey',
+    'documents:view',
+    'documents:upload'
+  ],
+
+  // Backward compatibility alias for Field Officer
   FIELD_OFFICER: [
     'cases:view',
     'workflow:conduct_survey',
@@ -101,18 +117,11 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'documents:upload'
   ],
 
-  // 7. Policy Viewer (Observer / Auditor / Parliamentarian)
+  // 8. Policy Viewer (Observer / Auditor / Parliamentarian)
   POLICY_VIEWER: [
     'cases:view',
     'documents:view',
     'analytics:view_all'
-  ],
-
-  // 8. Citizen / Affected Landowner
-  CITIZEN: [
-    'cases:view',
-    'workflow:log_objection',
-    'documents:view'
   ],
 
   // 9. LARR Authority (Chapter VIII - Compensation Disputes)
@@ -148,9 +157,10 @@ export const ROLE_DASHBOARD_ROUTES: Record<Role, string> = {
   STATE_APPROVER: '/state-approver',
   SIA_EXPERT: '/sia-expert',
   RR_ADMIN: '/rr-admin',
+  PATWARI_LEKHPAL: '/field-officer',
+  TEHSILDAR: '/tehsildar',
   FIELD_OFFICER: '/field-officer',
   POLICY_VIEWER: '/analytics',
-  CITIZEN: '/cases',
   LARR_AUTHORITY: '/authority',
   INDEPENDENT_SIA_EXPERT: '/authority',
   RR_MONITORING_COMMITTEE: '/authority'
@@ -166,7 +176,8 @@ export const ROUTE_ACCESS_RULES: Record<string, Role[]> = {
   '/state-approver': ['STATE_APPROVER'],
   '/sia-expert': ['SIA_EXPERT'],
   '/rr-admin': ['RR_ADMIN'],
-  '/field-officer': ['FIELD_OFFICER'],
+  '/field-officer': ['PATWARI_LEKHPAL', 'FIELD_OFFICER'],
+  '/tehsildar': ['TEHSILDAR'],
   '/cases/new': ['REQUIRING_BODY'],
   '/authority': ['LARR_AUTHORITY', 'INDEPENDENT_SIA_EXPERT', 'RR_MONITORING_COMMITTEE']
 };

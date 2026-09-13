@@ -16,6 +16,7 @@ from app.api.routes.risk import router as risk_router
 from app.api.routes.authority import router as authority_router
 from app.api.routes.export import router as export_router
 from app.api.routes.documents import router as documents_router
+from app.api.routes.land_verification import router as land_verification_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router)
@@ -31,6 +32,8 @@ api_router.include_router(export_router, prefix="/api/v1/export")
 api_router.include_router(export_router, prefix="/export")
 api_router.include_router(documents_router, prefix="/api/v1/documents")
 api_router.include_router(documents_router, prefix="/documents")
+api_router.include_router(land_verification_router, prefix="/api/v1")
+api_router.include_router(land_verification_router)
 api_router.include_router(analytics_router)
 
 __all__ = ["api_router"]

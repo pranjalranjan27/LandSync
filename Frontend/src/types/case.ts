@@ -14,14 +14,19 @@ export type CaseStage =
   | 'STAGE_8_POSSESSION_COMPLETED'   // Section 38 Vesting & Possession Complete
   | 'returned_for_clarification'     // Collector returned proposal for clarifications
   | 'proposal_submitted'             // Requisition body initial submission
+  | 'district_review'                // Collector district scrutiny
   | 'sia_in_progress'                // Social Impact Assessment under evaluation
   | 'sia_complete'                   // SIA finished, ready for Sec 11 notification
+  | 'notification_published'         // Section 11 gazette published
   | 'objections_window'              // Hearing window, ready for award formulation
+  | 'award_declared'                 // Section 19 declaration / award
   | 'compensation_disbursed'         // R&R DBT finished, ready for possession confirmation
   | 'state_review'                   // State Secretariat review
   | 'award_issued'                   // Final statutory award drafted
   | 'rr_in_progress'                 // Solatium and rehabilitation processing
-  | 'possession_taken';              // Possession handed over to Requiring Body
+  | 'possession_taken'               // Possession handed over to Requiring Body
+  | 'rejected'                       // Proposal rejected
+  | 'completed';                     // Workflow completed
 
 export type CaseAction =
   | 'SUBMIT_PROPOSAL'

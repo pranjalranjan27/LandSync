@@ -3,7 +3,7 @@ import type { CaseStage } from '../types/case';
 
 export function isReadOnlyRole(role: Role | string): boolean {
   const r = (role || '').toUpperCase();
-  return r === 'POLICY_VIEWER' || r === 'CITIZEN' || r === 'RR_MONITORING_COMMITTEE';
+  return r === 'POLICY_VIEWER' || r === 'RR_MONITORING_COMMITTEE';
 }
 
 export function canPerformCaseAction(role: Role | string, stage: CaseStage | string): boolean {
@@ -30,7 +30,7 @@ export function canPerformCaseAction(role: Role | string, stage: CaseStage | str
       return r === 'COLLECTOR';
     case 'objections_window':
     case 'stage_5_objections_hearing':
-      return r === 'COLLECTOR' || r === 'FIELD_OFFICER';
+      return r === 'COLLECTOR' || r === 'FIELD_OFFICER' || r === 'PATWARI_LEKHPAL' || r === 'TEHSILDAR';
     case 'award_issued':
     case 'stage_6_sec19_declaration':
       return r === 'COLLECTOR' || r === 'STATE_APPROVER';
@@ -38,10 +38,10 @@ export function canPerformCaseAction(role: Role | string, stage: CaseStage | str
     case 'stage_7_rr_award_disbursement':
       return r === 'RR_ADMIN' || r === 'COLLECTOR';
     case 'compensation_disbursed':
-      return r === 'COLLECTOR' || r === 'FIELD_OFFICER';
+      return r === 'COLLECTOR' || r === 'FIELD_OFFICER' || r === 'PATWARI_LEKHPAL' || r === 'TEHSILDAR';
     case 'possession_taken':
     case 'stage_8_possession_completed':
-      return r === 'RR_ADMIN' || r === 'COLLECTOR' || r === 'FIELD_OFFICER';
+      return r === 'RR_ADMIN' || r === 'COLLECTOR' || r === 'FIELD_OFFICER' || r === 'PATWARI_LEKHPAL' || r === 'TEHSILDAR';
     default:
       return false;
   }

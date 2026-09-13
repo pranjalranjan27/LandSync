@@ -13,7 +13,8 @@ import { CollectorDashboard } from '../features/collector/CollectorDashboard';
 import { StateApproverView } from '../pages/Dashboard/StateApproverView';
 import { SiaExpertView } from '../pages/Dashboard/SiaExpertView';
 import { RrAdminView } from '../pages/Dashboard/RrAdminView';
-import { FieldOfficerView } from '../pages/Dashboard/FieldOfficerView';
+import { PatwariLekhpalView } from '../pages/Dashboard/PatwariLekhpalView';
+import { TehsildarView } from '../pages/Dashboard/TehsildarView';
 import { AnalyticsPage } from '../features/policy-viewer/AnalyticsPage';
 import { LogObjectionForm } from '../features/objections/LogObjectionForm';
 import { CaseQueuePage } from '../features/cases/CaseQueuePage';
@@ -132,8 +133,16 @@ export function getAppRoutes(
     {
       path: '/field-officer',
       element: (
-        <ProtectedRoute currentUser={currentUser} allowedRoles={['FIELD_OFFICER']}>
-          <FieldOfficerView />
+        <ProtectedRoute currentUser={currentUser} allowedRoles={['PATWARI_LEKHPAL', 'FIELD_OFFICER']}>
+          <PatwariLekhpalView />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: '/tehsildar',
+      element: (
+        <ProtectedRoute currentUser={currentUser} allowedRoles={['TEHSILDAR']}>
+          <TehsildarView />
         </ProtectedRoute>
       )
     },

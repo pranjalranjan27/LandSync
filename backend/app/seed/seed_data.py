@@ -29,6 +29,7 @@ from app.models.enums import (
     SIARecommendation,
     RRStatus,
     DisputeReferralStatus,
+    LandVerificationStatus,
     EncroachmentStatus,
     DisputeStatus,
     OwnershipType,
@@ -39,6 +40,7 @@ from app.models.case import Case
 from app.models.audit import AuditLog
 from app.models.document import Document
 from app.models.dispute_referral import DisputeReferral
+from app.models.land_verification import LandVerificationRecord
 from app.models.workflow import (
     SIAVerdict,
     Objection,
@@ -149,11 +151,28 @@ def seed_database():
                 "jurisdiction_id": gb_nagar.id
             },
             {
-                "name": "Rajesh Sharma (Tehsildar Jewar)",
+                "name": "Rajesh Sharma (Field Kanungo)",
                 "email": "field_officer@landsync.gov.in",
-                "role": UserRole.FIELD_OFFICER.value,
-                "jurisdiction_level": JurisdictionLevel.DISTRICT.value,
-                "jurisdiction_id": gb_nagar.id
+                "role": UserRole.PATWARI_LEKHPAL.value,
+                "jurisdiction_level": JurisdictionLevel.VILLAGE.value,
+                "jurisdiction_id": gb_nagar.id,
+                "jurisdiction_value": "Chhapraula,Bisrakh Jalalpur"
+            },
+            {
+                "name": "Ramesh Sharma (Lekhpal / Patwari)",
+                "email": "patwari_lekhpal@landsync.gov.in",
+                "role": UserRole.PATWARI_LEKHPAL.value,
+                "jurisdiction_level": JurisdictionLevel.VILLAGE.value,
+                "jurisdiction_id": gb_nagar.id,
+                "jurisdiction_value": "Chhapraula,Bisrakh Jalalpur"
+            },
+            {
+                "name": "Suresh Chandra (Tehsildar Dadri)",
+                "email": "tehsildar@landsync.gov.in",
+                "role": UserRole.TEHSILDAR.value,
+                "jurisdiction_level": JurisdictionLevel.TEHSIL.value,
+                "jurisdiction_id": gb_nagar.id,
+                "jurisdiction_value": "Dadri"
             },
             {
                 "name": "Pooja Hegde (Joint Secretary MHA / MoRTH)",
@@ -192,15 +211,21 @@ def seed_database():
                 u = User(
                     name=u_data["name"],
                     email=u_data["email"],
-                    hashed_password=hashed_pwd,
+                    hashed_password=get_password_hash("password123"),
                     role=u_data["role"],
                     jurisdiction_level=u_data["jurisdiction_level"],
                     jurisdiction_id=u_data["jurisdiction_id"],
-                    created_at=datetime.now(timezone.utc)
+                    jurisdiction_value=u_data.get("jurisdiction_value")
                 )
                 db.add(u)
                 db.flush()
+            else:
+                u.role = u_data["role"]
+                u.jurisdiction_level = u_data["jurisdiction_level"]
+                u.jurisdiction_value = u_data.get("jurisdiction_value")
+                db.flush()
             user_lookup[u_data["role"]] = u
+            user_lookup[u_data["email"]] = u
         db.commit()
 
         print("[INFO] [4/6] Seeding 50 Cadastral Parcels in Gautam Buddha Nagar (Jewar area)...")
@@ -543,6 +568,75 @@ def seed_database():
                 remarks="Referred Section 30 solatium apportionment dispute to LARR Authority.",
                 created_at=now - timedelta(days=5)
             ))
+
+            # ── Seed Land Verification Records ────────────────────────────
+            patwari_user = user_lookup.get("patwari_lekhpal@landsync.gov.in") or user_lookup.get("field_officer@landsync.gov.in")
+            tehsildar_user = user_lookup.get("tehsildar@landsync.gov.in")
+
+            if patwari_user and tehsildar_user:
+                # 1. Case 1 (Certified verification under Section 4)
+                ver1 = db.query(LandVerificationRecord).filter_by(case_id=case1.id).first()
+                if not ver1:
+                    db.add(LandVerificationRecord(
+                        case_id=case1.id,
+                        parcel_ids=[str(p.id) for p in case1.parcels],
+                        khasra_ownership_confirmed=True,
+                        ownership_notes="All 6 Khasra parcels cross-checked against Tehsil Dadri Jamabandi 1431F. Clear title held by khatedars.",
+                        boundary_verification_notes="Physical boundary survey completed using DGPS rover. All boundary pillars intact along corridor alignment.",
+                        asset_inventory=[
+                            {"type": "tree", "description": "Mature Sheesham and Neem trees along field edge", "estimated_count_or_area": "24 trees"},
+                            {"type": "tubewell", "description": "Submersible borewell with 5HP pump set", "estimated_count_or_area": "2 units"},
+                            {"type": "structure", "description": "Pucca farm shed and brick boundary wall", "estimated_count_or_area": "120 sq.m"}
+                        ],
+                        notice_served_at=now - timedelta(days=22),
+                        notice_served_notes="Section 4 notice personally served on all 18 landholders against signature acknowledgment.",
+                        submitted_by_officer_id=patwari_user.id,
+                        submitted_at=now - timedelta(days=20),
+                        status=LandVerificationStatus.CERTIFIED.value,
+                        certified_by_tehsildar_id=tehsildar_user.id,
+                        certified_at=now - timedelta(days=18),
+                        tehsildar_notes="Certified under Section 4. Land title and asset enumeration verified against Tehsil revenue records."
+                    ))
+
+                # 2. Case 2 (Submitted, pending Tehsildar certification)
+                ver2 = db.query(LandVerificationRecord).filter_by(case_id=case2.id).first()
+                if not ver2:
+                    db.add(LandVerificationRecord(
+                        case_id=case2.id,
+                        parcel_ids=[str(p.id) for p in case2.parcels],
+                        khasra_ownership_confirmed=True,
+                        ownership_notes="Khasra UP-GB-10028 co-owned by 4 legal heirs. Joint consent record appended.",
+                        boundary_verification_notes="Cadastral boundaries demarcated on Shajra map Sheet 14-B.",
+                        asset_inventory=[
+                            {"type": "crop", "description": "Standing Sugarcane crop ready for harvest", "estimated_count_or_area": "3.2 Bigha"},
+                            {"type": "well", "description": "Open irrigation masonry well", "estimated_count_or_area": "1 well"}
+                        ],
+                        notice_served_at=now - timedelta(days=5),
+                        notice_served_notes="Statutory notice affixed at Mauza Chaupal.",
+                        submitted_by_officer_id=patwari_user.id,
+                        submitted_at=now - timedelta(days=3),
+                        status=LandVerificationStatus.SUBMITTED.value,
+                    ))
+
+                # 3. Case 3 (Returned for correction)
+                ver3 = db.query(LandVerificationRecord).filter_by(case_id=case3.id).first()
+                if not ver3:
+                    db.add(LandVerificationRecord(
+                        case_id=case3.id,
+                        parcel_ids=[str(p.id) for p in case3.parcels],
+                        khasra_ownership_confirmed=False,
+                        ownership_notes="Discrepancy noted between field survey boundary and Khatauni plot area.",
+                        boundary_verification_notes="Boundary stone missing on north-west boundary corner.",
+                        asset_inventory=[
+                            {"type": "structure", "description": "Temporary kachha hutment", "estimated_count_or_area": "1 structure"}
+                        ],
+                        notice_served_at=now - timedelta(days=8),
+                        notice_served_notes="Notice delivered via registered post.",
+                        submitted_by_officer_id=patwari_user.id,
+                        submitted_at=now - timedelta(days=6),
+                        status=LandVerificationStatus.RETURNED_FOR_CORRECTION.value,
+                        tehsildar_notes="Re-verify north-west boundary coordinates with Revenue Inspector and report exact encroachment offset."
+                    ))
 
         db.commit()
         print("[SUCCESS] [6/6] LandSync Demo Database Seeded Successfully!")

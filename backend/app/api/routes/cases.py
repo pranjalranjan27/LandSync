@@ -268,7 +268,7 @@ def publish_preliminary_notification(
     response_model=ObjectionRead,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
-        Depends(require_role(UserRole.FIELD_OFFICER, UserRole.DISTRICT_COLLECTOR)),
+        Depends(require_role(UserRole.PATWARI_LEKHPAL, UserRole.DISTRICT_COLLECTOR)),
         Depends(require_jurisdiction_match("case"))
     ]
 )
@@ -278,7 +278,7 @@ def log_stakeholder_objection(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Record an official citizen/landowner objection during the objections window."""
+    """Record an official landowner objection during the Section 15 objections window."""
     return WorkflowService.log_objection(db=db, case_id=id, user=current_user, objection_in=payload)
 
 
@@ -325,7 +325,7 @@ def begin_rehabilitation_resettlement(
     response_model=AffectedFamilyRead,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Depends(require_role(UserRole.RR_ADMINISTRATOR, UserRole.FIELD_OFFICER)),
+        Depends(require_role(UserRole.RR_ADMINISTRATOR, UserRole.PATWARI_LEKHPAL)),
         Depends(require_jurisdiction_match("case"))
     ]
 )

@@ -42,11 +42,22 @@ class UserRole(str, Enum):
     STATE_APPROVER = "state_approver"
     SIA_EXPERT = "sia_expert"
     RR_ADMINISTRATOR = "rr_administrator"
-    FIELD_OFFICER = "field_officer"
+    PATWARI_LEKHPAL = "patwari_lekhpal"
+    TEHSILDAR = "tehsildar"
     POLICY_VIEWER = "policy_viewer"
     LARR_AUTHORITY = "larr_authority"
     INDEPENDENT_SIA_EXPERT = "independent_sia_expert"
     RR_MONITORING_COMMITTEE = "rr_monitoring_committee"
+
+    # Backward compatibility alias
+    FIELD_OFFICER = "patwari_lekhpal"
+
+
+class LandVerificationStatus(str, Enum):
+    """Statutory status of village-level land verification under Section 4."""
+    SUBMITTED = "submitted"
+    CERTIFIED = "certified"
+    RETURNED_FOR_CORRECTION = "returned_for_correction"
 
 
 class DisputeReferralStatus(str, Enum):
@@ -60,6 +71,9 @@ class DisputeReferralStatus(str, Enum):
 
 class JurisdictionLevel(str, Enum):
     """Attribute-Based Access Control (ABAC) jurisdiction scope."""
+    VILLAGE = "village"
+    TEHSIL = "tehsil"
+    MUNICIPAL = "municipal"
     DISTRICT = "district"
     STATE = "state"
     NATIONAL = "national"

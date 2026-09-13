@@ -72,12 +72,16 @@ def require_role(*allowed_roles: Union[UserRole, str]) -> Callable[[User], User]
     Example: Depends(require_role(UserRole.DISTRICT_COLLECTOR, UserRole.STATE_APPROVER))
     """
     role_values = [r.value if isinstance(r, UserRole) else str(r) for r in allowed_roles]
+    # Backward compatibility: field_officer was replaced by patwari_lekhpal
+    if UserRole.PATWARI_LEKHPAL.value in role_values and "field_officer" not in role_values:
+        role_values.append("field_officer")
 
     def role_checker(current_user: User = Depends(get_current_user)) -> User:
-        if current_user.role not in role_values:
+        user_role_val = current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role)
+        if user_role_val not in role_values:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Forbidden: Action requires one of roles: {role_values}. User holds '{current_user.role}'."
+                detail=f"Forbidden: Action requires one of roles: {role_values}. User holds '{user_role_val}'."
             )
         return current_user
 

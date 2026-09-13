@@ -59,14 +59,16 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-006',
-    name: 'Vikram Singh Rawat',
-    email: 'patwari.srinagar@uk.gov.in',
-    role: 'FIELD_OFFICER',
-    designation: 'Revenue Inspector / Kanungo',
+    name: 'Rameshwar Dayal Sharma',
+    email: 'patwari_lekhpal@landsync.gov.in',
+    role: 'PATWARI_LEKHPAL',
+    designation: 'Patwari / Lekhpal (Chhapraula / Bisrakh)',
     department: 'Tehsil Land Revenue Wing',
-    district: 'Pauri Garhwal',
-    state: 'Uttarakhand',
-    isOfficial: true
+    district: 'Gautam Buddha Nagar',
+    state: 'Uttar Pradesh',
+    isOfficial: true,
+    jurisdiction_level: 'village',
+    jurisdiction_value: 'Chhapraula,Bisrakh Jalalpur'
   },
   {
     id: 'user-007',
@@ -81,14 +83,16 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-008',
-    name: 'Surendra Singh Rawat',
-    email: 'surendra.rawat@citizen.in',
-    role: 'CITIZEN',
-    designation: 'Landowner (Khasra 442/19-A)',
-    department: 'Mauza Rampur',
-    district: 'Pauri Garhwal',
-    state: 'Uttarakhand',
-    isOfficial: false
+    name: 'Smt. Sudha Upadhyay',
+    email: 'tehsildar@landsync.gov.in',
+    role: 'TEHSILDAR',
+    designation: 'Tehsildar / Executive Magistrate (Dadri)',
+    department: 'Office of the Tehsildar, Dadri',
+    district: 'Gautam Buddha Nagar',
+    state: 'Uttar Pradesh',
+    isOfficial: true,
+    jurisdiction_level: 'tehsil',
+    jurisdiction_value: 'Dadri'
   },
   {
     id: 'user-009',
@@ -128,7 +132,7 @@ export const mockUsers: User[] = [
 export const roleConfigs: Record<string, RoleConfig> = {
   COLLECTOR: {
     role: 'COLLECTOR',
-    displayName: 'District Collector',
+    displayName: 'District Collector & DM',
     hindiName: 'जिला कलेक्टर',
     dashboardPath: '/collector',
     description: 'Statutory authority under Section 11 & 19 for notifications, hearings, and land awards.',
@@ -136,7 +140,7 @@ export const roleConfigs: Record<string, RoleConfig> = {
   },
   REQUIRING_BODY: {
     role: 'REQUIRING_BODY',
-    displayName: 'Requiring Body',
+    displayName: 'Requiring Body / Project Proponent',
     hindiName: 'अपेक्षी निकाय',
     dashboardPath: '/requiring-body',
     description: 'Submits land proposals, project justifications, and funding commitments.',
@@ -144,7 +148,7 @@ export const roleConfigs: Record<string, RoleConfig> = {
   },
   STATE_APPROVER: {
     role: 'STATE_APPROVER',
-    displayName: 'State Approver',
+    displayName: 'State Revenue Department (Approver)',
     hindiName: 'राज्य अनुमोदनकर्ता',
     dashboardPath: '/state-approver',
     description: 'State government sanction authority for commissioning SIA and high-value approvals.',
@@ -152,7 +156,7 @@ export const roleConfigs: Record<string, RoleConfig> = {
   },
   SIA_EXPERT: {
     role: 'SIA_EXPERT',
-    displayName: 'SIA Expert Committee',
+    displayName: 'SIA Team Leader / Expert Group',
     hindiName: 'एसआईए विशेषज्ञ समिति',
     dashboardPath: '/sia-expert',
     description: 'Conducts social impact hearings, environmental assessments, and submits verdicts.',
@@ -160,15 +164,31 @@ export const roleConfigs: Record<string, RoleConfig> = {
   },
   RR_ADMIN: {
     role: 'RR_ADMIN',
-    displayName: 'R&R Administrator',
+    displayName: 'Administrator (R&R)',
     hindiName: 'पुनर्वास एवं पुनर्व्यवस्था प्रशासक',
     dashboardPath: '/rr-admin',
     description: 'Formulates Rehabilitation & Resettlement schemes and tracks solatium disbursements.',
     canMutate: true
   },
+  PATWARI_LEKHPAL: {
+    role: 'PATWARI_LEKHPAL',
+    displayName: 'Patwari / Lekhpal (Village Revenue Officer)',
+    hindiName: 'पटवारी / लेखपाल',
+    dashboardPath: '/field-officer',
+    description: 'Performs on-ground cadastral surveys, ground-truthing, and tree/structure inventories.',
+    canMutate: true
+  },
+  TEHSILDAR: {
+    role: 'TEHSILDAR',
+    displayName: 'Tehsildar (Quasi-Judicial Revenue Authority)',
+    hindiName: 'तहसीलदार',
+    dashboardPath: '/tehsildar',
+    description: 'Conducts quasi-judicial Section 4 ground-verification certification and tehsil-level revenue reviews.',
+    canMutate: true
+  },
   FIELD_OFFICER: {
     role: 'FIELD_OFFICER',
-    displayName: 'Field Officer / Patwari',
+    displayName: 'Patwari / Lekhpal (Village Revenue Officer)',
     hindiName: 'क्षेत्र अधिकारी / पटवारी',
     dashboardPath: '/field-officer',
     description: 'Performs on-ground cadastral surveys, ground-truthing, and tree/structure inventories.',
@@ -176,18 +196,10 @@ export const roleConfigs: Record<string, RoleConfig> = {
   },
   POLICY_VIEWER: {
     role: 'POLICY_VIEWER',
-    displayName: 'Policy Viewer / Auditor',
+    displayName: 'Policy Viewer (National / Public Portal)',
     hindiName: 'नीति समीक्षक / लेखा परीक्षक',
     dashboardPath: '/policy-viewer',
     description: 'Read-only nation-wide land acquisition analytics and audit compliance monitoring.',
-    canMutate: false
-  },
-  CITIZEN: {
-    role: 'CITIZEN',
-    displayName: 'Citizen / Landowner',
-    hindiName: 'नागरिक / भू-स्वामी',
-    dashboardPath: '/cases',
-    description: 'Tracks status of ancestral land, compensation disbursement, and files Section 15 objections.',
     canMutate: false
   },
   LARR_AUTHORITY: {

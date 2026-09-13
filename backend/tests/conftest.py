@@ -83,18 +83,23 @@ def test_setup(db_session: Session):
         )
         db_session.add(sa)
 
-    # Field Officer for GB Nagar
+    # Patwari / Lekhpal (Field Officer) for Chhapraula village, GB Nagar
     fo = db_session.query(User).filter_by(email="field_officer_gbnagar@test.gov.in").first()
     if not fo:
         fo = User(
-            name="Test Field Officer GB Nagar",
+            name="Test Patwari Lekhpal GB Nagar",
             email="field_officer_gbnagar@test.gov.in",
             hashed_password=get_password_hash("password123"),
-            role=UserRole.FIELD_OFFICER,
-            jurisdiction_level=JurisdictionLevel.DISTRICT,
-            jurisdiction_id=gb_nagar.id
+            role=UserRole.PATWARI_LEKHPAL,
+            jurisdiction_level=JurisdictionLevel.VILLAGE,
+            jurisdiction_id=gb_nagar.id,
+            jurisdiction_value="Chhapraula,Bisrakh Jalalpur"
         )
         db_session.add(fo)
+    else:
+        fo.role = UserRole.PATWARI_LEKHPAL
+        fo.jurisdiction_level = JurisdictionLevel.VILLAGE
+        fo.jurisdiction_value = "Chhapraula,Bisrakh Jalalpur"
 
     # Policy Viewer (National)
     pv = db_session.query(User).filter_by(email="policy_viewer@test.gov.in").first()
@@ -161,6 +166,34 @@ def test_setup(db_session: Session):
         )
         db_session.add(rr_comm)
 
+    # Tehsildar user for Dadri tehsil
+    teh_dadri = db_session.query(User).filter_by(email="tehsildar_dadri@test.gov.in").first()
+    if not teh_dadri:
+        teh_dadri = User(
+            name="Test Tehsildar Dadri",
+            email="tehsildar_dadri@test.gov.in",
+            hashed_password=get_password_hash("password123"),
+            role=UserRole.TEHSILDAR,
+            jurisdiction_level=JurisdictionLevel.TEHSIL,
+            jurisdiction_id=gb_nagar.id,
+            jurisdiction_value="Dadri"
+        )
+        db_session.add(teh_dadri)
+
+    # Tehsildar user for Jewar tehsil (other tehsil)
+    teh_jewar = db_session.query(User).filter_by(email="tehsildar_jewar@test.gov.in").first()
+    if not teh_jewar:
+        teh_jewar = User(
+            name="Test Tehsildar Jewar",
+            email="tehsildar_jewar@test.gov.in",
+            hashed_password=get_password_hash("password123"),
+            role=UserRole.TEHSILDAR,
+            jurisdiction_level=JurisdictionLevel.TEHSIL,
+            jurisdiction_id=gb_nagar.id,
+            jurisdiction_value="Jewar"
+        )
+        db_session.add(teh_jewar)
+
     db_session.commit()
 
     return {
@@ -171,6 +204,8 @@ def test_setup(db_session: Session):
         "c2_id": c2.id,
         "sa_id": sa.id,
         "fo_id": fo.id,
+        "teh_dadri_id": teh_dadri.id,
+        "teh_jewar_id": teh_jewar.id,
         "pv_id": pv.id,
         "rb_id": rb.id,
         "larr_id": larr.id,
@@ -204,6 +239,11 @@ def token_collector_gbnagar(test_setup) -> str:
 
 
 @pytest.fixture(scope="session")
+def token_district_collector(token_collector_gbnagar: str) -> str:
+    return token_collector_gbnagar
+
+
+@pytest.fixture(scope="session")
 def token_collector_agra(test_setup) -> str:
     return create_access_token(
         subject=test_setup["c2_id"],
@@ -232,9 +272,49 @@ def token_field_officer(test_setup) -> str:
     return create_access_token(
         subject=test_setup["fo_id"],
         claims={
-            "role": UserRole.FIELD_OFFICER.value,
-            "jurisdiction_level": JurisdictionLevel.DISTRICT.value,
-            "jurisdiction_id": test_setup["gb_nagar_id"]
+            "role": UserRole.PATWARI_LEKHPAL.value,
+            "jurisdiction_level": JurisdictionLevel.VILLAGE.value,
+            "jurisdiction_id": test_setup["gb_nagar_id"],
+            "jurisdiction_value": "Chhapraula,Bisrakh Jalalpur"
+        }
+    )
+
+
+@pytest.fixture(scope="session")
+def token_patwari_lekhpal(test_setup) -> str:
+    return create_access_token(
+        subject=test_setup["fo_id"],
+        claims={
+            "role": UserRole.PATWARI_LEKHPAL.value,
+            "jurisdiction_level": JurisdictionLevel.VILLAGE.value,
+            "jurisdiction_id": test_setup["gb_nagar_id"],
+            "jurisdiction_value": "Chhapraula,Bisrakh Jalalpur"
+        }
+    )
+
+
+@pytest.fixture(scope="session")
+def token_tehsildar(test_setup) -> str:
+    return create_access_token(
+        subject=test_setup["teh_dadri_id"],
+        claims={
+            "role": UserRole.TEHSILDAR.value,
+            "jurisdiction_level": JurisdictionLevel.TEHSIL.value,
+            "jurisdiction_id": test_setup["gb_nagar_id"],
+            "jurisdiction_value": "Dadri"
+        }
+    )
+
+
+@pytest.fixture(scope="session")
+def token_tehsildar_other(test_setup) -> str:
+    return create_access_token(
+        subject=test_setup["teh_jewar_id"],
+        claims={
+            "role": UserRole.TEHSILDAR.value,
+            "jurisdiction_level": JurisdictionLevel.TEHSIL.value,
+            "jurisdiction_id": test_setup["gb_nagar_id"],
+            "jurisdiction_value": "Jewar"
         }
     )
 

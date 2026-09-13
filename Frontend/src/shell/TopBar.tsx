@@ -15,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../locales';
 import { useAuth } from '../hooks/useAuth';
+import { getRoleDisplayLabel } from '../constants/roleLabels';
 import './TopBar.css';
 
 interface TopBarProps {
@@ -63,8 +64,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const displayName = currentUser.name.replace(/,.*$/, '');
   const userRoleMeta = roleConfigs[currentUser.role];
-  const roleTranslationKey = ROLE_LOCALE_MAP[currentUser.role];
-  const roleDisplay = roleTranslationKey ? t(roleTranslationKey, userRoleMeta?.displayName) : (userRoleMeta?.displayName || currentUser.designation);
+  const roleDisplay = getRoleDisplayLabel(currentUser.role) || (userRoleMeta?.displayName || currentUser.designation);
 
   const handleSignOut = () => {
     setDropdownOpen(false);

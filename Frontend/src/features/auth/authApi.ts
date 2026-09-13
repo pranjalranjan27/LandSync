@@ -85,7 +85,9 @@ export function buildUserFromFirebase(fbUser: FirebaseUser): User {
     state: stored.state || 'Uttar Pradesh',
     phone: stored.phone || fbUser.phoneNumber || undefined,
     avatarUrl: fbUser.photoURL || undefined,
-    isOfficial: role !== 'CITIZEN'
+    isOfficial: true,
+    jurisdiction_level: stored.jurisdiction_level || (role === 'PATWARI_LEKHPAL' ? 'village' : role === 'TEHSILDAR' ? 'tehsil' : undefined),
+    jurisdiction_value: stored.jurisdiction_value || (role === 'PATWARI_LEKHPAL' ? 'Chhapraula,Bisrakh Jalalpur' : role === 'TEHSILDAR' ? 'Dadri' : undefined)
   };
 
   return user;
@@ -204,7 +206,7 @@ export async function registerUser(details: RegisterDetails): Promise<LoginResul
       district_id: (details.district?.trim() || 'Gautam Buddha Nagar').toLowerCase().replace(/\s+/g, '_'),
       state: details.state?.trim() || 'Uttar Pradesh',
       phone: details.phone?.trim(),
-      isOfficial: details.role !== 'CITIZEN'
+      isOfficial: true
     };
 
     saveStoredUserProfile(fbUser.uid, profileData);

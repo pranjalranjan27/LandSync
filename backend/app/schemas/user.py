@@ -36,6 +36,7 @@ class UserBase(BaseModel):
     role: UserRole
     jurisdiction_level: JurisdictionLevel
     jurisdiction_id: Optional[int] = None
+    jurisdiction_value: Optional[str] = None
 
 
 class UserCreate(UserBase):
@@ -66,3 +67,4 @@ class TokenPayload(BaseModel):
     role: Optional[str] = None
     jurisdiction_level: Optional[str] = None
     jurisdiction_id: Optional[int] = None
+    jurisdiction_value: Optional[str] = None

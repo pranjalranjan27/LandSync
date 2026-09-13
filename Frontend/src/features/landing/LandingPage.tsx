@@ -87,8 +87,8 @@ export function LandingPage() {
                       navigate('/cases');
                     }}
                   >
-                    <span className="dropdown-option-title">Track My Case</span>
-                    <span className="dropdown-option-sub">(Citizen Access)</span>
+                    <span className="dropdown-option-title">Public Portal</span>
+                    <span className="dropdown-option-sub">(View Notifications & Objections)</span>
                   </button>
                 </div>
               )}
@@ -439,20 +439,20 @@ export function LandingPage() {
                   </div>
                 </div>
 
-                {/* Card 3: Citizens & Landowners */}
+                {/* Card 3: Tehsil & Village Revenue Field Wing */}
                 <div className="stakeholder-card card-rose">
                   <div className="stakeholder-img-wrap">
                     <img
-                      src="/assets/citizens_bw.jpg"
-                      alt="Citizens & Landowners"
+                      src="/assets/district_officials_bw.jpg"
+                      alt="Tehsil & Village Revenue Officers"
                       className="stakeholder-photo"
                     />
                   </div>
                   <div className="stakeholder-content-wrap">
-                    <h3 className="stakeholder-title">Citizens &amp; Landowners</h3>
+                    <h3 className="stakeholder-title">Revenue Field Administration</h3>
                     <div className="stakeholder-accent-bar bar-rose" />
                     <p className="stakeholder-desc">
-                      Track their own case status and compensation transparently.
+                      Patwari/Lekhpal on-ground cadastral surveys and Tehsildar statutory Section 4 certification.
                     </p>
                   </div>
                 </div>

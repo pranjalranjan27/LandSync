@@ -3,12 +3,12 @@
  * KPI cards + parcel table + role-gated action loop
  * Every action requires a remark via ReasonModal before submission.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Case } from '../../types/case';
 import {
   IndianRupee, MapPin, Users, Award,
   CheckCircle2, XCircle, RotateCcw, ChevronDown, ChevronUp,
-  AlertTriangle, Loader2, Scale, ShieldAlert
+  AlertTriangle, Loader2, Scale, ShieldAlert, FileCheck2, ShieldCheck
 } from 'lucide-react';
 import { Button } from '../../components/Button/Button';
 import { StatusBadge } from '../../components/StatusBadge/StatusBadge';
@@ -16,6 +16,8 @@ import { ReasonModal } from '../../components/ReasonModal/ReasonModal';
 import { usePermissions } from '../../hooks/usePermissions';
 import { caseService } from '../../services/caseService';
 import { referCaseToLarr } from '../../lib/api/authorityApi';
+import { fetchVerificationForCase } from '../../lib/api/landVerificationApi';
+import type { LandVerificationRecord } from '../../types/verification';
 import { RiskAssessmentCard } from '../../features/risk/RiskAssessmentCard';
 import { SignatureConfirmModal } from '../../features/signature/SignatureConfirmModal';
 import type { SignatureActionType } from '../../types/signature';
@@ -58,7 +60,7 @@ const ACTIONS: ActionDef[] = [
     description: 'Approve proposal and forward to State Secretariat for Section 5 scrutiny',
     variant: 'primary',
     allowedRoles: ['COLLECTOR'],
-    activeAtStages: ['proposal_submitted'],
+    activeAtStages: ['proposal_submitted', 'district_review'],
     nextStage: 'state_review',
   },
   // Collector: return for clarification
@@ -148,7 +150,7 @@ const ACTIONS: ActionDef[] = [
     label: 'Confirm Possession Taken',
     description: 'Confirm physical possession handed over to Requiring Body',
     variant: 'primary',
-    allowedRoles: ['FIELD_OFFICER', 'COLLECTOR', 'RR_ADMIN'],
+    allowedRoles: ['PATWARI_LEKHPAL', 'FIELD_OFFICER', 'COLLECTOR', 'RR_ADMIN'],
     activeAtStages: ['compensation_disbursed'],
     nextStage: 'possession_taken',
   },
@@ -170,6 +172,28 @@ export function OverviewTab({ caseItem, onCaseUpdate }: OverviewTabProps) {
   const [referModalOpen, setReferModalOpen] = useState(false);
   const [referReason, setReferReason] = useState('');
   const [referCaseNumber, setReferCaseNumber] = useState('');
+
+  // Section 4 Statutory Land Verification State
+  const [landVerification, setLandVerification] = useState<LandVerificationRecord | null>(null);
+  const [loadingVer, setLoadingVer] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    setLoadingVer(true);
+    fetchVerificationForCase(caseItem.id)
+      .then((ver) => {
+        if (isMounted) {
+          setLandVerification(ver);
+          setLoadingVer(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setLoadingVer(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [caseItem.id]);
 
   const currentStage = caseItem.stage.toLowerCase();
 
@@ -507,6 +531,31 @@ export function OverviewTab({ caseItem, onCaseUpdate }: OverviewTabProps) {
                   );
                 }
 
+                const isSection4GateLocked =
+                  action.key === 'approve_forward' &&
+                  landVerification?.status !== 'certified';
+
+                if (isSection4GateLocked) {
+                  return (
+                    <div key={action.key} className="overview-action-item">
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        type="button"
+                        disabled
+                        title="Statutory Section 4 Gate: Land Verification must be certified by Tehsildar"
+                      >
+                        <AlertTriangle size={15} style={{ color: '#D97706' }} /> Approval Locked (Sec 4 Gate)
+                      </Button>
+                      <span className="overview-action-desc" style={{ color: '#B45309', fontWeight: 600 }}>
+                        {!landVerification && 'Section 4 ground verification has not yet been submitted by Patwari / Lekhpal.'}
+                        {landVerification?.status === 'submitted' && 'Land verification submitted by Patwari; awaiting quasi-judicial certification by Tehsildar.'}
+                        {landVerification?.status === 'returned_for_correction' && `Returned for correction by Tehsildar: "${landVerification.tehsildar_notes || 'Deficiencies noted'}"`}
+                      </span>
+                    </div>
+                  );
+                }
+
                 return (
                   <div key={action.key} className="overview-action-item">
                     <Button
@@ -603,6 +652,135 @@ export function OverviewTab({ caseItem, onCaseUpdate }: OverviewTabProps) {
         totalAreaHectares={caseItem.totalAreaHectares}
         affectedFamiliesCount={caseItem.affectedFamiliesCount}
       />
+
+      {/* ── Section 4 Statutory Ground Land Verification Card ── */}
+      <div className="card" style={{ borderLeft: `4px solid ${landVerification?.status === 'certified' ? '#16A34A' : landVerification?.status === 'returned_for_correction' ? '#DC2626' : '#D97706'}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: 'var(--spacing-3)' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FileCheck2 size={20} style={{ color: 'var(--color-primary-navy)' }} />
+              <h4 style={{ margin: 0, color: 'var(--color-primary-navy)' }}>
+                Section 4 Ground Land Verification
+              </h4>
+            </div>
+            <span className="text-caption">
+              Patwari/Lekhpal on-ground inspection &amp; Tehsildar quasi-judicial certification
+            </span>
+          </div>
+
+          <div>
+            {loadingVer ? (
+              <span className="text-caption">Checking verification records...</span>
+            ) : landVerification?.status === 'certified' ? (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: '#DCFCE7',
+                color: '#166534',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                fontSize: '0.8rem',
+                fontWeight: 700
+              }}>
+                <CheckCircle2 size={15} /> Certified by Tehsildar
+              </span>
+            ) : landVerification?.status === 'submitted' ? (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: '#DBEAFE',
+                color: '#1E40AF',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                fontSize: '0.8rem',
+                fontWeight: 700
+              }}>
+                <ShieldCheck size={15} /> Awaiting Tehsildar Certification
+              </span>
+            ) : landVerification?.status === 'returned_for_correction' ? (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: '#FEE2E2',
+                color: '#991B1B',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                fontSize: '0.8rem',
+                fontWeight: 700
+              }}>
+                <AlertTriangle size={15} /> Returned for Correction
+              </span>
+            ) : (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: '#FEF3C7',
+                color: '#92400E',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                fontSize: '0.8rem',
+                fontWeight: 700
+              }}>
+                <AlertTriangle size={15} /> Ground Verification Pending
+              </span>
+            )}
+          </div>
+        </div>
+
+        {landVerification ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--spacing-3)', marginTop: '8px' }}>
+            <div style={{ background: '#F8FAFC', padding: '10px 14px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+              <span className="text-caption">KHASRA OWNERSHIP</span>
+              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: landVerification.khasra_ownership_confirmed ? '#16A34A' : '#DC2626', marginTop: 2 }}>
+                {landVerification.khasra_ownership_confirmed ? '✓ Confirmed via Jamabandi' : '✗ Ownership Discrepancy'}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: 2 }}>
+                {landVerification.ownership_notes || 'Reconciled with revenue records'}
+              </div>
+            </div>
+
+            <div style={{ background: '#F8FAFC', padding: '10px 14px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+              <span className="text-caption">REPORTING PATWARI / LEKHPAL</span>
+              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#0F172A', marginTop: 2 }}>
+                {landVerification.submitted_by_officer_name || 'Village Revenue Officer'}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: 2 }}>
+                Submitted: {new Date(landVerification.submitted_at).toLocaleDateString()}
+              </div>
+            </div>
+
+            <div style={{ background: '#F8FAFC', padding: '10px 14px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+              <span className="text-caption">TEHSILDAR CERTIFICATION</span>
+              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: landVerification.status === 'certified' ? '#16A34A' : '#64748B', marginTop: 2 }}>
+                {landVerification.certified_by_tehsildar_name ? `✓ ${landVerification.certified_by_tehsildar_name}` : 'Awaiting Review'}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: 2 }}>
+                {landVerification.certified_at ? new Date(landVerification.certified_at).toLocaleDateString() : 'Statutory Section 4 Gate'}
+              </div>
+            </div>
+
+            <div style={{ background: '#F8FAFC', padding: '10px 14px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+              <span className="text-caption">INVENTORIED ASSETS</span>
+              <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#0F172A', marginTop: 2 }}>
+                {landVerification.asset_inventory?.length || 0} Fixed Assets
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: 2 }}>
+                Notice Served: {landVerification.notice_served_at ? new Date(landVerification.notice_served_at).toLocaleDateString() : 'Recorded'}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '12px 16px', borderRadius: '6px', color: '#92400E', fontSize: '0.85rem' }}>
+            <strong>Section 4 Ground Verification Not Initiated:</strong> The Patwari / Lekhpal assigned to this village
+            must physically inspect the cadastral boundaries, reconcile khasra titles, and document trees/wells before
+            the District Collector can forward this proposal to State Review.
+          </div>
+        )}
+      </div>
 
       {/* ── Details ── */}
       <div className="card">
